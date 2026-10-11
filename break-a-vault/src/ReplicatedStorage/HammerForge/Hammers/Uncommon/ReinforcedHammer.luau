@@ -115,41 +115,45 @@ return {
 			end
 		end)
 
+		-- mango grueso y corto: K = escala radial de todo el mango; el pomo sube
+		local K = 1.35
+		local shaftBottom = -1.0
 		b:group("Shaft", function()
-			local bottom, top = A.ShaftBottom, headY - CH / 2
-			b:cylY(top - bottom, A.ShaftDia, CFrame.new(0, (top + bottom) / 2, 0), core, "Shaft")
+			local bottom, top = shaftBottom, headY - CH / 2
+			b:cylY(top - bottom, A.ShaftDia * K, CFrame.new(0, (top + bottom) / 2, 0), core, "Shaft")
 			-- collar de acero atornillado
-			oct(0.42, 0.66, CFrame.new(0, top - 0.24, 0), steel, "Collar")
-			b:disc(CFrame.new(0, top - 0.02, 0), 0.74, 0.06, steelEdge, "CollarLip")
-			bolt(CFrame.new(0, top - 0.24, 0.33), 0.14)
-			bolt(CFrame.new(0, top - 0.24, -0.33) * CFrame.Angles(0, math.pi, 0), 0.14)
+			oct(0.42, 0.66 * K, CFrame.new(0, top - 0.24, 0), steel, "Collar")
+			b:disc(CFrame.new(0, top - 0.02, 0), 0.74 * K, 0.06, steelEdge, "CollarLip")
+			bolt(CFrame.new(0, top - 0.24, 0.33 * K), 0.17)
+			bolt(CFrame.new(0, top - 0.24, -0.33 * K) * CFrame.Angles(0, math.pi, 0), 0.17)
 			-- anillo
 			local ry = top - 0.6
-			b:disc(CFrame.new(0, ry, 0), 0.62, 0.14, steelEdge, "Ring")
-			b:disc(CFrame.new(0, ry, 0), 0.66, 0.05, blue, "RingBlue")
+			b:disc(CFrame.new(0, ry, 0), 0.62 * K, 0.2, steelEdge, "Ring")
+			b:disc(CFrame.new(0, ry, 0), 0.66 * K, 0.06, blue, "RingBlue")
 			-- agarre negro acanalado
-			local g0, g1 = -1.05, ry - 0.12
-			b:cylY(g1 - g0, 0.48, CFrame.new(0, (g0 + g1) / 2, 0), rubber, "Grip")
-			local n = 9
+			local g0, g1 = -0.92, ry - 0.13
+			b:cylY(g1 - g0, 0.48 * K, CFrame.new(0, (g0 + g1) / 2, 0), rubber, "Grip")
+			local n = 7
 			for i = 0, n - 1 do
 				local y = g0 + 0.1 + (g1 - g0 - 0.2) * i / (n - 1)
-				b:disc(CFrame.new(0, y, 0), 0.58, 0.12, rubberRib, "GripRib")
+				b:disc(CFrame.new(0, y, 0), 0.58 * K, 0.21, rubberRib, "GripRib")
 			end
 		end)
 
 		b:group("Pommel", function()
-			local py = A.PommelY - 0.04
-			b:disc(CFrame.new(0, A.ShaftBottom + 0.1, 0), 0.6, 0.08, steelEdge, "PommelLip")
-			oct(0.44, 0.76, CFrame.new(0, py, 0), steel, "Pommel")
-			b:disc(CFrame.new(0, py + 0.24, 0), 0.68, 0.06, steelEdge, "PommelBevel")
-			b:disc(CFrame.new(0, py - 0.24, 0), 0.68, 0.06, steelDark, "PommelBevel")
-			b:cylY(0.06, 0.46, CFrame.new(0, py - 0.29, 0), core, "PommelCap")
+			local PK = 1.4 -- pomo más grande
+			local py = -1.13
+			b:disc(CFrame.new(0, -0.9, 0), 0.6 * K, 0.08, steelEdge, "PommelLip")
+			oct(0.4, 0.76 * PK, CFrame.new(0, py, 0), steel, "Pommel")
+			b:disc(CFrame.new(0, py + 0.22, 0), 0.68 * PK, 0.06, steelEdge, "PommelBevel")
+			b:disc(CFrame.new(0, py - 0.22, 0), 0.68 * PK, 0.06, steelDark, "PommelBevel")
+			b:cylY(0.06, 0.46 * PK, CFrame.new(0, py - 0.27, 0), core, "PommelCap")
 			-- placas azules cuadradas en las 4 caras
 			for i = 0, 3 do
 				local a = math.rad(90 * i)
-				local cf = CFrame.new(0, py, 0) * CFrame.Angles(0, a, 0) * CFrame.new(0, 0, 0.385)
-				b:box(Vector3.new(0.22, 0.22, 0.04), cf, blue, "PommelBlue")
-				b:box(Vector3.new(0.08, 0.08, 0.04), cf * CFrame.new(0, 0, 0.01), glow, "PommelGlow")
+				local cf = CFrame.new(0, py, 0) * CFrame.Angles(0, a, 0) * CFrame.new(0, 0, 0.385 * PK)
+				b:box(Vector3.new(0.22 * PK, 0.22 * PK, 0.04), cf, blue, "PommelBlue")
+				b:box(Vector3.new(0.08 * PK, 0.08 * PK, 0.04), cf * CFrame.new(0, 0, 0.01), glow, "PommelGlow")
 			end
 		end)
 
