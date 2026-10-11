@@ -204,17 +204,21 @@ return {
 		end)
 
 		-- ── mango de cubos apilados ─────────────────────────────
+		-- k = escala radial del mango (agarre robusto como el concepto); gBot = fin inferior del agarre
+		local k = 1.28
+		local gBot = -0.98
 		b:group("Shaft", function()
 			local top = headY - CH / 2
+			local cv = 0.36 * k
 			-- collar de cubos rosas/morados (2×2)
 			for _, sx in { -1, 1 } do
 				for _, sz in { -1, 1 } do
-					voxel(Vector3.new(sx * 0.19, top - 0.18, sz * 0.19), 0.36, if sx * sz > 0 then pink else purple, if sx > 0 and sz > 0 then "neon" else nil)
+					voxel(Vector3.new(sx * 0.19 * k, top - cv / 2, sz * 0.19 * k), cv, if sx * sz > 0 then pink else purple, if sx > 0 and sz > 0 then "neon" else nil)
 				end
 			end
-			b:box(Vector3.new(0.5, 0.36, 0.5), CFrame.new(0, top - 0.18, 0), P.neon(P.darken(pink, 0.2)), "CollarCore")
+			b:box(Vector3.new(0.5 * k, cv, 0.5 * k), CFrame.new(0, top - cv / 2, 0), P.neon(P.darken(pink, 0.2)), "CollarCore")
 			-- columna de cubos: cristal + núcleo de neón, degradado cian → azul → violeta
-			local yTop, yBot = top - 0.36, A.ShaftBottom - 0.05
+			local yTop, yBot = top - cv, gBot
 			local n = 7
 			local step = (yTop - yBot) / n
 			for i = 0, n - 1 do
@@ -223,33 +227,39 @@ return {
 				local c = if t < 0.3 then C[1] elseif t < 0.55 then C[2] elseif t < 0.8 then C[3] else C[4]
 				local off = Vector3.new(if i % 2 == 0 then 0.02 else -0.02, 0, if i % 3 == 0 then 0.02 else -0.015)
 				local sz = step - 0.04
-				b:box(Vector3.new(0.52, sz, 0.52), CFrame.new(Vector3.new(0, y, 0) + off) * CFrame.Angles(0, if i % 2 == 0 then 0 else math.rad(4), 0), glassOf(c), "ShaftVoxel")
-				local core = b:box(Vector3.new(0.34, sz - 0.1, 0.34), CFrame.new(Vector3.new(0, y, 0) + off), P.neon(P.darken(c, 0.1)), "ShaftCore")
+				b:box(Vector3.new(0.52 * k, sz, 0.52 * k), CFrame.new(Vector3.new(0, y, 0) + off) * CFrame.Angles(0, if i % 2 == 0 then 0 else math.rad(4), 0), glassOf(c), "ShaftVoxel")
+				local core = b:box(Vector3.new(0.34 * k, sz - 0.1, 0.34 * k), CFrame.new(Vector3.new(0, y, 0) + off), P.neon(P.darken(c, 0.1)), "ShaftCore")
 				if i % 3 == 1 then
 					table.insert(blinkers, core)
 				end
 				-- pixelito saliente en algunos cubos
 				if i % 2 == 1 then
 					local sgn = if i % 4 == 1 then 1 else -1
-					voxel(Vector3.new(sgn * 0.31, y, -sgn * 0.08), 0.13, C[(i % #C) + 1], "neon")
+					voxel(Vector3.new(sgn * 0.31 * k, y, -sgn * 0.08 * k), 0.13 * k, C[(i % #C) + 1], "neon")
 				end
 			end
 		end)
 
-		-- ── pomo: bloque de 2×2×2 cubos rosas/morados ───────────
+		-- ── pomo: bloque de 2×2×2 cubos rosas/morados (1.3x de ancho, achatado) ──
 		b:group("Pommel", function()
-			local y = A.PommelY - 0.14
-			local k = 0.24
+			local pk = 1.3
+			local vw, vh = 0.46 * pk, 0.29 -- voxel ancho y bajo
+			local o = 0.24 * pk
+			local y = gBot - vh - 0.02
 			for _, sx in { -1, 1 } do
 				for _, sy in { -1, 1 } do
 					for _, sz in { -1, 1 } do
 						local c = if sy > 0 then (if sx * sz > 0 then purple else pink) else (if sx * sz > 0 then pink else C[4])
-						voxel(Vector3.new(sx * k, y + sy * k, sz * k), 0.46, c, if sx < 0 and sy < 0 and sz > 0 then "neon" else nil)
+						local neon = sx < 0 and sy < 0 and sz > 0
+						local pv = b:box(Vector3.new(vw, vh, vw), CFrame.new(sx * o, y + sy * (vh / 2 + 0.01), sz * o), if neon then P.neon(P.darken(c, 0.08)) else glassOf(c), if neon then "PixelLit" else "Voxel")
+						if neon then
+							table.insert(lit, pv)
+						end
 					end
 				end
 			end
-			b:box(Vector3.new(0.7, 0.7, 0.7), CFrame.new(0, y, 0), P.neon(P.darken(purple, 0.15)), "PommelCore")
-			voxel(Vector3.new(0, y - 0.54, 0), 0.22, cyan, "neon")
+			b:box(Vector3.new(0.7 * pk, vh * 2 - 0.04, 0.7 * pk), CFrame.new(0, y, 0), P.neon(P.darken(purple, 0.15)), "PommelCore")
+			voxel(Vector3.new(0, y - vh - 0.06, 0), 0.2, cyan, "neon")
 		end)
 
 		-- ── animación de color ─────────────────────────────────
