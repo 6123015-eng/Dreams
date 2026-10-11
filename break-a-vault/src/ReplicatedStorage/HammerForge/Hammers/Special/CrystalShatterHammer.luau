@@ -216,52 +216,56 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
+		-- k = escala radial del mango (agarre robusto como el concepto); gBot = fin inferior del agarre
+		local k = 1.4
+		local gBot = -1.02
 		b:group("Shaft", function()
 			local top = headY - H / 2 - 0.05
-			local bottom = A.ShaftBottom
-			b:cylY(top - bottom, 0.38, CFrame.new(0, (top + bottom) / 2, 0), grip, "ShaftCore")
+			local bottom = gBot
+			b:cylY(top - bottom, 0.38 * k, CFrame.new(0, (top + bottom) / 2, 0), grip, "ShaftCore")
 			-- collar de acero + anillo de cobre
-			b:bevelBox(Vector3.new(0.7, 0.24, 0.7), CFrame.new(0, top - 0.12, 0), steelAlt, 0.18, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
-			b:cylY(0.16, 0.6, CFrame.new(0, top - 0.33, 0), copper, "CopperRing")
-			b:cylY(0.04, 0.64, CFrame.new(0, top - 0.25, 0), steelEdge, "CopperLip")
-			b:cylY(0.04, 0.64, CFrame.new(0, top - 0.41, 0), steelEdge, "CopperLip")
+			b:bevelBox(Vector3.new(0.7 * k, 0.24, 0.7 * k), CFrame.new(0, top - 0.12, 0), steelAlt, 0.18 * k, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
+			b:cylY(0.16, 0.6 * k, CFrame.new(0, top - 0.33, 0), copper, "CopperRing")
+			b:cylY(0.04, 0.64 * k, CFrame.new(0, top - 0.25, 0), steelEdge, "CopperLip")
+			b:cylY(0.04, 0.64 * k, CFrame.new(0, top - 0.41, 0), steelEdge, "CopperLip")
 			for i = 0, 3 do
 				local a = i * math.pi / 2 + math.pi / 4
-				b:rivet(Vector3.new(math.cos(a) * 0.33, top - 0.12, math.sin(a) * 0.33), 0.1, rivetSt)
+				b:rivet(Vector3.new(math.cos(a) * 0.33 * k, top - 0.12, math.sin(a) * 0.33 * k), 0.1 * k, rivetSt)
 			end
 			-- segmentos de agarre
 			for i = 0, 6 do
-				b:cylY(0.05, 0.46, CFrame.new(0, 1.55 - i * 0.22, 0), gripRib, "GripRib")
+				b:cylY(0.05, 0.46 * k, CFrame.new(0, 1.55 - i * 0.22, 0), gripRib, "GripRib")
 			end
 			-- jaula de acero con diamantes de cristal
 			local function cage(y: number, h: number, gem: number)
-				b:bevelBox(Vector3.new(0.58, h, 0.58), CFrame.new(0, y, 0), steelAlt, 0.16, { edges = "Y", edgeStyle = steelEdge, name = "Cage" })
-				b:cylY(0.05, 0.66, CFrame.new(0, y + h / 2, 0), steelEdge, "CageLip")
-				b:cylY(0.05, 0.66, CFrame.new(0, y - h / 2, 0), steelEdge, "CageLip")
+				b:bevelBox(Vector3.new(0.58 * k, h, 0.58 * k), CFrame.new(0, y, 0), steelAlt, 0.16 * k, { edges = "Y", edgeStyle = steelEdge, name = "Cage" })
+				b:cylY(0.05, 0.66 * k, CFrame.new(0, y + h / 2, 0), steelEdge, "CageLip")
+				b:cylY(0.05, 0.66 * k, CFrame.new(0, y - h / 2, 0), steelEdge, "CageLip")
 				for i = 0, 3 do
 					local a = i * math.pi / 2
-					local pos = Vector3.new(math.cos(a) * 0.3, y, math.sin(a) * 0.3)
-					local list = b:gem(CFrame.new(pos) * CFrame.Angles(0, -a, 0), gem, cryst, core)
+					local pos = Vector3.new(math.cos(a) * 0.3 * k, y, math.sin(a) * 0.3 * k)
+					local list = b:gem(CFrame.new(pos) * CFrame.Angles(0, -a, 0), gem * k, cryst, core)
 					G(list[2])
 				end
 			end
 			cage(0.05, 0.5, 0.2)
-			cage(-0.95, 0.3, 0.14)
+			cage(gBot + 0.14, 0.28, 0.14)
 			for i = 0, 2 do
-				b:cylY(0.05, 0.46, CFrame.new(0, -0.45 - i * 0.18, 0), gripRib, "GripRib")
+				b:cylY(0.05, 0.46 * k, CFrame.new(0, -0.36 - i * 0.14, 0), gripRib, "GripRib")
 			end
 		end)
 
-		-- ── pomo con gema ───────────────────────────────────────
+		-- ── pomo con gema (1.3x, achatado) ──────────────────────
 		b:group("Pommel", function()
-			local py = A.PommelY - 0.05
-			b:bevelBox(Vector3.new(0.76, 0.38, 0.76), CFrame.new(0, py, 0), steel, 0.2, { edges = "Y", edgeStyle = steelEdge, name = "Pommel" })
-			b:cylY(0.06, 0.62, CFrame.new(0, py + 0.22, 0), steelEdge, "PommelLip")
+			local pk = 1.3
+			local py = gBot - 0.2
+			b:bevelBox(Vector3.new(0.76 * pk, 0.3, 0.76 * pk), CFrame.new(0, py, 0), steel, 0.2 * pk, { edges = "Y", edgeStyle = steelEdge, name = "Pommel" })
+			b:cylY(0.06, 0.62 * pk, CFrame.new(0, py + 0.18, 0), steelEdge, "PommelLip")
 			for i = 0, 3 do
 				local a = i * math.pi / 2 + math.pi / 4
-				b:rivet(Vector3.new(math.cos(a) * 0.31, py, math.sin(a) * 0.31), 0.1, rivetSt)
+				b:rivet(Vector3.new(math.cos(a) * 0.31 * pk, py, math.sin(a) * 0.31 * pk), 0.1 * pk, rivetSt)
 			end
-			local g = b:gem(CFrame.new(0, py - 0.3, 0), 0.26, crystPale, coreHot)
+			local g = b:gem(CFrame.new(0, py - 0.2, 0), 0.26 * 1.15, crystPale, coreHot)
 			G(g[2])
 		end)
 
