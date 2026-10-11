@@ -22,18 +22,14 @@
 - [x] Revisión de director de arte + pulido de los 11 más flojos
 - [x] `break-a-vault/dist/BreakAVault_Hammers.rbxm` y `BreakAVault_Showcase.rbxl` (los 32)
 - [x] Vista previa 3D publicada: https://claude.ai/artifact/KduHYx4Kbo2tj8xkSAAugN
-- [ ] Mangos más gruesos y chaparros en todos (en curso en la nube; si no aparece el commit
-      "Mango <Id>" en un martillo, hazlo tú: ver "Pendientes de calidad")
+- [x] Mangos más gruesos y chaparros + pomos más grandes en los 32 (commits "Mango <Id>")
+- [x] Thunder Core con firma propia (orbe grande, anillo giratorio, rayos más gruesos); Shock Hammer con menos rayos
 
 ## Pendientes de calidad (si la nube no alcanzó)
 
-1. **Mangos**: casi todos usan el agarre estándar (diámetro ~0.36–0.42), delgado y largo comparado
-   con los conceptos. Objetivo: diámetro visible 0.55–0.65, ~10–15 % más corto (subir el pomo) y pomo
-   ~1.3× más grande. Escala juntos el mango, vendas/anillos, collar y pomo de cada martillo.
-2. **Thunder Core (Mythic) vs Shock Hammer (Epic)** comparten jaula de rayos, agarre azul y paleta.
-   A Thunder Core le falta una firma más grande: orbe central más brillante con anillo giratorio y
-   rayos más gruesos; a Shock Hammer se le pueden bajar un poco los rayos.
-3. **Revisar en Studio** (el visor es una aproximación): colores de mármol/oro/vidrio, que las formas
+1. **Thunder Core** brilla muchísimo en la vista previa; en Studio confirma que el orbe no se vea
+   como una mancha blanca (baja Brightness de su luz o sube la transparencia del neón si hace falta).
+2. **Revisar en Studio** (el visor es una aproximación): colores de mármol/oro/vidrio, que las formas
    hechas con WedgeParts (picos, alas, flamas, coronas, franjas) no salgan invertidas, y el brillo del
    neón con BloomEffect.
 
