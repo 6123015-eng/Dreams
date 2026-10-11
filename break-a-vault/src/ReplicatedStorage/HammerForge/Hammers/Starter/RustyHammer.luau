@@ -187,44 +187,48 @@ return {
 		end)
 
 		-- ── mango: madera gruesa y un poco cónica ───────────────
-		local shaftBottom = A.ShaftBottom + 0.3
+		-- K = escala radial del mango (todo lo del mango se ensancha junto); mango más corto: el pomo sube
+		local K = 1.2
+		local shaftBottom = -0.86
 		b:group("Shaft", function()
 			local top = headY - H / 2 - 0.05
 			-- tramo de arriba (más grueso) y tramo de abajo (más delgado); el escalón queda bajo la venda
 			local split = 0.2
-			b:bevelBox(Vector3.new(0.64, top - split, 0.64), CFrame.new(0, (top + split) / 2, 0), wood, 0.13, { edges = "Y", edgeStyle = woodLight, name = "Shaft" })
-			b:bevelBox(Vector3.new(0.57, split - shaftBottom, 0.57), CFrame.new(0, (split + shaftBottom) / 2, 0), wood, 0.12, { edges = "Y", edgeStyle = woodLight, name = "Shaft" })
-			b:box(Vector3.new(0.05, 1.1, 0.03), CFrame.new(0.08, 1.55, 0.33), woodDark, "Grain")
-			b:box(Vector3.new(0.05, 0.85, 0.03), CFrame.new(-0.07, 1.4, -0.33), woodDark, "Grain")
-			b:box(Vector3.new(0.03, 0.95, 0.05), CFrame.new(0.33, 1.5, -0.06), woodDark, "Grain")
+			b:bevelBox(Vector3.new(0.64 * K, top - split, 0.64 * K), CFrame.new(0, (top + split) / 2, 0), wood, 0.13 * K, { edges = "Y", edgeStyle = woodLight, name = "Shaft" })
+			b:bevelBox(Vector3.new(0.58 * K, split - shaftBottom, 0.58 * K), CFrame.new(0, (split + shaftBottom) / 2, 0), wood, 0.12 * K, { edges = "Y", edgeStyle = woodLight, name = "Shaft" })
+			local g = 0.33 * K
+			b:box(Vector3.new(0.06, 1.1, 0.03), CFrame.new(0.08 * K, 1.55, g), woodDark, "Grain")
+			b:box(Vector3.new(0.06, 0.85, 0.03), CFrame.new(-0.07 * K, 1.4, -g), woodDark, "Grain")
+			b:box(Vector3.new(0.03, 0.95, 0.06), CFrame.new(g, 1.5, -0.06 * K), woodDark, "Grain")
 			-- collar de madera bajo la cabeza
-			b:bevelBox(Vector3.new(0.76, 0.38, 0.76), CFrame.new(0, top - 0.2, 0), woodDark, 0.11, { edges = "Y", edgeStyle = wood, name = "Collar" })
+			b:bevelBox(Vector3.new(0.76 * K, 0.38, 0.76 * K), CFrame.new(0, top - 0.2, 0), woodDark, 0.11 * K, { edges = "Y", edgeStyle = wood, name = "Collar" })
 
 			-- venda: 7 vueltas de tela inclinadas y encimadas (alternando dirección) + punta suelta
-			local bandDia = 0.74
+			local bandDia = 0.74 * K
 			local turns = {
-				{ -0.62, 0.24, 0.2 }, { -0.42, -0.26, 0.2 }, { -0.2, 0.26, 0.2 }, { 0.02, -0.26, 0.2 },
-				{ 0.24, 0.26, 0.2 }, { 0.46, -0.26, 0.2 }, { 0.64, 0.2, 0.2 },
+				{ -0.6, 0.24, 0.2 }, { -0.4, -0.26, 0.2 }, { -0.18, 0.26, 0.2 }, { 0.04, -0.26, 0.2 },
+				{ 0.26, 0.26, 0.2 }, { 0.48, -0.26, 0.2 }, { 0.68, 0.2, 0.2 },
 			}
 			for i, t in turns do
-				b:cylY(0.24, bandDia - (i % 2) * 0.03, CFrame.new(0, t[1], 0) * CFrame.Angles(0, t[3], 0) * CFrame.Angles(t[2], 0, 0), if i % 2 == 0 then clothDirty else cloth, "Bandage")
+				b:cylY(0.25, bandDia - (i % 2) * 0.03, CFrame.new(0, t[1], 0) * CFrame.Angles(0, t[3], 0) * CFrame.Angles(t[2], 0, 0), if i % 2 == 0 then clothDirty else cloth, "Bandage")
 			end
-			b:disc(CFrame.new(0, -0.78, 0), bandDia - 0.06, 0.12, clothDirty, "BandageEnd")
+			b:disc(CFrame.new(0, -0.76, 0), bandDia - 0.06, 0.12, clothDirty, "BandageEnd")
 			-- punta suelta de la venda
-			b:box(Vector3.new(0.05, 0.5, 0.2), CFrame.new(bandDia / 2 - 0.02, 0.52, 0.14) * CFrame.Angles(0.15, 0, math.rad(-14)), clothDirty, "BandageTail")
-			b:box(Vector3.new(0.05, 0.22, 0.17), CFrame.new(bandDia / 2 + 0.04, 0.2, 0.18) * CFrame.Angles(0.2, 0, math.rad(-30)), cloth, "BandageTail")
+			b:box(Vector3.new(0.05, 0.5, 0.22), CFrame.new(bandDia / 2 - 0.02, 0.54, 0.15) * CFrame.Angles(0.15, 0, math.rad(-14)), clothDirty, "BandageTail")
+			b:box(Vector3.new(0.05, 0.22, 0.19), CFrame.new(bandDia / 2 + 0.04, 0.22, 0.19) * CFrame.Angles(0.2, 0, math.rad(-30)), cloth, "BandageTail")
 		end)
 
-		-- ── pomo grande y astillado ─────────────────────────────
+		-- ── pomo grande y astillado (1.3x, más arriba) ──────────
 		b:group("Pommel", function()
-			local y = shaftBottom - 0.24
-			b:bevelBox(Vector3.new(0.8, 0.46, 0.8), CFrame.new(0, y, 0), woodDark, 0.14, { edges = "Y", edgeStyle = wood, name = "Pommel" })
-			b:cylY(0.06, 0.6, CFrame.new(0, y - 0.24, 0), woodLight, "EndGrain")
-			b:cylY(0.065, 0.3, CFrame.new(0, y - 0.25, 0), woodDark, "EndRing")
+			local y = -0.92
+			local w = 1.04
+			b:bevelBox(Vector3.new(w, 0.4, w), CFrame.new(0, y, 0), woodDark, 0.16, { edges = "Y", edgeStyle = wood, name = "Pommel" })
+			b:cylY(0.05, 0.78, CFrame.new(0, y - 0.21, 0), woodLight, "EndGrain")
+			b:cylY(0.055, 0.39, CFrame.new(0, y - 0.22, 0), woodDark, "EndRing")
 			-- astillas
-			b:wedge(Vector3.new(0.12, 0.2, 0.1), CFrame.new(0.24, y - 0.28, 0.16) * CFrame.Angles(math.pi, 0.4, 0), wood, "Splinter")
-			b:wedge(Vector3.new(0.1, 0.16, 0.09), CFrame.new(-0.2, y - 0.27, -0.18) * CFrame.Angles(math.pi, 2.2, 0), woodLight, "Splinter")
-			b:box(Vector3.new(0.82, 0.08, 0.82), CFrame.new(0, y + 0.25, 0), rustDark, "PommelBand")
+			b:wedge(Vector3.new(0.16, 0.24, 0.13), CFrame.new(0.31, y - 0.24, 0.21) * CFrame.Angles(math.pi, 0.4, 0), wood, "Splinter")
+			b:wedge(Vector3.new(0.13, 0.2, 0.12), CFrame.new(-0.26, y - 0.23, -0.23) * CFrame.Angles(math.pi, 2.2, 0), woodLight, "Splinter")
+			b:box(Vector3.new(w + 0.03, 0.08, w + 0.03), CFrame.new(0, y + 0.21, 0), rustDark, "PommelBand")
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
