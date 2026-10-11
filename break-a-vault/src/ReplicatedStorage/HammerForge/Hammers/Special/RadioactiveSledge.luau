@@ -207,43 +207,47 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
+		-- k = escala radial del mango (agarre robusto como el concepto); gBot = fin inferior del agarre
+		local k = 1.18
+		local gBot = -1.0
 		local gripTop = 1.7
 		b:group("Shaft", function()
 			local top = headY - CH / 2
-			b:bevelBox(Vector3.new(0.86, 0.3, 0.86), CFrame.new(0, top - 0.15, 0), armor, 0.18, { edges = "Y", edgeStyle = edge, name = "Collar" })
+			b:bevelBox(Vector3.new(0.86 * k, 0.3, 0.86 * k), CFrame.new(0, top - 0.15, 0), armor, 0.18 * k, { edges = "Y", edgeStyle = edge, name = "Collar" })
 			for i = 0, 3 do
 				local a = TAU * i / 4 + TAU / 8
-				b:rivet(Vector3.new(math.cos(a) * 0.43, top - 0.15, math.sin(a) * 0.43), 0.1, steel)
+				b:rivet(Vector3.new(math.cos(a) * 0.43 * k, top - 0.15, math.sin(a) * 0.43 * k), 0.1 * k, steel)
 			end
-			b:cylY(0.12, 0.66, CFrame.new(0, top - 0.36, 0), steel, "CollarRing")
-			local s0, s1 = A.ShaftBottom, top - 0.36
-			b:cylY(s1 - s0, 0.52, CFrame.new(0, (s0 + s1) / 2, 0), black, "Shaft")
+			b:cylY(0.12, 0.66 * k, CFrame.new(0, top - 0.36, 0), steel, "CollarRing")
+			local s0, s1 = gBot, top - 0.36
+			b:cylY(s1 - s0, 0.52 * k, CFrame.new(0, (s0 + s1) / 2, 0), black, "Shaft")
 			-- espiral de peligro amarilla
-			b:wrap(-0.8, gripTop - 0.1, 0.26, 3, yellow, { width = 0.22, thickness = 0.045, segmentsPerTurn = 8, name = "HazardWrap" })
+			b:wrap(-0.72, gripTop - 0.1, 0.26 * k, 3, yellow, { width = 0.22 * k, thickness = 0.045 * k, segmentsPerTurn = 8, name = "HazardWrap" })
 			-- bandas de acero negro
-			for _, y in { gripTop, 0.45, -0.88 } do
-				b:cylY(0.2, 0.66, CFrame.new(0, y, 0), armor, "Band")
-				b:cylY(0.05, 0.7, CFrame.new(0, y, 0), edge, "BandEdge")
+			for _, y in { gripTop, 0.45, -0.76 } do
+				b:cylY(0.2, 0.66 * k, CFrame.new(0, y, 0), armor, "Band")
+				b:cylY(0.05, 0.7 * k, CFrame.new(0, y, 0), edge, "BandEdge")
 			end
-			-- anillo verde brillante cerca del pomo
-			b:cylY(0.06, 0.7, CFrame.new(0, -1.02, 0), armorDark, "GlowRingLip")
-			local ring = b:cylY(0.2, 0.6, CFrame.new(0, -1.15, 0), green, "GlowRing")
-			b:cylY(0.22, 0.68, CFrame.new(0, -1.15, 0), glass, "GlowRingGlass")
+			-- anillo verde brillante cerca del pomo (cierra el agarre)
+			b:cylY(0.04, 0.7 * k, CFrame.new(0, -0.87, 0), armorDark, "GlowRingLip")
+			local ring = b:cylY(0.13, 0.6 * k, CFrame.new(0, gBot + 0.065, 0), green, "GlowRing")
+			b:cylY(0.15, 0.68 * k, CFrame.new(0, gBot + 0.065, 0), glass, "GlowRingGlass")
 			b:pulse({ ring }, 0, 0.3, 1.1, 0.6)
 		end)
 
-		-- ── pomo ────────────────────────────────────────────────
+		-- ── pomo (1.3x, achatado) ───────────────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY - 0.06
-			b:bevelBox(Vector3.new(0.86, 0.36, 0.86), CFrame.new(0, y, 0), armor, 0.22, { edges = "Y", edgeStyle = edge, name = "Pommel" })
-			b:bevelBox(Vector3.new(0.7, 0.1, 0.7), CFrame.new(0, y - 0.22, 0), armorDark, 0.18, { edges = "Y", edgeStyle = edge, name = "PommelCap" })
+			local pk = 1.3
+			local y = gBot - 0.15
+			b:bevelBox(Vector3.new(0.86 * pk, 0.3, 0.86 * pk), CFrame.new(0, y, 0), armor, 0.22 * pk, { edges = "Y", edgeStyle = edge, name = "Pommel" })
+			b:bevelBox(Vector3.new(0.7 * pk, 0.08, 0.7 * pk), CFrame.new(0, y - 0.19, 0), armorDark, 0.18 * pk, { edges = "Y", edgeStyle = edge, name = "PommelCap" })
 			for i = 0, 3 do
 				local a = TAU * i / 4 + TAU / 8
-				b:rivet(Vector3.new(math.cos(a) * 0.43, y, math.sin(a) * 0.43), 0.11, steel)
+				b:rivet(Vector3.new(math.cos(a) * 0.43 * pk, y, math.sin(a) * 0.43 * pk), 0.11 * pk, steel)
 				-- cuadritos amarillos de peligro en las caras del octágono
-				b:box(Vector3.new(0.04, 0.18, 0.18), CFrame.new(math.cos(a - TAU / 8) * 0.43, y, math.sin(a - TAU / 8) * 0.43) * CFrame.Angles(0, -(a - TAU / 8), 0), yellow, "PommelMark")
+				b:box(Vector3.new(0.04, 0.18 * pk, 0.18 * pk), CFrame.new(math.cos(a - TAU / 8) * 0.43 * pk, y, math.sin(a - TAU / 8) * 0.43 * pk) * CFrame.Angles(0, -(a - TAU / 8), 0), yellow, "PommelMark")
 			end
-			b:cylY(0.04, 0.3, CFrame.new(0, y - 0.28, 0), green, "PommelGlow")
+			b:cylY(0.04, 0.3 * pk, CFrame.new(0, y - 0.24, 0), green, "PommelGlow")
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
