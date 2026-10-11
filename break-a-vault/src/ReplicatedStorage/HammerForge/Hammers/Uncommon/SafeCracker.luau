@@ -105,31 +105,35 @@ return {
 			end)
 		end)
 
+		-- mango grueso y corto: K = escala radial de todo el mango; el pomo sube
+		local K = 1.4
+		local shaftBottom = -1.0
 		b:group("Shaft", function()
-			local bottom, top = A.ShaftBottom, headY - CH / 2
-			b:cylY(top - bottom, 0.44, CFrame.new(0, (top + bottom) / 2, 0), grip, "Shaft")
+			local bottom, top = shaftBottom, headY - CH / 2
+			b:cylY(top - bottom, 0.44 * K, CFrame.new(0, (top + bottom) / 2, 0), grip, "Shaft")
 			-- collar octagonal de oro
-			oct(0.4, 0.7, CFrame.new(0, top - 0.2, 0), gold, "Collar")
-			b:disc(CFrame.new(0, top - 0.42, 0), 0.62, 0.06, goldEdge, "CollarLip")
-			b:rivet(Vector3.new(0, top - 0.2, 0.35), 0.14, goldEdge)
-			b:rivet(Vector3.new(0, top - 0.2, -0.35), 0.14, goldEdge)
+			oct(0.4, 0.7 * K, CFrame.new(0, top - 0.2, 0), gold, "Collar")
+			b:disc(CFrame.new(0, top - 0.42, 0), 0.62 * K, 0.06, goldEdge, "CollarLip")
+			b:rivet(Vector3.new(0, top - 0.2, 0.35 * K), 0.17, goldEdge)
+			b:rivet(Vector3.new(0, top - 0.2, -0.35 * K), 0.17, goldEdge)
 			-- bandas de oro
 			for _, y in { 1.35, -0.2 } do
-				b:disc(CFrame.new(0, y, 0), 0.54, 0.2, gold, "GoldBand")
-				b:disc(CFrame.new(0, y, 0), 0.58, 0.06, goldEdge, "GoldBandRidge")
+				b:disc(CFrame.new(0, y, 0), 0.54 * K, 0.34, gold, "GoldBand")
+				b:disc(CFrame.new(0, y, 0), 0.58 * K, 0.09, goldEdge, "GoldBandRidge")
 			end
 			-- banda de oro inclinada (vuelta de cinta)
-			b:disc(CFrame.new(0, 0.58, 0) * CFrame.Angles(0.22, 0.6, 0), 0.52, 0.16, gold, "GoldWrap")
+			b:disc(CFrame.new(0, 0.58, 0) * CFrame.Angles(0.22, 0.6, 0), 0.52 * K, 0.28, gold, "GoldWrap")
 		end)
 
 		b:group("Pommel", function()
-			local py = A.PommelY - 0.04
-			oct(0.44, 0.74, CFrame.new(0, py, 0), gold, "Pommel")
-			b:disc(CFrame.new(0, py + 0.24, 0), 0.66, 0.06, goldEdge, "PommelBevel")
-			b:disc(CFrame.new(0, py - 0.24, 0), 0.66, 0.06, goldDeep, "PommelBevel")
-			b:cylY(0.06, 0.48, CFrame.new(0, py - 0.29, 0), black, "PommelCap")
-			b:rivet(Vector3.new(0, py, 0.37), 0.15, goldEdge)
-			b:rivet(Vector3.new(0, py, -0.37), 0.15, goldEdge)
+			local PK = 1.4 -- pomo más grande
+			local py = -1.12
+			oct(0.4, 0.74 * PK, CFrame.new(0, py, 0), gold, "Pommel")
+			b:disc(CFrame.new(0, py + 0.22, 0), 0.66 * PK, 0.06, goldEdge, "PommelBevel")
+			b:disc(CFrame.new(0, py - 0.22, 0), 0.66 * PK, 0.06, goldDeep, "PommelBevel")
+			b:cylY(0.06, 0.48 * PK, CFrame.new(0, py - 0.27, 0), black, "PommelCap")
+			b:rivet(Vector3.new(0, py, 0.37 * PK), 0.19, goldEdge)
+			b:rivet(Vector3.new(0, py, -0.37 * PK), 0.19, goldEdge)
 		end)
 
 		-- brillo de oro: destellos sutiles + luz cálida suave
