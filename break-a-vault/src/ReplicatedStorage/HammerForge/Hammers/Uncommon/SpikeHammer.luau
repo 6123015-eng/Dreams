@@ -109,42 +109,46 @@ return {
 			b:emitter(tips, gl, "SpikeGlint")
 		end)
 
+		-- mango grueso y corto: K = escala radial de todo el mango; el pomo sube
+		local K = 1.4
+		local shaftBottom = -1.0
 		b:group("Shaft", function()
-			local bottom, top = A.ShaftBottom, headY - RH / 2
-			b:cylY(top - bottom, A.ShaftDia, CFrame.new(0, (top + bottom) / 2, 0), dark, "Shaft")
+			local bottom, top = shaftBottom, headY - RH / 2
+			b:cylY(top - bottom, A.ShaftDia * K, CFrame.new(0, (top + bottom) / 2, 0), dark, "Shaft")
 			-- collar de hierro bajo la cabeza
-			oct(0.46, 0.66, CFrame.new(0, top - 0.24, 0), iron, "Collar")
-			b:disc(CFrame.new(0, top - 0.5, 0), 0.6, 0.08, ironEdge, "CollarLip")
-			b:rivet(Vector3.new(0, top - 0.24, 0.33), 0.14, rivetSt)
-			b:rivet(Vector3.new(0, top - 0.24, -0.33), 0.14, rivetSt)
+			oct(0.46, 0.66 * K, CFrame.new(0, top - 0.24, 0), iron, "Collar")
+			b:disc(CFrame.new(0, top - 0.5, 0), 0.6 * K, 0.08, ironEdge, "CollarLip")
+			b:rivet(Vector3.new(0, top - 0.24, 0.33 * K), 0.16, rivetSt)
+			b:rivet(Vector3.new(0, top - 0.24, -0.33 * K), 0.16, rivetSt)
 			-- forro de cuero rojo con vueltas cruzadas
-			local g0, g1 = -1.08, top - 0.56
-			b:cylY(g1 - g0, 0.46, CFrame.new(0, (g0 + g1) / 2, 0), leatherDark, "Grip")
+			local g0, g1 = -0.92, top - 0.56
+			b:cylY(g1 - g0, 0.46 * K, CFrame.new(0, (g0 + g1) / 2, 0), leatherDark, "Grip")
 			local n = 9
 			for i = 0, n - 1 do
 				local y = g0 + 0.16 + (g1 - g0 - 0.32) * i / (n - 1)
 				local tilt = if i % 2 == 0 then 0.16 else -0.16
-				b:cylY(0.17, 0.53, CFrame.new(0, y, 0) * CFrame.Angles(tilt, i * 0.7, 0), if i % 3 == 1 then leatherDark else leather, "LeatherBand")
+				b:cylY(0.19, 0.53 * K, CFrame.new(0, y, 0) * CFrame.Angles(tilt, i * 0.7, 0), if i % 3 == 1 then leatherDark else leather, "LeatherBand")
 			end
-			b:disc(CFrame.new(0, g1 - 0.02, 0), 0.56, 0.12, leather, "WrapEnd")
-			b:disc(CFrame.new(0, g0 + 0.02, 0), 0.56, 0.12, leather, "WrapEnd")
-			b:box(Vector3.new(0.05, 0.36, 0.14), CFrame.new(0.3, g0 + 0.22, 0.05) * CFrame.Angles(0, 0, math.rad(14)), leatherDark, "WrapTail")
+			b:disc(CFrame.new(0, g1 - 0.02, 0), 0.56 * K, 0.12, leather, "WrapEnd")
+			b:disc(CFrame.new(0, g0 + 0.02, 0), 0.56 * K, 0.12, leather, "WrapEnd")
+			b:box(Vector3.new(0.05, 0.36, 0.16), CFrame.new(0.3 * K, g0 + 0.22, 0.06) * CFrame.Angles(0, 0, math.rad(14)), leatherDark, "WrapTail")
 		end)
 
 		b:group("Pommel", function()
-			local py = A.PommelY - 0.04
-			b:disc(CFrame.new(0, A.ShaftBottom + 0.1, 0), 0.58, 0.08, ironEdge, "PommelLip")
-			oct(0.42, 0.76, CFrame.new(0, py, 0), iron, "Pommel")
-			b:disc(CFrame.new(0, py + 0.23, 0), 0.66, 0.06, ironEdge, "PommelBevel")
-			b:disc(CFrame.new(0, py - 0.23, 0), 0.66, 0.06, ironEdge, "PommelBevel")
+			local PK = 1.45 -- pomo ~1.3x del mango (más grueso)
+			local py = -1.12
+			b:disc(CFrame.new(0, -0.9, 0), 0.58 * K, 0.08, ironEdge, "PommelLip")
+			oct(0.38, 0.76 * PK, CFrame.new(0, py, 0), iron, "Pommel")
+			b:disc(CFrame.new(0, py + 0.2, 0), 0.66 * PK, 0.06, ironEdge, "PommelBevel")
+			b:disc(CFrame.new(0, py - 0.2, 0), 0.66 * PK, 0.06, ironEdge, "PommelBevel")
 			-- tachones alrededor
 			for i = 0, 3 do
 				local a = math.rad(90 * i)
-				b:rivet(Vector3.new(math.cos(a) * 0.39, py, math.sin(a) * 0.39), 0.15, rivetSt)
+				b:rivet(Vector3.new(math.cos(a) * 0.39 * PK, py, math.sin(a) * 0.39 * PK), 0.18, rivetSt)
 			end
 			-- pico inferior
-			b:cylY(0.1, 0.4, CFrame.new(0, py - 0.27, 0), dark, "PommelBase")
-			b:ball(0.26, CFrame.new(0, py - 0.33, 0), spikeSt, "PommelStud")
+			b:cylY(0.1, 0.4 * PK, CFrame.new(0, py - 0.24, 0), dark, "PommelBase")
+			b:ball(0.3, CFrame.new(0, py - 0.3, 0), spikeSt, "PommelStud")
 		end)
 
 		-- golpe: chispas rojo-naranja y polvo de pintura
