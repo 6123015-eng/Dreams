@@ -189,17 +189,20 @@ return {
 		end)
 
 		-- ── mango forrado de roca ───────────────────────────────
+		-- k = escala radial del mango (agarre robusto como el concepto); gBot = fin inferior del agarre
+		local k = 1.25
+		local gBot = -1.0
 		b:group("Shaft", function()
 			local top = headY - HB / 2 - 0.05
-			local bottom = A.ShaftBottom
-			G(b:cylY(top - bottom, 0.38, CFrame.new(0, (top + bottom) / 2, 0), magma, "ShaftCore"))
+			local bottom = gBot
+			G(b:cylY(top - bottom, 0.38 * k, CFrame.new(0, (top + bottom) / 2, 0), magma, "ShaftCore"))
 			-- collar de hierro
 			local cy = top - 0.22
-			b:bevelBox(Vector3.new(0.8, 0.36, 0.8), CFrame.new(0, cy, 0), iron, 0.2, { edges = "Y", edgeStyle = ironEdge, name = "Collar" })
-			b:cylY(0.08, 0.7, CFrame.new(0, cy - 0.22, 0), ironAlt, "CollarLip")
+			b:bevelBox(Vector3.new(0.8 * k, 0.36, 0.8 * k), CFrame.new(0, cy, 0), iron, 0.2 * k, { edges = "Y", edgeStyle = ironEdge, name = "Collar" })
+			b:cylY(0.08, 0.7 * k, CFrame.new(0, cy - 0.22, 0), ironAlt, "CollarLip")
 			for i = 0, 3 do
 				local a = i * math.pi / 2 + math.pi / 4
-				b:rivet(Vector3.new(math.cos(a) * 0.3, cy, math.sin(a) * 0.3), 0.1, rivetSt)
+				b:rivet(Vector3.new(math.cos(a) * 0.3 * k, cy, math.sin(a) * 0.3 * k), 0.1 * k, rivetSt)
 			end
 			-- trozos de roca en espiral alrededor del magma
 			local y = cy - 0.3
@@ -208,22 +211,23 @@ return {
 				local h = 0.28
 				for q = 0, 3 do
 					local a = q * math.pi / 2 + lvl * 0.45
-					local cf = CFrame.new(0, y - h / 2, 0) * CFrame.Angles(0, a, 0) * CFrame.new(0.15, 0, 0) * CFrame.Angles(0, 0, rnd(-0.06, 0.06))
-					b:box(Vector3.new(0.26, h - 0.04, 0.38), cf, if (q + lvl) % 3 == 0 then rockLava elseif q % 2 == 0 then rockA else rockB, "GripRock")
+					local cf = CFrame.new(0, y - h / 2, 0) * CFrame.Angles(0, a, 0) * CFrame.new(0.15 * k, 0, 0) * CFrame.Angles(0, 0, rnd(-0.06, 0.06))
+					b:box(Vector3.new(0.26 * k, h - 0.04, 0.38 * k), cf, if (q + lvl) % 3 == 0 then rockLava elseif q % 2 == 0 then rockA else rockB, "GripRock")
 				end
 				y -= h + 0.05
 				lvl += 1
 			end
 		end)
 
-		-- ── pomo de roca rajada ─────────────────────────────────
+		-- ── pomo de roca rajada (1.3x, achatado) ────────────────
 		b:group("Pommel", function()
-			local py = A.PommelY - 0.05
-			b:cylY(0.08, 0.66, CFrame.new(0, py + 0.24, 0), ironAlt, "PommelBand")
-			rock(CFrame.new(0, py, 0) * CFrame.Angles(0, 0.4, 0.04), Vector3.new(0.8, 0.46, 0.8), rockB, 0.16)
-			G(b:box(Vector3.new(0.74, 0.05, 0.74), CFrame.new(0, py - 0.02, 0) * CFrame.Angles(0, 0.4, 0.05), magmaHot, "PommelSeam"))
-			rock(CFrame.new(0, py - 0.3, 0) * CFrame.Angles(0.05, 1.1, 0), Vector3.new(0.5, 0.2, 0.5), rockLava, 0.1)
-			G(b:cylY(0.04, 0.22, CFrame.new(0, py - 0.41, 0), magmaHot, "PommelCore"))
+			local pk = 1.3
+			local py = gBot - 0.22
+			b:cylY(0.08, 0.66 * pk, CFrame.new(0, py + 0.2, 0), ironAlt, "PommelBand")
+			rock(CFrame.new(0, py, 0) * CFrame.Angles(0, 0.4, 0.04), Vector3.new(0.8 * pk, 0.38, 0.8 * pk), rockB, 0.15)
+			G(b:box(Vector3.new(0.74 * pk, 0.05, 0.74 * pk), CFrame.new(0, py - 0.02, 0) * CFrame.Angles(0, 0.4, 0.05), magmaHot, "PommelSeam"))
+			rock(CFrame.new(0, py - 0.24, 0) * CFrame.Angles(0.05, 1.1, 0), Vector3.new(0.5 * pk, 0.18, 0.5 * pk), rockLava, 0.07)
+			G(b:cylY(0.04, 0.22 * pk, CFrame.new(0, py - 0.34, 0), magmaHot, "PommelCore"))
 		end)
 
 		b:pulse(glow, 0, 0.3, 0.9)
