@@ -183,44 +183,47 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
+		-- K = factor radial del mango (agarre grueso y achaparrado como el concepto); PK = pomo
+		local K, PK = 1.3, 1.3
 		b:group("Shaft", function()
-			local bottom, top = A.ShaftBottom, headY - CH / 2
-			b:cylY(top - bottom, 0.46, CFrame.new(0, (top + bottom) / 2, 0), grip, "Shaft")
+			local bottom, top = -1.02, headY - CH / 2
+			b:cylY(top - bottom, 0.46 * K, CFrame.new(0, (top + bottom) / 2, 0), grip, "Shaft")
 			-- collar octagonal de acero con remaches
-			oct(0.44, 0.78, CFrame.new(0, top - 0.22, 0), steel, "Collar")
-			b:disc(CFrame.new(0, top - 0.46, 0), 0.68, 0.06, steelEdge, "CollarLip")
-			b:disc(CFrame.new(0, top - 0.02, 0), 0.76, 0.06, frameDark, "CollarTop")
+			oct(0.44, 0.78 * K, CFrame.new(0, top - 0.22, 0), steel, "Collar")
+			b:disc(CFrame.new(0, top - 0.46, 0), 0.68 * K, 0.06, steelEdge, "CollarLip")
+			b:disc(CFrame.new(0, top - 0.02, 0), 0.76 * K, 0.06, frameDark, "CollarTop")
 			for _, a in { 0, math.pi / 2, math.pi, 3 * math.pi / 2 } do
-				b:rivet(Vector3.new(math.cos(a) * 0.39, top - 0.22, math.sin(a) * 0.39), 0.13, chrome)
+				b:rivet(Vector3.new(math.cos(a) * 0.39 * K, top - 0.22, math.sin(a) * 0.39 * K), 0.13 * K, chrome)
 			end
 			-- agarre: segmentos de cuero negro + correas azules cruzadas
 			for i = 0, 5 do
-				b:disc(CFrame.new(0, -0.88 + i * 0.36, 0), 0.52, 0.24, grip, "GripRib")
+				b:disc(CFrame.new(0, -0.82 + i * 0.34, 0), 0.52 * K, 0.24, grip, "GripRib")
 			end
 			for i = 0, 5 do
 				local tilt = if i % 2 == 0 then 0.42 else -0.42
-				b:cylY(0.12, 0.56, CFrame.new(0, -0.72 + i * 0.3, 0) * CFrame.Angles(0, i * 0.5, 0) * CFrame.Angles(tilt, 0, 0), blueStrap, "Strap")
+				b:cylY(0.12, 0.56 * K, CFrame.new(0, -0.68 + i * 0.28, 0) * CFrame.Angles(0, i * 0.5, 0) * CFrame.Angles(tilt, 0, 0), blueStrap, "Strap")
 			end
 			-- anillos de neón en los extremos del agarre
-			for _, y in { 1.08, -1.06 } do
-				b:disc(CFrame.new(0, y, 0), 0.56, 0.1, steel, "RingBase")
-				table.insert(cores, b:disc(CFrame.new(0, y, 0), 0.6, 0.04, core, "GripGlow"))
+			for _, y in { 1.06, -0.98 } do
+				b:disc(CFrame.new(0, y, 0), 0.56 * K, 0.1, steel, "RingBase")
+				table.insert(cores, b:disc(CFrame.new(0, y, 0), 0.6 * K, 0.04, core, "GripGlow"))
 			end
 		end)
 
 		-- ── pomo ────────────────────────────────────────────────
 		b:group("Pommel", function()
-			local py = A.PommelY - 0.04
-			oct(0.46, 0.8, CFrame.new(0, py, 0), steel, "Pommel")
-			b:disc(CFrame.new(0, py + 0.25, 0), 0.7, 0.06, steelEdge, "PommelBevel")
-			b:disc(CFrame.new(0, py - 0.25, 0), 0.7, 0.06, frameDark, "PommelBevel")
+			local ph = 0.5 -- más ancho, no más alto: el mango queda más corto
+			local py = -0.99 - ph / 2
+			oct(ph, 0.8 * PK, CFrame.new(0, py, 0), steel, "Pommel")
+			b:disc(CFrame.new(0, py + ph / 2 + 0.02, 0), 0.7 * PK, 0.06, steelEdge, "PommelBevel")
+			b:disc(CFrame.new(0, py - ph / 2 - 0.02, 0), 0.7 * PK, 0.06, frameDark, "PommelBevel")
 			for _, a in { 0, math.pi / 2, math.pi, 3 * math.pi / 2 } do
-				b:rivet(Vector3.new(math.cos(a) * 0.4, py, math.sin(a) * 0.4), 0.13, chrome)
+				b:rivet(Vector3.new(math.cos(a) * 0.4 * PK, py, math.sin(a) * 0.4 * PK), 0.13 * PK, chrome)
 			end
 			-- diamante en la punta del pomo
-			local tip = CFrame.new(0, py - 0.32, 0) * CFrame.Angles(math.pi, 0, 0)
-			b:box(Vector3.new(0.36, 0.36, 0.36), tip * VERTEX_UP, crystal, "PommelGem")
-			table.insert(cores, b:box(Vector3.new(0.16, 0.16, 0.16), tip * VERTEX_UP, coreHot, "PommelGemCore"))
+			local tip = CFrame.new(0, py - ph / 2 + 0.1, 0) * CFrame.Angles(math.pi, 0, 0)
+			b:box(Vector3.new(0.38, 0.38, 0.38), tip * VERTEX_UP, crystal, "PommelGem")
+			table.insert(cores, b:box(Vector3.new(0.18, 0.18, 0.18), tip * VERTEX_UP, coreHot, "PommelGemCore"))
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
