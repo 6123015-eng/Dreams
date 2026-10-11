@@ -183,33 +183,37 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
+		-- K = factor radial del mango (agarre grueso como el concepto); PK = pomo
+		local K, PK = 1.3, 1.3
 		b:group("Shaft", function()
-			local bottom, top = A.ShaftBottom, headY - CH / 2
-			b:cylY(top - bottom, 0.48, CFrame.new(0, (top + bottom) / 2, 0), gripRed, "Shaft")
+			local bottom, top = -0.96, headY - CH / 2
+			b:cylY(top - bottom, 0.48 * K, CFrame.new(0, (top + bottom) / 2, 0), gripRed, "Shaft")
 			-- collar de acero
-			oct(0.4, 0.74, CFrame.new(0, top - 0.2, 0), steel, "Collar")
-			b:disc(CFrame.new(0, top - 0.42, 0), 0.64, 0.06, steelEdge, "CollarLip")
-			b:disc(CFrame.new(0, top - 0.02, 0), 0.8, 0.05, dark, "CollarTop")
+			oct(0.4, 0.74 * K, CFrame.new(0, top - 0.2, 0), steel, "Collar")
+			b:disc(CFrame.new(0, top - 0.42, 0), 0.64 * K, 0.06, steelEdge, "CollarLip")
+			b:disc(CFrame.new(0, top - 0.02, 0), 0.8 * K, 0.05, dark, "CollarTop")
 			-- correas negras cruzadas sobre el rojo
-			for i = 0, 5 do
+			for i = 0, 7 do
 				local tilt = if i % 2 == 0 then 0.45 else -0.45
-				b:cylY(0.06, 0.52, CFrame.new(0, -0.62 + i * 0.3, 0) * CFrame.Angles(0, i * 0.6, 0) * CFrame.Angles(tilt, 0, 0), hose, "Strap")
+				b:cylY(0.06, 0.52 * K, CFrame.new(0, -0.6 + i * 0.3, 0) * CFrame.Angles(0, i * 0.6, 0) * CFrame.Angles(tilt, 0, 0), hose, "Strap")
 			end
 			-- banda de acero abajo con remache
-			b:disc(CFrame.new(0, -1.02, 0), 0.6, 0.2, steel, "LowBand")
-			b:disc(CFrame.new(0, -1.02, 0), 0.64, 0.05, steelEdge, "LowBandRidge")
-			b:rivet(Vector3.new(0, -1.02, 0.31), 0.12, chrome)
-			b:rivet(Vector3.new(0, -1.02, -0.31), 0.12, chrome)
+			local ly = -0.88
+			b:disc(CFrame.new(0, ly, 0), 0.62 * K, 0.3, steel, "LowBand")
+			b:disc(CFrame.new(0, ly, 0), 0.66 * K, 0.05, steelEdge, "LowBandRidge")
+			b:rivet(Vector3.new(0, ly, 0.33 * K), 0.12 * K, chrome)
+			b:rivet(Vector3.new(0, ly, -0.33 * K), 0.12 * K, chrome)
 		end)
 
 		-- ── pomo ────────────────────────────────────────────────
 		b:group("Pommel", function()
-			local py = A.PommelY - 0.06
-			oct(0.42, 0.8, CFrame.new(0, py, 0), dark, "Pommel")
-			b:disc(CFrame.new(0, py + 0.23, 0), 0.7, 0.06, steelEdge, "PommelBevel")
-			b:disc(CFrame.new(0, py - 0.23, 0), 0.7, 0.06, steel, "PommelBevel")
-			b:cylY(0.06, 0.46, CFrame.new(0, py - 0.28, 0), black, "PommelCap")
-			table.insert(glow, b:cylY(0.06, 0.18, CFrame.new(0, py - 0.29, 0), hot, "PommelGlow"))
+			local ph = 0.46
+			local py = -1.04 - ph / 2
+			oct(ph, 0.8 * PK, CFrame.new(0, py, 0), dark, "Pommel")
+			b:disc(CFrame.new(0, py + ph / 2 + 0.02, 0), 0.7 * PK, 0.06, steelEdge, "PommelBevel")
+			b:disc(CFrame.new(0, py - ph / 2 - 0.02, 0), 0.7 * PK, 0.06, steel, "PommelBevel")
+			b:cylY(0.06, 0.46 * PK, CFrame.new(0, py - ph / 2 - 0.07, 0), black, "PommelCap")
+			table.insert(glow, b:cylY(0.06, 0.18 * PK, CFrame.new(0, py - ph / 2 - 0.08, 0), hot, "PommelGlow"))
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
