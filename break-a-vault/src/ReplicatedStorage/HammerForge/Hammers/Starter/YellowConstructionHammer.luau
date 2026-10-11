@@ -1,8 +1,9 @@
 -- Yellow Construction Hammer (Starter) — herramienta de obra pintada de amarillo industrial, limpia y
--- saturada como juguete premium. Bloque central con panel de franjas de peligro negro/amarillo enmarcado
--- (en las dos caras), flejes oscuros, remates biselados con pernos cromados, defensas de hule negro abajo
--- con sus tornillos, tapas de golpe de acero, cuello negro con collar amarillo, agarre de hule negro
--- con costillas y pomo amarillo con anillo negro.
+-- saturada como juguete premium. Bloque central con panel de franjas de peligro negro/amarillo que SALE
+-- del bloque, enmarcado por un borde grueso amarillo profundo (en las dos caras); remates gordos y biselados
+-- unidos al centro por flejes oscuros, con pernos cromados, defensas de hule negro abajo con sus tornillos y
+-- tapas de golpe de acero. Cuello negro con collar amarillo grande, agarre corto y grueso de hule negro con
+-- costillas hondas, y pomo amarillo grande con anillo negro.
 return {
 	Id = "YellowConstructionHammer",
 	DisplayName = "Yellow Construction Hammer",
@@ -11,7 +12,7 @@ return {
 	Theme = "Construction Site",
 	Build = function(b, P, B)
 		local A = B.Anatomy
-		local headY = A.HeadY + 0.08
+		local headY = A.HeadY - 0.22
 
 		-- ── estilos ─────────────────────────────────────────────
 		local yellow = P.paint(P.rgb(242, 170, 10))
@@ -26,9 +27,10 @@ return {
 		local steelHi = P.metal(P.rgb(196, 204, 214), 0.26)
 
 		-- ── cabeza ──────────────────────────────────────────────
-		local cW, cH, cD = 1.5, 1.72, 1.62
-		local eL, eH, eD = 0.9, 1.96, 1.86
-		local eX = cW / 2 + 0.08 + eL / 2
+		local cW, cH, cD = 1.44, 1.78, 1.68
+		local eL, eH, eD = 1.04, 1.98, 1.88
+		local strapW = 0.1
+		local eX = cW / 2 + strapW + eL / 2
 		local tipX = eX + eL / 2
 		b:group("Head", function()
 			b:bevelBox(Vector3.new(cW, cH, cD), CFrame.new(0, headY, 0), yellow, 0.12, { edgeStyle = yellowEdge, name = "CenterBlock" })
@@ -36,21 +38,27 @@ return {
 			-- panel de franjas de peligro en ambas caras: marco amarillo → fondo negro → franjas amarillas
 			B.both(function(s)
 				local face = B.faceZ(s, headY, cD / 2)
-				local pw, ph = 1.18, 0.98
-				b:box(Vector3.new(pw + 0.16, ph + 0.16, 0.06), face * CFrame.new(0, 0, 0.02), yellowDeep, "PanelFrame")
-				b:box(Vector3.new(pw, ph, 0.06), face * CFrame.new(0, 0, 0.04), black, "PanelBack")
-				b:stripes(face * CFrame.new(0, 0, 0.075), pw, ph, 0.27, 40, 0.04, yellow)
+				local pw, ph = 1.0, 1.02
+				-- panel negro 0.03 salido del bloque, franjas encima
+				b:box(Vector3.new(pw, ph, 0.08), face * CFrame.new(0, 0, -0.01), black, "PanelBack")
+				b:stripes(face * CFrame.new(0, 0, 0.04), pw, ph, 0.25, 40, 0.03, yellow)
+				-- borde grueso amarillo profundo (0.12) con arista clara
+				local fw = 0.12
+				for _, e in { { 0, ph / 2 + fw / 2, pw + 2 * fw, fw }, { 0, -ph / 2 - fw / 2, pw + 2 * fw, fw }, { pw / 2 + fw / 2, 0, fw, ph }, { -pw / 2 - fw / 2, 0, fw, ph } } do
+					b:box(Vector3.new(e[3], e[4], 0.12), face * CFrame.new(e[1], e[2], 0), yellowDeep, "PanelFrame")
+				end
+				b:box(Vector3.new(pw + 2 * fw, 0.04, 0.124), face * CFrame.new(0, ph / 2 + fw - 0.02, 0), yellowEdge, "PanelFrameHi")
 			end)
 
 			B.both(function(s)
 				-- fleje oscuro entre bloques
-				b:box(Vector3.new(0.16, cH + 0.06, cD + 0.06), CFrame.new(s * (cW / 2 + 0.04), headY, 0), strap, "Strap")
-				-- remate biselado
-				b:bevelBox(Vector3.new(eL, eH, eD), CFrame.new(s * eX, headY, 0), yellow, 0.22, { edgeStyle = yellowEdge, name = "EndBlock" })
+				b:bevelBox(Vector3.new(strapW + 0.04, eH - 0.16, eD - 0.12), CFrame.new(s * (cW / 2 + strapW / 2), headY, 0), strap, 0.1, { edges = "X", name = "Strap" })
+				-- remate gordo biselado
+				b:bevelBox(Vector3.new(eL, eH, eD), CFrame.new(s * eX, headY, 0), yellow, 0.15, { edgeStyle = yellowEdge, name = "EndBlock" })
 				-- pernos cromados en ambas caras del remate
 				for _, z in { 1, -1 } do
 					for _, y in { 0.56, -0.05 } do
-						local p = CFrame.new(s * (eX + 0.1), headY + y, z * (eD / 2))
+						local p = CFrame.new(s * (eX + 0.12), headY + y, z * (eD / 2))
 						b:cylZ(0.1, 0.22, p * CFrame.new(0, 0, z * 0.03), bolt, "Bolt")
 					end
 				end
@@ -58,7 +66,7 @@ return {
 				local bumpY = headY - eH / 2 + 0.12
 				b:bevelBox(Vector3.new(eL + 0.06, 0.42, eD + 0.1), CFrame.new(s * eX, bumpY, 0), black, 0.1, { edges = "X", edgeStyle = rubberHi, name = "Bumper" })
 				for _, z in { 1, -1 } do
-					for _, dx in { s * 0.24 } do
+					for _, dx in { s * 0.3 } do
 						b:cylZ(0.05, 0.11, CFrame.new(s * eX + dx, bumpY, z * ((eD + 0.1) / 2 + 0.02)), steel, "BumperScrew")
 					end
 				end
@@ -72,30 +80,33 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
-		local shaftDia = 0.46
+		local shaftDia = 0.52
+		local shaftBottom = A.ShaftBottom + 0.28
 		b:group("Shaft", function()
-			local bottom, top = A.ShaftBottom, headY - cH / 2
+			local bottom, top = shaftBottom, headY - cH / 2
 			b:cylY(top - bottom, shaftDia, CFrame.new(0, (top + bottom) / 2, 0), rubber, "Shaft")
-			-- cuello negro + collar amarillo
-			b:cylY(0.42, 0.58, CFrame.new(0, top - 0.22, 0), black, "Neck")
-			b:bevelBox(Vector3.new(0.7, 0.26, 0.7), CFrame.new(0, top - 0.62, 0), yellow, 0.14, { edges = "Y", edgeStyle = yellowEdge, name = "Collar" })
-			-- agarre de hule con costillas
-			local y0, y1 = -1.08, 1.02
-			local nRibs = 9
+			-- cuello negro + collar amarillo grande
+			b:cylY(0.42, 0.66, CFrame.new(0, top - 0.22, 0), black, "Neck")
+			b:bevelBox(Vector3.new(0.84, 0.32, 0.84), CFrame.new(0, top - 0.62, 0), yellow, 0.16, { edges = "Y", edgeStyle = yellowEdge, name = "Collar" })
+			b:cylY(0.06, 0.72, CFrame.new(0, top - 0.8, 0), black, "CollarLip")
+			-- agarre corto y grueso: 7 costillas hondas de hule
+			local y0, y1 = -0.84, 1.2
+			local nRibs = 7
 			for i = 0, nRibs - 1 do
 				local y = y0 + (y1 - y0) * (i + 0.5) / nRibs
-				b:cylY(0.15, shaftDia + 0.16, CFrame.new(0, y, 0), if i % 2 == 0 then rubber else P.with(rubber, { Color = P.rgb(34, 35, 42) }), "GripRib")
+				b:cylY(0.18, 0.7, CFrame.new(0, y, 0), if i % 2 == 0 then rubber else P.with(rubber, { Color = P.rgb(38, 39, 46) }), "GripRib")
+				b:cylY(0.04, 0.72, CFrame.new(0, y + 0.07, 0), rubberHi, "GripRibHi")
 			end
 		end)
 
-		-- ── pomo ────────────────────────────────────────────────
+		-- ── pomo grande ─────────────────────────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY - 0.04
-			b:disc(CFrame.new(0, y + 0.24, 0), shaftDia + 0.24, 0.08, black, "PommelRing")
-			b:bevelBox(Vector3.new(0.74, 0.36, 0.74), CFrame.new(0, y, 0), yellow, 0.16, { edges = "Y", edgeStyle = yellowEdge, name = "PommelCap" })
-			b:cylY(0.12, 0.62, CFrame.new(0, y - 0.24, 0), black, "PommelBase")
-			b:cylZ(0.05, 0.12, CFrame.new(0, y, 0.37), bolt, "PommelBolt")
-			b:cylZ(0.05, 0.12, CFrame.new(0, y, -0.37), bolt, "PommelBolt")
+			local y = shaftBottom - 0.3
+			b:disc(CFrame.new(0, y + 0.3, 0), 0.78, 0.09, black, "PommelRing")
+			b:bevelBox(Vector3.new(0.96, 0.44, 0.96), CFrame.new(0, y, 0), yellow, 0.2, { edges = "Y", edgeStyle = yellowEdge, name = "PommelCap" })
+			b:cylY(0.13, 0.8, CFrame.new(0, y - 0.28, 0), black, "PommelBase")
+			b:cylZ(0.05, 0.14, CFrame.new(0, y, 0.48), bolt, "PommelBolt")
+			b:cylZ(0.05, 0.14, CFrame.new(0, y, -0.48), bolt, "PommelBolt")
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
