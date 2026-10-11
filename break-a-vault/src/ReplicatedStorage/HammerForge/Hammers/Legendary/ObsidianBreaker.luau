@@ -164,61 +164,69 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
+		local K = 1.24 -- escala radial del mango (agarre chunky como el concepto)
+		local g0, g1 = -0.9, 1.42 -- agarre (mango ~12% más corto)
 		b:group("Shaft", function()
 			local top = headY - CH / 2
-			local bottom = A.ShaftBottom + 0.15
-			b:cylY(top - bottom, 0.46, CFrame.new(0, (top + bottom) / 2, 0), obsDeep, "ShaftCore")
+			local bottom = g0 - 0.1
+			b:cylY(top - bottom, 0.5 * K, CFrame.new(0, (top + bottom) / 2, 0), obsDeep, "ShaftCore")
 			-- collar de acero con anillo de neón
 			local cy = top - 0.2
-			b:bevelBox(Vector3.new(0.8, 0.38, 0.8), CFrame.new(0, cy, 0), steel, 0.15, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
-			table.insert(glowParts, b:cylY(0.1, 0.68, CFrame.new(0, cy - 0.26, 0), neon, "CollarGlow"))
-			b:cylY(0.12, 0.74, CFrame.new(0, cy - 0.37, 0), steelDark, "CollarLip")
+			b:bevelBox(Vector3.new(0.8 * K, 0.38, 0.8 * K), CFrame.new(0, cy, 0), steel, 0.15 * K, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
+			table.insert(glowParts, b:cylY(0.1, 0.68 * K, CFrame.new(0, cy - 0.26, 0), neon, "CollarGlow"))
+			b:cylY(0.12, 0.74 * K, CFrame.new(0, cy - 0.37, 0), steelDark, "CollarLip")
 			for i = 0, 3 do
 				local a = math.pi / 2 * i + math.pi / 4
-				b:rivet(Vector3.new(math.cos(a) * 0.34, cy, math.sin(a) * 0.34), 0.12, steelEdge)
+				b:rivet(Vector3.new(math.cos(a) * 0.34 * K, cy, math.sin(a) * 0.34 * K), 0.13, steelEdge)
 			end
 			-- segmentos de obsidiana (octágonos chuecos) con anillos de neón entre ellos
-			local segs = { { 1.45, 0.98 }, { 0.86, 0.34 }, { 0.22, -0.32 }, { -0.44, -0.98 } }
-			for i, sgm in segs do
-				local y = (sgm[1] + sgm[2]) / 2
-				local h = sgm[1] - sgm[2]
-				b:cylY(h, 0.64, CFrame.new(0, y, 0), if i % 2 == 0 then obs else obsGloss, "GripSeg")
-				b:cylY(h - 0.14, 0.68, CFrame.new(0, y, 0), obsEdge, "GripSegBulge")
-			end
-			for i, y in { 0.92, 0.28, -0.38 } do
-				if i == 2 then
-					table.insert(glowParts, b:cylY(0.1, 0.62, CFrame.new(0, y, 0), neon, "GripGlow"))
-					b:cylY(0.04, 0.7, CFrame.new(0, y + 0.07, 0), steelEdge, "GripRingLip")
-					b:cylY(0.04, 0.7, CFrame.new(0, y - 0.07, 0), steelEdge, "GripRingLip")
-				else
-					b:cylY(0.1, 0.7, CFrame.new(0, y, 0), steel, "GripRing")
+			local gap = 0.12
+			local segH = (g1 - g0 - 3 * gap) / 4
+			local ringYs = {}
+			for i = 1, 4 do
+				local s1 = g1 - (i - 1) * (segH + gap)
+				local y = s1 - segH / 2
+				b:cylY(segH, 0.64 * K, CFrame.new(0, y, 0), if i % 2 == 0 then obs else obsGloss, "GripSeg")
+				b:cylY(segH - 0.14, 0.68 * K, CFrame.new(0, y, 0), obsEdge, "GripSegBulge")
+				if i < 4 then
+					table.insert(ringYs, s1 - segH - gap / 2)
 				end
 			end
-			table.insert(glowParts, b:cylY(0.08, 0.64, CFrame.new(0, -1.03, 0), neon, "GripGlow"))
+			for i, y in ringYs do
+				if i == 2 then
+					table.insert(glowParts, b:cylY(0.1, 0.62 * K, CFrame.new(0, y, 0), neon, "GripGlow"))
+					b:cylY(0.04, 0.7 * K, CFrame.new(0, y + 0.07, 0), steelEdge, "GripRingLip")
+					b:cylY(0.04, 0.7 * K, CFrame.new(0, y - 0.07, 0), steelEdge, "GripRingLip")
+				else
+					b:cylY(0.1, 0.7 * K, CFrame.new(0, y, 0), steel, "GripRing")
+				end
+			end
+			table.insert(glowParts, b:cylY(0.08, 0.64 * K, CFrame.new(0, g0 - 0.05, 0), neon, "GripGlow"))
 		end)
 
-		-- ── pomo erizado ────────────────────────────────────────
+		-- ── pomo erizado (1.3x) ─────────────────────────────────
 		local floatParts = {}
-		local py = A.PommelY + 0.08
+		local PK = 1.28
+		local py = g0 - 0.1 - 0.25 * PK
+		local fy = py - 0.72
 		b:group("Pommel", function()
-			b:bevelBox(Vector3.new(0.86, 0.5, 0.86), CFrame.new(0, py, 0), steelDark, 0.22, { edges = "Y", edgeStyle = steel, name = "Pommel" })
-			b:cylY(0.09, 0.94, CFrame.new(0, py + 0.22, 0), steel, "PommelBand")
-			table.insert(glowParts, b:cylY(0.06, 0.8, CFrame.new(0, py + 0.12, 0), neon, "PommelGlow"))
-			-- corona de cristales: 6 grandes hacia afuera/abajo + 3 chicos hacia abajo
+			b:bevelBox(Vector3.new(0.86 * PK, 0.5 * PK, 0.86 * PK), CFrame.new(0, py, 0), steelDark, 0.22 * PK, { edges = "Y", edgeStyle = steel, name = "Pommel" })
+			b:cylY(0.1, 0.94 * PK, CFrame.new(0, py + 0.22 * PK, 0), steel, "PommelBand")
+			table.insert(glowParts, b:cylY(0.07, 0.8 * PK, CFrame.new(0, py + 0.12 * PK, 0), neon, "PommelGlow"))
+			-- corona de cristales: 6 grandes hacia afuera/abajo
 			for i = 0, 5 do
 				local a = math.pi / 3 * i + math.pi / 6
 				local d = Vector3.new(math.cos(a), 0, math.sin(a))
-				shard(Vector3.new(0, py - 0.04, 0) + d * 0.4, d + Vector3.new(0, -0.45, 0), 0.78, 0.36, 3, i % 2 == 0)
-				b:rivet(Vector3.new(math.cos(a + math.pi / 6) * 0.44, py + 0.02, math.sin(a + math.pi / 6) * 0.44), 0.12, steelEdge)
+				shard(Vector3.new(0, py - 0.04, 0) + d * 0.4 * PK, d + Vector3.new(0, -0.45, 0), 0.78 * PK * 0.92, 0.36 * PK, 3, i % 2 == 0)
+				b:rivet(Vector3.new(math.cos(a + math.pi / 6) * 0.44 * PK, py + 0.02, math.sin(a + math.pi / 6) * 0.44 * PK), 0.14, steelEdge)
 			end
-			b:cylY(0.12, 0.56, CFrame.new(0, py - 0.3, 0), steel, "PommelCap")
+			b:cylY(0.14, 0.56 * PK, CFrame.new(0, py - 0.3 * PK, 0), steel, "PommelCap")
 			-- cristal flotante que gira bajo el pomo (bipirámide)
-			local fy = py - 0.8
 			for _, p in b:gem(CFrame.new(0, fy, 0), 0.3, crystalLight, neonHot) do
 				table.insert(floatParts, p)
 			end
 		end)
-		b:animate(floatParts, CFrame.new(0, py - 0.8, 0), { Spin = Vector3.new(0, 1.4, 0), Bob = Vector3.new(0, 0.06, 0), BobSpeed = 0.6 })
+		b:animate(floatParts, CFrame.new(0, fy, 0), { Spin = Vector3.new(0, 1.4, 0), Bob = Vector3.new(0, 0.06, 0), BobSpeed = 0.6 })
 
 		-- ── pulsos ──────────────────────────────────────────────
 		b:pulse(crackParts, 0, 0.55, 0.7)
@@ -252,7 +260,7 @@ return {
 			b:emitter(v, wisp, "VoidWisp")
 		end)
 		b:light(Vector3.new(0, headY, 0), purple, 2.4, 12, { pulse = { 1.4, 3.2 }, pulseSpeed = 0.7, name = "VoidGlow" })
-		b:light(Vector3.new(0, py - 0.8, 0), P.rgb(200, 120, 255), 0.6, 4, { pulse = { 0.3, 0.9 }, pulseSpeed = 0.7, name = "PommelGlow" })
+		b:light(Vector3.new(0, fy, 0), P.rgb(200, 120, 255), 0.6, 4, { pulse = { 0.3, 0.9 }, pulseSpeed = 0.7, name = "PommelGlow" })
 
 		local chips = B.Particles.sparkle(P.rgb(60, 40, 80), 0)
 		chips.Texture = B.Textures.FireSparks
