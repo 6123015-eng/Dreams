@@ -15,21 +15,21 @@ return {
 	Theme = "Void Vault",
 	Build = function(b, P, B)
 		local A = B.Anatomy
-		local headY = A.HeadY + 0.1
+		local headY = A.HeadY - 0.15
 
 		-- ── estilos ─────────────────────────────────────────────
 		local purple = P.rgb(160, 60, 255)
 		local obs = P.style(P.rgb(26, 22, 34), Enum.Material.Basalt, 0.08)
-		local obsEdge = P.style(P.rgb(70, 62, 88), Enum.Material.Basalt, 0.12) -- arista clara
+		local obsEdge = P.style(P.rgb(104, 92, 128), Enum.Material.Slate, 0.22) -- arista clara
 		local obsDeep = P.style(P.rgb(16, 13, 22), Enum.Material.Basalt, 0.04)
-		local obsGloss = P.style(P.rgb(44, 38, 58), Enum.Material.Slate, 0.15)
+		local obsGloss = P.style(P.rgb(40, 34, 54), Enum.Material.Slate, 0.2)
 		local steel = P.metal(P.rgb(92, 96, 108), 0.16)
 		local steelEdge = P.metal(P.rgb(168, 174, 188), 0.22)
 		local steelDark = P.metal(P.rgb(40, 42, 50), 0.1)
 		local oldGold = P.metal(P.rgb(196, 146, 60), 0.18)
 		local oldGoldPale = P.foil(P.rgb(236, 196, 110), 0.22)
-		local crystal = P.crystal(P.rgb(124, 36, 232), 0.1)
-		local crystalLight = P.crystal(P.rgb(172, 86, 255), 0.1)
+		local crystal = P.crystal(P.rgb(96, 16, 214), 0.12)
+		local crystalLight = P.crystal(P.rgb(150, 58, 255), 0.12)
 		local neon = P.neon(P.rgb(150, 56, 255))
 		local neonHot = P.neon(P.rgb(226, 170, 255))
 
@@ -49,7 +49,7 @@ return {
 			if noCore then
 				return
 			end
-			table.insert(glowParts, b:box(Vector3.new(w * 0.3, len * 0.6, w * 0.3), base * CFrame.new(0, len * 0.3, 0) * CFrame.Angles(0, math.pi / 4, 0), neon, "CrystalCore"))
+			table.insert(glowParts, b:box(Vector3.new(w * 0.38, len * 0.66, w * 0.38), base * CFrame.new(0, len * 0.36, 0) * CFrame.Angles(0, math.pi / 4, 0), neon, "CrystalCore"))
 		end
 		local crackParts = {}
 		local function crack(face: CFrame, pts2: { Vector2 }, w: number?)
@@ -65,11 +65,22 @@ return {
 
 		-- ── medidas ────────────────────────────────────────────
 		local CW, CH, CD = 1.5, 2.1, 2.0 -- bloque central
-		local bandW, BH, BD = 0.24, 2.36, 2.24 -- bandas de acero
+		local bandW, BH, BD = 0.3, 2.5, 2.36 -- bandas de acero
 		local bx = CW / 2 + bandW / 2 - 0.02
-		local EX0, EX1 = bx + bandW / 2 - 0.04, 2.0
-		local EW, EH, ED = EX1 - EX0, 2.2, 2.12
+		local EX0, EX1 = bx + bandW / 2 - 0.04, 2.12
+		local EW, EH, ED = EX1 - EX0, 2.34, 2.24
 		local ex = (EX0 + EX1) / 2
+		local rnd = B.rng(7331)
+
+		-- trozo de obsidiana: bloque biselado, un poco chueco, con arista clara
+		local function chunk(sx: number, u0: number, u1: number, y0: number, y1: number, depth: number, st, tilt: number)
+			local g = 0.09 -- junta (deja ver el núcleo de neón)
+			local size = Vector3.new(u1 - u0 - g, y1 - y0 - g, depth)
+			local ctr = Vector3.new(sx * (EX0 + (u0 + u1) / 2), headY + (y0 + y1) / 2, rnd(-0.03, 0.03))
+			local cf = CFrame.new(ctr) * CFrame.Angles(rnd(-tilt, tilt), rnd(-tilt, tilt) * sx, rnd(-tilt, tilt) * sx)
+			b:bevelBox(size, cf, st, math.min(0.18, math.min(size.X, size.Y) * 0.24), { edges = "Z", edgeStyle = obsEdge, name = "Chunk" })
+			return cf, size
+		end
 
 		b:group("Head", function()
 			-- ── bloque central de obsidiana ───────────────────
@@ -98,112 +109,116 @@ return {
 				end
 				table.insert(glowParts, b:box(Vector3.new(0.12, 0.2, 0.06), face * CFrame.new(0, 0.04, 0.2) * CFrame.Angles(0, 0, 0), neonHot, "GemSpark"))
 				-- grietas en el bloque central (salen del emblema)
-				crack(face, { V(-0.36, 0.6), V(-0.55, 0.78), V(-0.62, 1.0) }, 0.07)
-				crack(face, { V(0.38, -0.56), V(0.52, -0.78), V(0.7, -0.88) }, 0.07)
+				crack(face, { V(-0.36, 0.6), V(-0.55, 0.78), V(-0.62, 1.0) }, 0.08)
+				crack(face, { V(0.38, -0.56), V(0.52, -0.78), V(0.7, -0.88) }, 0.08)
 			end)
 
-			-- ── bandas de acero remachadas ────────────────────
+			-- ── bandas de acero gruesas, biseladas y remachadas ─
 			B.both(function(sx)
 				local x = sx * bx
-				b:bevelBox(Vector3.new(bandW, BH, BD), CFrame.new(x, headY, 0), steel, 0.08, { edges = "X", edgeStyle = steelEdge, name = "Band" })
-				b:box(Vector3.new(bandW + 0.04, BH - 0.4, BD - 0.4), CFrame.new(x, headY, 0), steelDark, "BandInner")
+				b:bevelBox(Vector3.new(bandW, BH, BD), CFrame.new(x, headY, 0), steel, 0.09, { edges = "X", edgeStyle = steelEdge, name = "Band" })
+				b:box(Vector3.new(bandW + 0.04, BH - 0.44, BD - 0.44), CFrame.new(x, headY, 0), steelDark, "BandInner")
 				for _, sz in { 1, -1 } do
-					b:rivetLine(Vector3.new(x, headY + BH / 2 - 0.22, sz * (BD / 2 + 0.01)), Vector3.new(x, headY - BH / 2 + 0.22, sz * (BD / 2 + 0.01)), 2, 0.13, steelEdge)
+					b:rivetLine(Vector3.new(x, headY + BH / 2 - 0.22, sz * (BD / 2 + 0.01)), Vector3.new(x, headY - BH / 2 + 0.22, sz * (BD / 2 + 0.01)), 2, 0.15, steelEdge)
 				end
+				b:rivet(Vector3.new(x, headY + BH / 2 + 0.01, 0), 0.14, steelEdge)
 			end)
 
-			-- ── remates de roca en capas con cristales ────────
+			-- ── remates: cúmulos de trozos de obsidiana sobre un núcleo de neón ─
 			B.both(function(sx)
-				local ecf = CFrame.new(sx * ex, headY, 0) * CFrame.Angles(0.03 * sx, 0, math.rad(2.5) * sx)
-				b:bevelBox(Vector3.new(EW, EH, ED), ecf, obs, 0.22, { edgeStyle = obsEdge, name = "Rock" })
-				-- losas que sobresalen (rompen la silueta): arriba-afuera y abajo-adentro
-				b:bevelBox(Vector3.new(EW * 0.62, 0.62, ED * 0.78), CFrame.new(sx * (ex + 0.12), headY + EH / 2 - 0.12, 0.08) * CFrame.Angles(0.06, 0.1 * sx, math.rad(-9) * sx), obsGloss, 0.12, { edges = "Z", edgeStyle = obsEdge, name = "RockSlab" })
-				b:bevelBox(Vector3.new(EW * 0.7, 0.55, ED * 0.85), CFrame.new(sx * (ex - 0.04), headY - EH / 2 + 0.1, -0.05) * CFrame.Angles(-0.05, 0, math.rad(6) * sx), obs, 0.12, { edges = "Z", edgeStyle = obsEdge, name = "RockSlab" })
-				-- losa lateral en cada cara (capa) + grietas
-				for _, sz in { 1, -1 } do
-					local f = B.faceZ(sz, headY, ED / 2 + 0.01, sx * ex)
-					local k = sx * sz
-					crack(f, { V(-0.48 * k, 0.8), V(-0.2 * k, 0.42), V(0.08 * k, -0.06), V(0.0, -0.5), V(0.3 * k, -0.86) }, 0.075)
-					crack(f, { V(0.08 * k, -0.06), V(0.42 * k, 0.16) }, 0.055)
-				end
+				-- núcleo de energía: brilla por TODAS las juntas (hundido ~0.1 bajo la superficie)
+				table.insert(crackParts, b:box(Vector3.new(EW - 0.16, EH - 0.2, ED - 0.2), CFrame.new(sx * ex, headY, 0), neon, "SeamCore"))
+				local W = EW
+				-- aparejo irregular (u = 0 junto a la banda, W = cara de golpe; y relativo al centro)
+				chunk(sx, -0.02, 0.62, 0.2, 1.19, ED + 0.02, obs, 0.1)
+				chunk(sx, 0.62, W + 0.06, 0.02, 1.3, ED + 0.14, obsGloss, 0.11)
+				chunk(sx, -0.02, 0.5, -0.52, 0.2, ED + 0.1, obsGloss, 0.1)
+				chunk(sx, 0.5, W + 0.04, -1.2, 0.02, ED + 0.06, obs, 0.11)
+				chunk(sx, -0.02, 0.5, -1.2, -0.52, ED - 0.04, obs, 0.1)
 				-- cara de golpe: placa de acero negro con runa de neón y gema
-				local fx = sx * (EX1 + 0.04)
-				b:bevelBox(Vector3.new(0.14, EH - 0.36, ED - 0.36), CFrame.new(fx, headY, 0), steelDark, 0.07, { edges = "X", edgeStyle = steel, name = "StrikePlate" })
-				local sf = B.faceX(sx, EX1 + 0.11, headY)
-				local rr = 0.58
+				local fx = sx * (EX1 + 0.05)
+				b:bevelBox(Vector3.new(0.16, EH - 0.62, ED - 0.62), CFrame.new(fx, headY, 0), steelDark, 0.07, { edges = "X", edgeStyle = steel, name = "StrikePlate" })
+				b:box(Vector3.new(0.12, EH - 0.5, ED - 0.5), CFrame.new(sx * (EX1 + 0.01), headY, 0), steel, "StrikeLip")
+				local sf = B.faceX(sx, EX1 + 0.13, headY)
+				local rr = 0.5
 				local rune = { sf:PointToWorldSpace(Vector3.new(0, rr, 0)), sf:PointToWorldSpace(Vector3.new(rr, 0, 0)), sf:PointToWorldSpace(Vector3.new(0, -rr, 0)), sf:PointToWorldSpace(Vector3.new(-rr, 0, 0)) }
-				for _, p in b:polyline(rune, 0.08, 0.05, neon, sf.LookVector, true, "Rune") do
+				for _, p in b:polyline(rune, 0.09, 0.05, neon, sf.LookVector, true, "Rune") do
 					table.insert(crackParts, p)
 				end
-				for _, p in b:gem(sf * CFrame.new(0, 0, 0.04), 0.26, crystalLight, neonHot) do
+				for _, p in b:gem(sf * CFrame.new(0, 0, 0.04), 0.3, crystalLight, neonHot) do
 					table.insert(glowParts, p)
 				end
-				-- cristales: arriba (grande), abajo, esquinas exteriores y uno que sale por el frente
-				shard(Vector3.new(sx * (ex + 0.2), headY + EH / 2 + 0.12, 0.2), Vector3.new(sx * 0.35, 1, 0.15), 0.9, 0.42, 4, true)
-				shard(Vector3.new(sx * (ex - 0.22), headY + EH / 2 + 0.05, -0.45), Vector3.new(sx * 0.1, 1, -0.45), 0.55, 0.28, 3)
-				shard(Vector3.new(sx * (EX1 - 0.1), headY - EH / 2 + 0.2, 0.55), Vector3.new(sx * 0.8, -0.9, 0.35), 0.62, 0.32, 3)
-				shard(Vector3.new(sx * (EX1 - 0.12), headY + 0.25, -ED / 2 + 0.25), Vector3.new(sx, 0.2, -0.75), 0.6, 0.3, 3, true)
-				shard(Vector3.new(sx * (EX1 - 0.15), headY - 0.35, ED / 2 - 0.2), Vector3.new(sx, -0.1, 0.8), 0.5, 0.26, 3)
+				for _, c in { { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } } do
+					b:rivet(sf:PointToWorldSpace(Vector3.new(c[1] * 0.66, c[2] * 0.66, -0.02)), 0.14, steelEdge)
+				end
+				-- cristales (1.5x): brotan de las juntas hacia arriba, abajo, afuera y al frente
+				shard(Vector3.new(sx * (ex + 0.22), headY + EH / 2 + 0.1, 0.22), Vector3.new(sx * 0.35, 1, 0.15), 1.35, 0.6, 4, true)
+				shard(Vector3.new(sx * (ex - 0.26), headY + EH / 2 + 0.02, -0.5), Vector3.new(sx * 0.1, 1, -0.45), 0.85, 0.42, 3)
+				shard(Vector3.new(sx * (EX1 - 0.12), headY - EH / 2 + 0.22, 0.55), Vector3.new(sx * 0.8, -0.9, 0.35), 0.95, 0.46, 3)
+				shard(Vector3.new(sx * (EX1 - 0.12), headY + 0.3, -ED / 2 + 0.25), Vector3.new(sx, 0.25, -0.75), 0.9, 0.44, 3, true)
+				shard(Vector3.new(sx * (EX1 - 0.15), headY - 0.4, ED / 2 - 0.2), Vector3.new(sx, -0.1, 0.8), 0.78, 0.4, 3)
 			end)
 
 			-- cristales sobre el bloque central
-			shard(Vector3.new(0.18, headY + CH / 2, -0.25), Vector3.new(0.15, 1, -0.2), 0.72, 0.34, 4, true)
+			shard(Vector3.new(0.18, headY + CH / 2, -0.25), Vector3.new(0.15, 1, -0.2), 1.05, 0.48, 4, true)
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
 		b:group("Shaft", function()
 			local top = headY - CH / 2
-			local bottom = A.ShaftBottom
-			b:cylY(top - bottom, 0.38, CFrame.new(0, (top + bottom) / 2, 0), obsDeep, "ShaftCore")
+			local bottom = A.ShaftBottom + 0.15
+			b:cylY(top - bottom, 0.46, CFrame.new(0, (top + bottom) / 2, 0), obsDeep, "ShaftCore")
 			-- collar de acero con anillo de neón
 			local cy = top - 0.2
-			b:bevelBox(Vector3.new(0.72, 0.36, 0.72), CFrame.new(0, cy, 0), steel, 0.15, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
-			table.insert(glowParts, b:cylY(0.1, 0.6, CFrame.new(0, cy - 0.26, 0), neon, "CollarGlow"))
-			b:cylY(0.12, 0.66, CFrame.new(0, cy - 0.37, 0), steelDark, "CollarLip")
+			b:bevelBox(Vector3.new(0.8, 0.38, 0.8), CFrame.new(0, cy, 0), steel, 0.15, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
+			table.insert(glowParts, b:cylY(0.1, 0.68, CFrame.new(0, cy - 0.26, 0), neon, "CollarGlow"))
+			b:cylY(0.12, 0.74, CFrame.new(0, cy - 0.37, 0), steelDark, "CollarLip")
 			for i = 0, 3 do
 				local a = math.pi / 2 * i + math.pi / 4
-				b:rivet(Vector3.new(math.cos(a) * 0.3, cy, math.sin(a) * 0.3), 0.12, steelEdge)
+				b:rivet(Vector3.new(math.cos(a) * 0.34, cy, math.sin(a) * 0.34), 0.12, steelEdge)
 			end
 			-- segmentos de obsidiana (octágonos chuecos) con anillos de neón entre ellos
-			local segs = { { 1.62, 1.12 }, { 1.0, 0.42 }, { 0.3, -0.3 }, { -0.42, -1.05 } }
+			local segs = { { 1.45, 0.98 }, { 0.86, 0.34 }, { 0.22, -0.32 }, { -0.44, -0.98 } }
 			for i, sgm in segs do
 				local y = (sgm[1] + sgm[2]) / 2
 				local h = sgm[1] - sgm[2]
-				b:cylY(h, 0.56, CFrame.new(0, y, 0), if i % 2 == 0 then obs else obsGloss, "GripSeg")
-				b:cylY(h - 0.14, 0.6, CFrame.new(0, y, 0), obsEdge, "GripSegBulge")
+				b:cylY(h, 0.64, CFrame.new(0, y, 0), if i % 2 == 0 then obs else obsGloss, "GripSeg")
+				b:cylY(h - 0.14, 0.68, CFrame.new(0, y, 0), obsEdge, "GripSegBulge")
 			end
-			for i, y in { 1.06, 0.36, -0.36 } do
+			for i, y in { 0.92, 0.28, -0.38 } do
 				if i == 2 then
-					table.insert(glowParts, b:cylY(0.1, 0.54, CFrame.new(0, y, 0), neon, "GripGlow"))
-					b:cylY(0.04, 0.62, CFrame.new(0, y + 0.07, 0), steelEdge, "GripRingLip")
-					b:cylY(0.04, 0.62, CFrame.new(0, y - 0.07, 0), steelEdge, "GripRingLip")
+					table.insert(glowParts, b:cylY(0.1, 0.62, CFrame.new(0, y, 0), neon, "GripGlow"))
+					b:cylY(0.04, 0.7, CFrame.new(0, y + 0.07, 0), steelEdge, "GripRingLip")
+					b:cylY(0.04, 0.7, CFrame.new(0, y - 0.07, 0), steelEdge, "GripRingLip")
 				else
-					b:cylY(0.1, 0.6, CFrame.new(0, y, 0), steel, "GripRing")
+					b:cylY(0.1, 0.7, CFrame.new(0, y, 0), steel, "GripRing")
 				end
 			end
-			table.insert(glowParts, b:cylY(0.08, 0.56, CFrame.new(0, -1.11, 0), neon, "GripGlow"))
+			table.insert(glowParts, b:cylY(0.08, 0.64, CFrame.new(0, -1.03, 0), neon, "GripGlow"))
 		end)
 
 		-- ── pomo erizado ────────────────────────────────────────
 		local floatParts = {}
-		local py = A.PommelY - 0.08
+		local py = A.PommelY + 0.08
 		b:group("Pommel", function()
-			b:bevelBox(Vector3.new(0.78, 0.46, 0.78), CFrame.new(0, py, 0), steelDark, 0.2, { edges = "Y", edgeStyle = steel, name = "Pommel" })
-			b:cylY(0.08, 0.84, CFrame.new(0, py + 0.2, 0), steel, "PommelBand")
-			for i = 0, 3 do
-				local a = math.pi / 2 * i + math.pi / 4
+			b:bevelBox(Vector3.new(0.86, 0.5, 0.86), CFrame.new(0, py, 0), steelDark, 0.22, { edges = "Y", edgeStyle = steel, name = "Pommel" })
+			b:cylY(0.09, 0.94, CFrame.new(0, py + 0.22, 0), steel, "PommelBand")
+			table.insert(glowParts, b:cylY(0.06, 0.8, CFrame.new(0, py + 0.12, 0), neon, "PommelGlow"))
+			-- corona de cristales: 6 grandes hacia afuera/abajo + 3 chicos hacia abajo
+			for i = 0, 5 do
+				local a = math.pi / 3 * i + math.pi / 6
 				local d = Vector3.new(math.cos(a), 0, math.sin(a))
-				shard(Vector3.new(0, py - 0.05, 0) + d * 0.36, d + Vector3.new(0, -0.5, 0), 0.56, 0.26, 3, i % 2 == 0, true)
-				b:rivet(Vector3.new(math.cos(a - math.pi / 4) * 0.4, py + 0.02, math.sin(a - math.pi / 4) * 0.4), 0.12, steelEdge)
+				shard(Vector3.new(0, py - 0.04, 0) + d * 0.4, d + Vector3.new(0, -0.45, 0), 0.78, 0.36, 3, i % 2 == 0)
+				b:rivet(Vector3.new(math.cos(a + math.pi / 6) * 0.44, py + 0.02, math.sin(a + math.pi / 6) * 0.44), 0.12, steelEdge)
 			end
-			b:cylY(0.12, 0.52, CFrame.new(0, py - 0.28, 0), steel, "PommelCap")
+			b:cylY(0.12, 0.56, CFrame.new(0, py - 0.3, 0), steel, "PommelCap")
 			-- cristal flotante que gira bajo el pomo (bipirámide)
-			local fy = py - 0.66
-			for _, p in b:gem(CFrame.new(0, fy, 0), 0.26, crystalLight, neonHot) do
+			local fy = py - 0.8
+			for _, p in b:gem(CFrame.new(0, fy, 0), 0.3, crystalLight, neonHot) do
 				table.insert(floatParts, p)
 			end
 		end)
-		b:animate(floatParts, CFrame.new(0, py - 0.66, 0), { Spin = Vector3.new(0, 1.4, 0), Bob = Vector3.new(0, 0.06, 0), BobSpeed = 0.6 })
+		b:animate(floatParts, CFrame.new(0, py - 0.8, 0), { Spin = Vector3.new(0, 1.4, 0), Bob = Vector3.new(0, 0.06, 0), BobSpeed = 0.6 })
 
 		-- ── pulsos ──────────────────────────────────────────────
 		b:pulse(crackParts, 0, 0.55, 0.7)
@@ -223,14 +238,21 @@ return {
 			local motes = B.Particles.orb(purple, 7)
 			motes.Size = B.seq(0, 0, 0.3, 0.28, 1, 0)
 			b:emitter(v, motes, "VoidMotes")
-			b:emitter(v, B.Particles.sparkle(P.rgb(200, 120, 255), 8), "VoidSparkle")
+			b:emitter(v, B.Particles.sparkle(P.rgb(200, 120, 255), 6), "VoidSparkle")
+			-- brasas moradas que suben de las juntas de los remates
+			B.both(function(sx)
+				local emb = B.Particles.ember(P.rgb(176, 70, 255), 5)
+				emb.Size = B.seq(0, 0.16, 1, 0)
+				emb.Speed = NumberRange.new(0.6, 1.6)
+				b:emitter(b:fxVolume(Vector3.new(EW, EH * 0.8, ED), CFrame.new(sx * ex, headY, 0), "EmberVolume"), emb, "VoidEmbers")
+			end)
 			local wisp = B.Particles.smoke(P.rgb(70, 20, 110), 3)
 			wisp.LightEmission = 0.4
 			wisp.Size = B.seq(0, 0.5, 1, 1.4)
 			b:emitter(v, wisp, "VoidWisp")
 		end)
-		b:light(Vector3.new(0, headY, 0), purple, 1.6, 10, { pulse = { 0.9, 2.2 }, pulseSpeed = 0.7, name = "VoidGlow" })
-		b:light(Vector3.new(0, py - 0.66, 0), P.rgb(200, 120, 255), 0.6, 4, { pulse = { 0.3, 0.9 }, pulseSpeed = 0.7, name = "PommelGlow" })
+		b:light(Vector3.new(0, headY, 0), purple, 2.4, 12, { pulse = { 1.4, 3.2 }, pulseSpeed = 0.7, name = "VoidGlow" })
+		b:light(Vector3.new(0, py - 0.8, 0), P.rgb(200, 120, 255), 0.6, 4, { pulse = { 0.3, 0.9 }, pulseSpeed = 0.7, name = "PommelGlow" })
 
 		local chips = B.Particles.sparkle(P.rgb(60, 40, 80), 0)
 		chips.Texture = B.Textures.FireSparks
