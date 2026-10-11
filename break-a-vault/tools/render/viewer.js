@@ -116,7 +116,7 @@ function materialFor(p, unique) {
 function wedgeGeometry(sx, sy, sz) {
   const x = sx / 2, y = sy / 2, z = sz / 2;
   const A = [-x, -y, -z], B = [-x, -y, z], C = [-x, y, z], D = [x, -y, -z], E = [x, -y, z], F = [x, y, z];
-  const tris = [A, C, B, D, E, F, A, B, E, A, E, D, B, C, F, B, F, E, A, D, F, A, F, C];
+  const tris = [A, B, C, D, F, E, A, E, B, A, D, E, B, F, C, B, E, F, A, F, D, A, C, F];
   const pos = new Float32Array(tris.flat());
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));

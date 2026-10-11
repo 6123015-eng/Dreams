@@ -681,12 +681,14 @@ function Builder:bevelBox(size: Vector3, cf: CFrame | Vector3, style: Style?, be
 	local o = opts or {}
 	local base = toCF(cf)
 	local sx, sy, sz = size.X, size.Y, size.Z
-	local c = bevel or math.min(sx, sy, sz) * 0.12
-	c = math.min(c, math.min(sx, sy, sz) * 0.45)
+	local mode = o.edges or "all"
+	-- el chaflán solo depende de las dimensiones perpendiculares a las aristas biseladas
+	local cross = if mode == "X" then math.min(sy, sz) elseif mode == "Y" then math.min(sx, sz) elseif mode == "Z" then math.min(sx, sy) else math.min(sx, sy, sz)
+	local c = bevel or cross * 0.12
+	c = math.min(c, cross * 0.45)
 	local d = c * math.sqrt(2)
 	local es = o.edgeStyle or style
 	local name = o.name or "Block"
-	local mode = o.edges or "all"
 	local parts = {}
 	local q = math.pi / 4
 
@@ -1087,6 +1089,9 @@ function Builder:emitter(at: any, props: { [string]: any }, name: string?): Part
 	local e = Instance.new("ParticleEmitter")
 	e.Name = name or "Emitter"
 	for k, v in props do
+		if k == "EmitCount" then
+			continue -- no es propiedad de Roblox: la usa impact() para FX_Emit
+		end
 		local value = v
 		if self.scale ~= 1 then
 			if k == "Size" then

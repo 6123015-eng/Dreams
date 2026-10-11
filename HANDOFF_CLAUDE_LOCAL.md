@@ -15,12 +15,27 @@
 - [x] Fábrica de martillos (`HammerForge`: Builder, Palette, FX, init) + build con Lune + visor 3D
 - [x] Guía de modelado: `break-a-vault/docs/MODELING_GUIDE.md`
 - [x] Rusty Hammer (primera versión de referencia)
-- [ ] Martillos Starter (4) · Uncommon (4)
-- [ ] Martillos Rare (4) · Epic (4)
-- [ ] Martillos Legendary (4) · Mythic (4)
-- [ ] Martillos Special & Event (8)
-- [ ] Archivo final `break-a-vault/dist/BreakAVault_Hammers.rbxm`
-- [ ] Vista previa 3D publicada
+- [x] Martillos Starter (4) · Uncommon (4)
+- [x] Martillos Rare (4) · Epic (4)
+- [x] Martillos Legendary (4) · Mythic (4)
+- [x] Martillos Special & Event (8)
+- [x] Revisión de director de arte + pulido de los 11 más flojos
+- [x] `break-a-vault/dist/BreakAVault_Hammers.rbxm` y `BreakAVault_Showcase.rbxl` (los 32)
+- [x] Vista previa 3D publicada: https://claude.ai/artifact/KduHYx4Kbo2tj8xkSAAugN
+- [ ] Mangos más gruesos y chaparros en todos (en curso en la nube; si no aparece el commit
+      "Mango <Id>" en un martillo, hazlo tú: ver "Pendientes de calidad")
+
+## Pendientes de calidad (si la nube no alcanzó)
+
+1. **Mangos**: casi todos usan el agarre estándar (diámetro ~0.36–0.42), delgado y largo comparado
+   con los conceptos. Objetivo: diámetro visible 0.55–0.65, ~10–15 % más corto (subir el pomo) y pomo
+   ~1.3× más grande. Escala juntos el mango, vendas/anillos, collar y pomo de cada martillo.
+2. **Thunder Core (Mythic) vs Shock Hammer (Epic)** comparten jaula de rayos, agarre azul y paleta.
+   A Thunder Core le falta una firma más grande: orbe central más brillante con anillo giratorio y
+   rayos más gruesos; a Shock Hammer se le pueden bajar un poco los rayos.
+3. **Revisar en Studio** (el visor es una aproximación): colores de mármol/oro/vidrio, que las formas
+   hechas con WedgeParts (picos, alas, flamas, coronas, franjas) no salgan invertidas, y el brillo del
+   neón con BloomEffect.
 
 ## Qué es esto
 

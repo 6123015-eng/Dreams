@@ -3,3 +3,4 @@ node_modules/
 .DS_Store
 break-a-vault/tools/render/out/
 break-a-vault/dist/check_*.json
+break-a-vault/dist/hammers.json
