@@ -182,48 +182,52 @@ return {
 		end)
 
 		-- ── mango (grueso y corto) ──────────────────────────────
+		local K = 1.22 -- escala radial del mango (agarre ~0.73 de diámetro, como el concepto)
+		local gripBottom = -0.96 -- fondo del agarre (mango ~12% más corto)
 		b:group("Shaft", function()
 			local top = headY - CH / 2
-			local bottom = A.ShaftBottom + 0.15
-			b:cylY(top - bottom, 0.46, CFrame.new(0, (top + bottom) / 2, 0), goldDeep, "ShaftCore")
+			local bottom = gripBottom - 0.1
+			b:cylY(top - bottom, 0.56 * K, CFrame.new(0, (top + bottom) / 2, 0), goldDeep, "ShaftCore")
 			-- cuello de oro bajo la cabeza
-			local cy = top - 0.24
-			b:bevelBox(Vector3.new(0.84, 0.42, 0.84), CFrame.new(0, cy, 0), gold, 0.18, { edges = "Y", edgeStyle = goldPale, name = "Collar" })
-			b:cylY(0.1, 0.76, CFrame.new(0, cy - 0.26, 0), goldDark, "CollarLip")
-			b:cylY(0.1, 0.68, CFrame.new(0, cy - 0.35, 0), goldPale, "CollarRing")
+			local cy = top - 0.26
+			b:bevelBox(Vector3.new(0.86 * K, 0.46, 0.86 * K), CFrame.new(0, cy, 0), gold, 0.18 * K, { edges = "Y", edgeStyle = goldPale, name = "Collar" })
+			b:cylY(0.12, 0.78 * K, CFrame.new(0, cy - 0.28, 0), goldDark, "CollarLip")
+			b:cylY(0.12, 0.7 * K, CFrame.new(0, cy - 0.38, 0), goldPale, "CollarRing")
 			for i = 0, 3 do
 				local a = math.pi / 2 * i + math.pi / 4
-				b:rivet(Vector3.new(math.cos(a) * 0.35, cy, math.sin(a) * 0.35), 0.14, goldPale)
+				b:rivet(Vector3.new(math.cos(a) * 0.36 * K, cy, math.sin(a) * 0.36 * K), 0.15, goldPale)
 			end
 			-- agarre negro con espiral y anillos de oro
-			local g0, g1 = -0.98, 1.42
-			b:cylY(g1 - g0, 0.6, CFrame.new(0, (g0 + g1) / 2, 0), grip, "Grip")
-			local n = 7
+			local g0, g1 = gripBottom, 1.36
+			b:cylY(g1 - g0, 0.6 * K, CFrame.new(0, (g0 + g1) / 2, 0), grip, "Grip")
+			local n = 6
 			local step = (g1 - g0) / n
 			for i = 0, n - 1 do
 				local tilt = if i % 2 == 0 then 0.2 else -0.2
-				b:cylY(step * 0.9, 0.66, CFrame.new(0, g0 + step * (i + 0.5), 0) * CFrame.Angles(0, i * 0.8, 0) * CFrame.Angles(tilt, 0, 0), gripWrap, "GripWrap")
+				b:cylY(step * 0.9, 0.66 * K, CFrame.new(0, g0 + step * (i + 0.5), 0) * CFrame.Angles(0, i * 0.8, 0) * CFrame.Angles(tilt, 0, 0), gripWrap, "GripWrap")
 			end
 			for _, y in { g0, g1, 0.2 } do
-				b:cylY(0.14, 0.72, CFrame.new(0, y, 0), gold, "GripRing")
-				b:cylY(0.05, 0.76, CFrame.new(0, y, 0), goldPale, "GripRingLip")
+				b:cylY(0.16, 0.74 * K, CFrame.new(0, y, 0), gold, "GripRing")
+				b:cylY(0.06, 0.78 * K, CFrame.new(0, y, 0), goldPale, "GripRingLip")
 			end
 		end)
 
-		-- ── pomo (1.3x) ─────────────────────────────────────────
+		-- ── pomo (más ancho, pegado al agarre) ──────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY + 0.02
-			b:bevelBox(Vector3.new(1.04, 0.6, 1.04), CFrame.new(0, y, 0), gold, 0.26, { edges = "Y", edgeStyle = goldPale, name = "Pommel" })
-			b:cylY(0.08, 1.08, CFrame.new(0, y + 0.26, 0), goldDeep, "PommelBand")
-			b:bevelBox(Vector3.new(0.8, 0.16, 0.8), CFrame.new(0, y - 0.37, 0), goldDeep, 0.2, { edges = "Y", edgeStyle = gold, name = "PommelCap" })
+			local PK = 1.32
+			local ph = 0.66
+			local y = gripBottom - 0.06 - ph / 2
+			b:bevelBox(Vector3.new(1.04 * PK, ph, 1.04 * PK), CFrame.new(0, y, 0), gold, 0.26 * PK, { edges = "Y", edgeStyle = goldPale, name = "Pommel" })
+			b:cylY(0.1, 1.08 * PK, CFrame.new(0, y + ph / 2 - 0.06, 0), goldDeep, "PommelBand")
+			b:bevelBox(Vector3.new(0.8 * PK, 0.14, 0.8 * PK), CFrame.new(0, y - ph / 2 - 0.04, 0), goldDeep, 0.2 * PK, { edges = "Y", edgeStyle = gold, name = "PommelCap" })
 			for i = 0, 3 do
 				local a = math.pi / 2 * i
-				b:ball(0.32, Vector3.new(math.cos(a) * 0.52, y, math.sin(a) * 0.52), goldPale, "Stud")
+				b:ball(0.36, Vector3.new(math.cos(a) * 0.52 * PK, y, math.sin(a) * 0.52 * PK), goldPale, "Stud")
 				local a2 = a + math.pi / 4
-				b:rivet(Vector3.new(math.cos(a2) * 0.44, y + 0.15, math.sin(a2) * 0.44), 0.13, goldPale)
-				b:rivet(Vector3.new(math.cos(a2) * 0.44, y - 0.15, math.sin(a2) * 0.44), 0.13, goldPale)
+				b:rivet(Vector3.new(math.cos(a2) * 0.44 * PK, y + 0.15, math.sin(a2) * 0.44 * PK), 0.15, goldPale)
+				b:rivet(Vector3.new(math.cos(a2) * 0.44 * PK, y - 0.15, math.sin(a2) * 0.44 * PK), 0.15, goldPale)
 			end
-			b:gem(CFrame.new(0, y - 0.52, 0), 0.24, goldPale, neonHot)
+			b:gem(CFrame.new(0, y - ph / 2 - 0.14, 0), 0.24, goldPale, neonHot)
 		end)
 
 		-- ── animación ───────────────────────────────────────────
