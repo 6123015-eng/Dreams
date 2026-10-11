@@ -38,7 +38,8 @@ return {
 		local glass = P.glass(P.rgb(150, 210, 255), 0.6)
 		local glassBlue = P.glass(P.rgb(60, 150, 255), 0.35)
 		local arcCore = P.neon(P.rgb(205, 238, 255))
-		local arcGlow = P.neon(P.rgb(50, 140, 255), 0.62)
+		local arcGlow = P.neon(P.rgb(70, 160, 255), 0.45)
+		local field = P.forcefield(P.rgb(120, 200, 255), 0.25)
 
 		-- ── medidas ────────────────────────────────────────────
 		local CW, CH, CD = 1.5, 2.0, 1.9 -- bloque central
@@ -71,43 +72,46 @@ return {
 				for i = 0, 3 do
 					local a = i * math.pi / 2
 					local d = Vector3.new(math.cos(a), math.sin(a), 0)
-					local len = if i % 2 == 0 then 0.24 else 0.34
-					local r0 = 0.62
+					local len = if i % 2 == 0 then 0.14 else 0.28
+					local r0 = 0.7
 					local mid = d * (r0 + len / 2)
 					local sz = if i % 2 == 0 then Vector3.new(len, 0.3, 0.12) else Vector3.new(0.3, len, 0.12)
 					b:box(sz, face * CFrame.new(mid.X, mid.Y, 0.1), brass, "Clamp")
 					b:box(sz + Vector3.new(-0.08, -0.08, 0.02), face * CFrame.new(mid.X, mid.Y, 0.12), neon, "ClampLed")
 					b:rivet(face:PointToWorldSpace(Vector3.new(d.X * (r0 + len + 0.02), d.Y * (r0 + len + 0.02), 0.08)), 0.1, brassEdge)
 				end
-				-- aro de latón grueso + bisel interior claro
-				local rcf = face * CFrame.new(0, 0, 0.13) * CFrame.Angles(math.pi / 2, 0, 0)
-				b:ring(rcf, 0.56, 0.16, 14, brass, "CoreRing", 0.16)
+				-- aro de latón grueso + bisel interior claro (más grande: el núcleo es la firma Mythic)
+				local rcf = face * CFrame.new(0, 0, 0.14) * CFrame.Angles(math.pi / 2, 0, 0)
+				b:ring(rcf, 0.62, 0.18, 12, brass, "CoreRing", 0.2)
 				-- fondo de la cámara: disco negro + anillo de luz azul alrededor del orbe
-				b:cylZ(0.08, 0.98, face * CFrame.new(0, 0, 0.07), P.Blackened, "CoreWell")
-				local wl = b:cylZ(0.04, 0.88, face * CFrame.new(0, 0, 0.12), well, "CoreWellGlow")
+				b:cylZ(0.08, 1.12, face * CFrame.new(0, 0, 0.07), P.Blackened, "CoreWell")
+				local wl = b:cylZ(0.04, 1.02, face * CFrame.new(0, 0, 0.12), well, "CoreWellGlow")
 				b:pulse({ wl }, 0.2, 0.6, 3, 0.1)
-				-- orbe: núcleo blanco + neón azul + cáscara de campo de fuerza
-				local ocf = face * CFrame.new(0, 0, 0.1)
-				local orb = b:ball(0.72, ocf, neon, "CoreOrb")
-				local hot = b:ball(0.48, ocf * CFrame.new(0, 0, 0.14), neonWhite, "CoreHot")
-				local sh = b:ball(0.9, ocf, shell, "CoreShell")
-				b:pulse({ orb }, 0, 0.3, 3, if s > 0 then 0 else 0.15)
-				b:pulse({ sh }, 0.6, 0.85, 1.5)
-				b:pulse({ hot }, 0, 0.35, 6)
-				-- anillo de energía en tres arcos (gira)
+				-- orbe GRANDE que sobresale de la cara: núcleo blanco + neón azul + vidrio + campo de fuerza
+				local ocf = face * CFrame.new(0, 0, 0.2)
+				local orb = b:ball(0.94, ocf, neon, "CoreOrb")
+				local hot = b:ball(0.62, ocf * CFrame.new(0, 0, 0.2), neonWhite, "CoreHot")
+				local gl = b:ball(1.08, ocf, shell, "CoreGlass")
+				local sh = b:ball(1.24, ocf, field, "CoreShell")
+				b:pulse({ orb }, 0, 0.25, 3, if s > 0 then 0 else 0.15)
+				b:pulse({ gl }, 0.55, 0.8, 1.5)
+				b:pulse({ sh }, 0.1, 0.6, 2.2)
+				b:pulse({ hot }, 0, 0.3, 6)
+				-- anillo de energía grueso en tres arcos alrededor del orbe (gira rápido)
 				local spin = {}
+				local er = 0.9
 				for k = 0, 2 do
 					local a0 = k * TAU / 3
-					for j = 0, 2 do
-						local a = a0 + j * 0.32
-						local p = face * CFrame.new(math.cos(a) * 0.82, math.sin(a) * 0.82, 0.24) * CFrame.Angles(0, 0, a)
-						table.insert(spin, b:box(Vector3.new(0.06, 0.29, 0.06), p, if j == 1 then neonWhite else neonHot, "EnergyArc"))
+					for j = 0, 3 do
+						local a = a0 + j * 0.36
+						local p = face * CFrame.new(math.cos(a) * er, math.sin(a) * er, 0.4) * CFrame.Angles(0, 0, a)
+						table.insert(spin, b:box(Vector3.new(0.13, 0.34, 0.13), p, if j == 1 or j == 2 then neonWhite else neonHot, "EnergyArc"))
 					end
 				end
-				b:animate(spin, face * CFrame.new(0, 0, 0.24), { Spin = Vector3.new(0, 0, 1.8 * s) })
+				b:animate(spin, face * CFrame.new(0, 0, 0.4), { Spin = Vector3.new(0, 0, 2.4 * s) })
 				-- aro giroscopio inclinado sobre el orbe (precesa)
-				local gyro = b:ring(face * CFrame.new(0, 0, 0.12) * CFrame.Angles(math.rad(62), 0, 0), 0.52, 0.04, 10, neonHot, "GyroRing", 0.04)
-				b:animate(gyro, face * CFrame.new(0, 0, 0.12), { Spin = Vector3.new(0, 0, -2.6 * s) })
+				local gyro = b:ring(face * CFrame.new(0, 0, 0.2) * CFrame.Angles(math.rad(62), 0, 0), 0.7, 0.05, 8, neonHot, "GyroRing", 0.05)
+				b:animate(gyro, face * CFrame.new(0, 0, 0.2), { Spin = Vector3.new(0, 0, -2.6 * s) })
 				-- tiras de neón verticales a los lados de la cámara
 				for _, sx in { 1, -1 } do
 					b:box(Vector3.new(0.07, 1.1, 0.05), face * CFrame.new(sx * 0.67, 0, 0.09), neon, "SideLed")
@@ -195,9 +199,9 @@ return {
 						a0, a1 = math.pi - d[3], math.pi - d[4]
 					end
 					local pts = arcPoints(cx, headY, d[1], d[2], a0, a1, 5, 0.28, d[5] + (if sx > 0 then 0 else 100))
-					b:polyline(pts, 0.05, 0.05, arcCore, Vector3.zAxis, false, "Arc")
+					b:polyline(pts, 0.08, 0.08, arcCore, Vector3.zAxis, false, "Arc")
 					if d[6] then
-						b:polyline(pts, 0.13, 0.13, arcGlow, Vector3.zAxis, false, "ArcGlow")
+						b:polyline(pts, 0.2, 0.2, arcGlow, Vector3.zAxis, false, "ArcGlow")
 					end
 				end
 				-- rayo que salta del núcleo al remate por arriba
@@ -207,57 +211,62 @@ return {
 						top[i] = p + Vector3.new(0, 0.32, 0)
 					end
 				end
-				b:polyline(top, 0.05, 0.05, arcCore, Vector3.zAxis, false, "Arc")
-				b:polyline(top, 0.12, 0.12, arcGlow, Vector3.zAxis, false, "ArcGlow")
+				b:polyline(top, 0.08, 0.08, arcCore, Vector3.zAxis, false, "Arc")
+				b:polyline(top, 0.2, 0.2, arcGlow, Vector3.zAxis, false, "ArcGlow")
 			end)
-			b:flicker(folder, if sx > 0 then 15 else 12, 0.55)
+			b:flicker(folder, if sx > 0 then 18 else 14, 0.5)
 		end)
 
-		-- ── mango ───────────────────────────────────────────────
+		-- ── mango (grueso y corto) ──────────────────────────────
+		local K = 1.25 -- escala radial del mango (agarre ~0.68 chunky como el concepto)
+		local g0, g1 = -0.92, 1.92 -- agarre (mango más corto)
 		b:group("Shaft", function()
 			local top = headY - CH / 2
-			local bottom = A.ShaftBottom
 			-- collar de bronce octagonal escalonado con banda de neón
-			b:bevelBox(Vector3.new(0.86, 0.22, 0.86), CFrame.new(0, top - 0.11, 0), brass, 0.2, { edges = "Y", edgeStyle = brassEdge, name = "Collar" })
-			b:cylY(0.08, 0.72, CFrame.new(0, top - 0.26, 0), neon, "CollarNeon")
-			b:bevelBox(Vector3.new(0.7, 0.2, 0.7), CFrame.new(0, top - 0.4, 0), plate, 0.16, { edges = "Y", edgeStyle = plateEdge, name = "CollarLow" })
+			b:bevelBox(Vector3.new(0.86 * K, 0.24, 0.86 * K), CFrame.new(0, top - 0.12, 0), brass, 0.2 * K, { edges = "Y", edgeStyle = brassEdge, name = "Collar" })
+			b:cylY(0.1, 0.72 * K, CFrame.new(0, top - 0.28, 0), neon, "CollarNeon")
+			b:bevelBox(Vector3.new(0.7 * K, 0.2, 0.7 * K), CFrame.new(0, top - 0.42, 0), plate, 0.16 * K, { edges = "Y", edgeStyle = plateEdge, name = "CollarLow" })
 			for i = 0, 3 do
 				local a = TAU * i / 4
-				b:rivet(Vector3.new(math.cos(a) * 0.43, top - 0.11, math.sin(a) * 0.43), 0.1, brassEdge)
+				b:rivet(Vector3.new(math.cos(a) * 0.43 * K, top - 0.12, math.sin(a) * 0.43 * K), 0.12, brassEdge)
 			end
 			-- eje
-			b:cylY(top - bottom - 0.4, 0.4, CFrame.new(0, (top + bottom) / 2 - 0.2, 0), dark, "ShaftCore")
-			-- agarre: segmentos de goma + cinco anillos de neón bajo vidrio
-			local g0, g1 = -1.12, 1.95
+			b:cylY(top - g0, 0.42 * K, CFrame.new(0, (top + g0) / 2, 0), dark, "ShaftCore")
+			-- agarre: segmentos de goma + seis anillos de neón bajo vidrio
 			local n = 5
 			local step = (g1 - g0) / n
 			for i = 0, n - 1 do
 				local y = g0 + step * (i + 0.5)
-				b:cylY(step - 0.12, 0.54, CFrame.new(0, y, 0), rubber, "Grip")
-				b:cylY(step - 0.36, 0.58, CFrame.new(0, y, 0), P.Blackened, "GripPad")
+				b:cylY(step - 0.12, 0.54 * K, CFrame.new(0, y, 0), rubber, "Grip")
+				b:cylY(step - 0.36, 0.58 * K, CFrame.new(0, y, 0), P.Blackened, "GripPad")
 			end
 			for i = 0, n do
 				local y = g0 + step * i
-				local ring = b:cylY(0.12, 0.6, CFrame.new(0, y, 0), neon, "GripNeon")
-				b:cylY(0.16, 0.64, CFrame.new(0, y, 0), glass, "GripGlass")
+				local ring = b:cylY(0.13, 0.6 * K, CFrame.new(0, y, 0), neon, "GripNeon")
+				b:cylY(0.17, 0.64 * K, CFrame.new(0, y, 0), glass, "GripGlass")
 				-- la energía sube por el mango
 				b:pulse({ ring }, 0, 0.6, 1.6, 1 - i * 0.1)
 			end
 		end)
 
-		-- ── pomo ────────────────────────────────────────────────
+		-- ── pomo: collar de bronce octagonal + banda de neón + tapa con brillo ──
 		b:group("Pommel", function()
-			local y = A.PommelY - 0.05
-			b:bevelBox(Vector3.new(0.92, 0.5, 0.92), CFrame.new(0, y, 0), brass, 0.26, { edges = "Y", edgeStyle = brassEdge, name = "Pommel" })
-			b:cylY(0.12, 0.86, CFrame.new(0, y + 0.04, 0), neon, "PommelNeon")
-			b:cylY(0.16, 0.9, CFrame.new(0, y + 0.04, 0), glass, "PommelGlass")
-			b:bevelBox(Vector3.new(0.8, 0.12, 0.8), CFrame.new(0, y + 0.31, 0), brass, 0.22, { edges = "Y", edgeStyle = brassEdge, name = "PommelTop" })
-			b:bevelBox(Vector3.new(0.74, 0.14, 0.74), CFrame.new(0, y - 0.32, 0), dark, 0.2, { edges = "Y", edgeStyle = darkEdge, name = "PommelCap" })
-			b:cylY(0.05, 0.4, CFrame.new(0, y - 0.4, 0), neonHot, "PommelCore")
+			local cy = g0 - 0.22
+			b:bevelBox(Vector3.new(1.18, 0.3, 1.18), CFrame.new(0, cy, 0), plate, 0.32, { edges = "Y", edgeStyle = plateEdge, name = "PommelCollar" })
+			b:bevelBox(Vector3.new(1.0, 0.08, 1.0), CFrame.new(0, cy + 0.18, 0), brass, 0.26, { edges = "Y", edgeStyle = brassEdge, name = "PommelCollarLip" })
 			for i = 0, 3 do
-				local a = TAU * i / 4 + math.pi / 4
-				b:rivet(Vector3.new(math.cos(a) * 0.4, y + 0.2, math.sin(a) * 0.4), 0.1, brassEdge)
+				local a = TAU * i / 4 + TAU / 8
+				b:rivet(Vector3.new(math.cos(a) * 0.55, cy, math.sin(a) * 0.55), 0.11, brassEdge)
 			end
+			local by = g0 - 0.47
+			b:bevelBox(Vector3.new(0.92, 0.26, 0.92), CFrame.new(0, by, 0), dark, 0.24, { edges = "Y", edgeStyle = darkEdge, name = "PommelBody" })
+			local pn = b:cylY(0.12, 0.94, CFrame.new(0, by, 0), neon, "PommelNeon")
+			b:cylY(0.16, 0.98, CFrame.new(0, by, 0), glass, "PommelGlass")
+			b:pulse({ pn }, 0, 0.5, 1.6, 0)
+			local ky = g0 - 0.66
+			b:bevelBox(Vector3.new(1.06, 0.14, 1.06), CFrame.new(0, ky, 0), plate, 0.28, { edges = "Y", edgeStyle = plateEdge, name = "PommelCap" })
+			b:cylY(0.05, 0.62, CFrame.new(0, ky - 0.08, 0), darkMid, "PommelPlate")
+			b:cylY(0.05, 0.4, CFrame.new(0, ky - 0.11, 0), neonHot, "PommelCore")
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
@@ -276,7 +285,7 @@ return {
 			glow.Size = B.seq(0, 0, 0.3, 0.6, 1, 0)
 			b:emitter(core, glow, "CoreGlow")
 		end)
-		b:light(Vector3.new(0, headY, 0), blue, 2.4, 11, { pulse = { 1.4, 3.4 }, pulseSpeed = 3, name = "CoreLight" })
+		b:light(Vector3.new(0, headY, 0), P.rgb(170, 220, 255), 3, 14, { pulse = { 1.8, 4 }, pulseSpeed = 3, name = "CoreLight" })
 		b:light(Vector3.new(faceX + 0.4, headY, 0), blueHot, 1.4, 7, { pulse = { 0.3, 2.2 }, pulseSpeed = 6, name = "ArcLightR" })
 		b:light(Vector3.new(-faceX - 0.4, headY, 0), blueHot, 1.4, 7, { pulse = { 0.3, 2.2 }, pulseSpeed = 7, name = "ArcLightL" })
 
