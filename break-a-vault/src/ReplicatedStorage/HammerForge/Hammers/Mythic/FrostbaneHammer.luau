@@ -240,27 +240,27 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
+		local K = 1.4 -- escala radial del mango (agarre ~0.7 chunky como el concepto)
+		local g0, g1 = -0.92, 1.74 -- agarre (mango más corto)
 		b:group("Shaft", function()
 			local top = headY - CH / 2
-			local bottom = A.ShaftBottom
 			-- collar: anillo de acero octagonal + banda con gemas + escarcha
-			b:bevelBox(Vector3.new(0.86, 0.22, 0.86), CFrame.new(0, top - 0.11, 0), steel, 0.2, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
-			b:bevelBox(Vector3.new(0.7, 0.26, 0.7), CFrame.new(0, top - 0.34, 0), steelDark, 0.16, { edges = "Y", edgeStyle = steel, name = "CollarBand" })
+			b:bevelBox(Vector3.new(0.86 * K, 0.24, 0.86 * K), CFrame.new(0, top - 0.12, 0), steel, 0.2 * K, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
+			b:bevelBox(Vector3.new(0.7 * K, 0.28, 0.7 * K), CFrame.new(0, top - 0.37, 0), steelDark, 0.16 * K, { edges = "Y", edgeStyle = steel, name = "CollarBand" })
 			for i = 0, 3 do
 				local a = TAU * i / 4 + math.pi / 4
-				b:ball(0.12, Vector3.new(math.cos(a) * 0.3, top - 0.34, math.sin(a) * 0.3), neonCyan, "CollarGem")
+				b:ball(0.15, Vector3.new(math.cos(a) * 0.3 * K, top - 0.37, math.sin(a) * 0.3 * K), neonCyan, "CollarGem")
 			end
-			b:cylY(0.08, 0.6, CFrame.new(0, top - 0.52, 0), steelEdge, "CollarLip")
+			b:cylY(0.1, 0.6 * K, CFrame.new(0, top - 0.56, 0), steelEdge, "CollarLip")
 			-- eje
-			b:cylY(top - bottom - 0.4, 0.4, CFrame.new(0, (top + bottom) / 2 - 0.2, 0), steelDark, "ShaftCore")
+			b:cylY(top - g0, 0.42 * K, CFrame.new(0, (top + g0) / 2, 0), steelDark, "ShaftCore")
 			-- agarre de cuero azul noche
-			local g0, g1 = -1.0, 1.78
-			b:cylY(g1 - g0, 0.5, CFrame.new(0, (g0 + g1) / 2, 0), leather, "Grip")
+			b:cylY(g1 - g0, 0.5 * K, CFrame.new(0, (g0 + g1) / 2, 0), leather, "Grip")
 			-- correas plateadas cruzadas (dos hélices en sentidos opuestos)
 			local function helix(dirSign: number, phase: number, st)
 				local turns, per = 2, 5
 				local n = turns * per
-				local r = 0.25
+				local r = 0.25 * K
 				local height = g1 - g0
 				local circ = TAU * r
 				local pitch = height / turns
@@ -270,36 +270,37 @@ return {
 					local t = (i + 0.5) / n
 					local th = phase + dirSign * TAU * turns * t
 					local y = g0 + height * t
-					b:box(Vector3.new(0.05, 0.11, segLen), CFrame.new(0, y, 0) * CFrame.Angles(0, -th, 0) * CFrame.new(r + 0.02, 0, 0) * CFrame.Angles(-dirSign * alpha, 0, 0), st, "Strap")
+					b:box(Vector3.new(0.06, 0.14, segLen), CFrame.new(0, y, 0) * CFrame.Angles(0, -th, 0) * CFrame.new(r + 0.025, 0, 0) * CFrame.Angles(-dirSign * alpha, 0, 0), st, "Strap")
 				end
 			end
 			helix(1, 0, strap)
 			helix(-1, math.pi, strapDark)
 			-- anillos de neón bajo vidrio en los extremos del agarre
 			for i, y in { g0 - 0.04, g1 + 0.04 } do
-				local r = b:cylY(0.08, 0.58, CFrame.new(0, y, 0), neonCyan, "GripNeon")
-				b:cylY(0.14, 0.62, CFrame.new(0, y, 0), glass, "GripGlass")
+				local r = b:cylY(0.09, 0.58 * K, CFrame.new(0, y, 0), neonCyan, "GripNeon")
+				b:cylY(0.16, 0.62 * K, CFrame.new(0, y, 0), glass, "GripGlass")
 				b:pulse(r, 0, 0.5, 1.1, i * 0.4)
-				b:cylY(0.06, 0.6, CFrame.new(0, y + (if i == 1 then -0.11 else 0.11), 0), steel, "GripRing")
+				b:cylY(0.07, 0.6 * K, CFrame.new(0, y + (if i == 1 then -0.12 else 0.12), 0), steel, "GripRing")
 			end
 		end)
 
-		-- ── pomo ────────────────────────────────────────────────
+		-- ── pomo (1.3x, pegado al agarre) ───────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY
-			b:bevelBox(Vector3.new(0.66, 0.14, 0.66), CFrame.new(0, y + 0.22, 0), steelDark, 0.14, { edges = "Y", edgeStyle = steel, name = "PommelNeck" })
-			b:bevelBox(Vector3.new(0.9, 0.28, 0.9), CFrame.new(0, y + 0.02, 0), steel, 0.24, { edges = "Y", edgeStyle = steelEdge, name = "PommelCup" })
-			b:cylY(0.06, 0.78, CFrame.new(0, y - 0.13, 0), steelEdge, "PommelRim")
+			local PK = 1.3
+			local y = g0 - 0.08 - 0.29 * PK
+			b:bevelBox(Vector3.new(0.66 * PK, 0.14 * PK, 0.66 * PK), CFrame.new(0, y + 0.22 * PK, 0), steelDark, 0.14 * PK, { edges = "Y", edgeStyle = steel, name = "PommelNeck" })
+			b:bevelBox(Vector3.new(0.9 * PK, 0.28 * PK, 0.9 * PK), CFrame.new(0, y + 0.02 * PK, 0), steel, 0.24 * PK, { edges = "Y", edgeStyle = steelEdge, name = "PommelCup" })
+			b:cylY(0.08, 0.78 * PK, CFrame.new(0, y - 0.13 * PK, 0), steelEdge, "PommelRim")
 			for i = 0, 3 do
 				local a = TAU * i / 4 + math.pi / 4
-				b:ball(0.12, Vector3.new(math.cos(a) * 0.37, y + 0.02, math.sin(a) * 0.37), neonCyan, "PommelGem")
+				b:ball(0.15, Vector3.new(math.cos(a) * 0.37 * PK, y + 0.02 * PK, math.sin(a) * 0.37 * PK), neonCyan, "PommelGem")
 			end
-			-- gran gema azul (corona dentro de la copa + pabellón facetado hacia abajo)
-			local gy = y - 0.14
-			b:pyramid(CFrame.new(0, gy, 0) * CFrame.Angles(math.pi, 0, 0), 0.82, 0.8, 6, iceDeep, "PommelGem")
-			b:cylY(0.1, 0.84, CFrame.new(0, gy + 0.02, 0), iceDeep, "PommelGemTable")
-			local gc = b:ball(0.4, CFrame.new(0, gy - 0.2, 0), iceCore, "PommelGemCore")
-			b:ball(0.18, CFrame.new(0, gy - 0.24, 0), neonHot, "PommelGemSpark")
+			-- gran gema azul (corona dentro de la copa + pabellón facetado hacia abajo, más rechoncho)
+			local gy = y - 0.14 * PK
+			b:pyramid(CFrame.new(0, gy, 0) * CFrame.Angles(math.pi, 0, 0), 0.66, 0.8 * PK, 6, iceDeep, "PommelGem")
+			b:cylY(0.12, 0.84 * PK, CFrame.new(0, gy + 0.02, 0), iceDeep, "PommelGemTable")
+			local gc = b:ball(0.46, CFrame.new(0, gy - 0.18, 0), iceCore, "PommelGemCore")
+			b:ball(0.2, CFrame.new(0, gy - 0.22, 0), neonHot, "PommelGemSpark")
 			b:pulse(gc, 0.05, 0.5, 0.8, 0.3)
 		end)
 
