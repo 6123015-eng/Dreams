@@ -1,7 +1,9 @@
--- Steel Sledge (Uncommon) — mazo de acero grande y biselado: bloque central de acero cepillado con
--- placa en relieve, filetes de cromo y rayones de uso; tapas laterales más oscuras y más grandes,
--- separadas por una junta negra, con placas remachadas y caras de golpe enmarcadas con un tope pulido.
--- Mango: casquillo remachado bajo la cabeza, anillo de acero, agarre negro acanalado y pomo octagonal.
+-- Steel Sledge (Uncommon) — mazo de acero grande y biselado, con contraste de valores: bloque central de
+-- acero pavonado OSCURO con placa en relieve llena de abolladuras de martillo (huecos oscuros con borde
+-- claro) y filetes de cromo brillante en cada bisel; tapas laterales un tono más claras y más grandes,
+-- separadas por una junta negra, con nichos oscuros para los remaches, y caras de golpe enmarcadas con un
+-- filo de neón azul frío (el brillo sutil del Uncommon) y tope pulido. Mango: casquillo remachado, anillo
+-- de acero, agarre corto y grueso de hule con ranuras hondas, y pomo octagonal grande.
 return {
 	Id = "SteelSledge",
 	DisplayName = "Steel Sledge",
@@ -13,11 +15,14 @@ return {
 		local headY = A.HeadY
 
 		-- materiales
-		local brushed = P.metal(P.rgb(150, 158, 170), 0.16) -- acero cepillado (bloque central)
-		local plateSt = P.metal(P.rgb(146, 154, 166), 0.12) -- placa central, un pelo más clara
+		local brushed = P.metal(P.rgb(70, 76, 88), 0.12) -- acero pavonado oscuro (bloque central)
+		local plateSt = P.metal(P.rgb(88, 94, 106), 0.1) -- placa central, un pelo más clara
 		local chrome = P.Chrome -- filos y brillos de arista
-		local capSt = P.metal(P.rgb(92, 98, 110), 0.1) -- tapas más oscuras
-		local capEdge = P.metal(P.rgb(176, 184, 196), 0.24)
+		local capSt = P.metal(P.rgb(140, 148, 162), 0.14) -- tapas un tono más claras
+		local capEdge = P.metal(P.rgb(206, 214, 226), 0.26)
+		local dentSt = P.metal(P.rgb(46, 50, 60), 0.06)
+		local dentRim = P.metal(P.rgb(150, 158, 172), 0.16)
+		local iceNeon = P.neon(P.rgb(120, 200, 255), 0.6)
 		local dark = P.Blackened
 		local gun = P.metal(P.rgb(58, 62, 72), 0.08)
 		local scratch = P.metal(P.rgb(96, 102, 114), 0.04)
@@ -46,25 +51,22 @@ return {
 
 		b:group("Head", function()
 			-- ── bloque central de acero cepillado
-			b:bevelBox(Vector3.new(CW, CH, CD), CFrame.new(0, headY, 0), brushed, 0.14, { edgeStyle = chrome, name = "Core" })
+			b:bevelBox(Vector3.new(CW, CH, CD), CFrame.new(0, headY, 0), brushed, 0.1, { edgeStyle = chrome, name = "Core" })
 
 			-- placas en relieve sobre ambas caras de emblema, con filete de cromo y rayones
 			local rand = B.rng(7)
 			B.both(function(s)
 				local face = B.faceZ(s, headY, CD / 2)
 				b:bevelBox(Vector3.new(1.24, 1.3, 0.08), face * CFrame.new(0, 0, 0.03), plateSt, 0.035, { edges = "Z", edgeStyle = chrome, name = "FacePlate" })
-				-- rayones finos de acero fresco (más claros)
-				for i = 1, 3 do
-					local x0, y0 = rand(-0.45, 0.3), rand(-0.45, 0.45)
-					local ang = rand(-0.5, 0.5) + (if i == 2 then 2.2 else 0)
-					local len = rand(0.2, 0.36)
-					local p0 = face:PointToWorldSpace(Vector3.new(x0, y0, 0.075))
-					local p1 = face:PointToWorldSpace(Vector3.new(x0 + math.cos(ang) * len, y0 + math.sin(ang) * len, 0.075))
-					b:line(p0, p1, 0.025, 0.04, P.BrightSteel, face.LookVector, "Scratch")
+				-- abolladuras de martillo: hueco oscuro + borde claro (6 por cara, distintas en cada cara)
+				local dents = if s > 0
+					then { { -0.38, 0.4, 0.24 }, { 0.3, 0.46, 0.17 }, { 0.05, 0.02, 0.27 }, { -0.4, -0.3, 0.18 }, { 0.42, -0.18, 0.21 }, { -0.02, -0.48, 0.15 } }
+					else { { 0.36, 0.36, 0.23 }, { -0.3, 0.5, 0.16 }, { -0.12, 0.0, 0.26 }, { 0.4, -0.36, 0.19 }, { -0.42, -0.24, 0.2 }, { 0.1, -0.5, 0.15 } }
+				for _, dn in dents do
+					local dc = face * CFrame.new(dn[1], dn[2], 0.07)
+					b:cylZ(0.04, dn[3] + 0.07, dc, dentRim, "DentRim")
+					b:cylZ(0.04, dn[3], dc * CFrame.new(0, 0, 0.006), dentSt, "Dent")
 				end
-				-- brillo diagonal del cepillado (raya de luz)
-				b:line(face:PointToWorldSpace(Vector3.new(-0.62, 0.42, 0.075)), face:PointToWorldSpace(Vector3.new(-0.2, 0.55, 0.075)), 0.04, 0.04, chrome, face.LookVector, "Glint")
-				b:line(face:PointToWorldSpace(Vector3.new(0.22, -0.55, 0.075)), face:PointToWorldSpace(Vector3.new(0.62, -0.42, 0.075)), 0.04, 0.04, chrome, face.LookVector, "Glint")
 			end)
 
 			-- lomo de cromo arriba y abajo del bloque central
@@ -85,7 +87,9 @@ return {
 				-- placas remachadas en las caras ±Z de cada tapa
 				B.both(function(sz)
 					local face = B.faceZ(sz, headY, capD / 2, cx)
-					b:bevelBox(Vector3.new(0.44, 1.5, 0.07), face * CFrame.new(0, 0, 0.025), gun, 0.03, { edges = "Z", edgeStyle = capEdge, name = "CapPlate" })
+					-- nicho oscuro para los remaches, con borde claro
+					b:box(Vector3.new(0.5, 1.58, 0.06), face * CFrame.new(0, 0, 0.0), capEdge, "CapRecessRim")
+					b:box(Vector3.new(0.38, 1.46, 0.06), face * CFrame.new(0, 0, 0.012), gun, "CapRecess")
 					b:rivet(face:PointToWorldSpace(Vector3.new(0, 0.52, 0.07)), 0.2, rivetSt)
 					b:rivet(face:PointToWorldSpace(Vector3.new(0, 0, 0.07)), 0.14, rivetSt)
 					b:rivet(face:PointToWorldSpace(Vector3.new(0, -0.52, 0.07)), 0.2, rivetSt)
@@ -103,6 +107,11 @@ return {
 					b:box(Vector3.new(fr * 2 + th, th, 0.06), f * CFrame.new(0, sy * fr, 0.02), capEdge, "StrikeFrame")
 					b:box(Vector3.new(th, fr * 2 + th, 0.06), f * CFrame.new(sy * fr, 0, 0.02), capEdge, "StrikeFrame")
 				end
+				-- filo de neón azul frío sobre el marco
+				for _, sy in { 1, -1 } do
+					b:box(Vector3.new(fr * 2 + th, 0.03, 0.04), f * CFrame.new(0, sy * fr, 0.06), iceNeon, "StrikeGlow")
+					b:box(Vector3.new(0.03, fr * 2 + th, 0.04), f * CFrame.new(sy * fr, 0, 0.06), iceNeon, "StrikeGlow")
+				end
 				b:box(Vector3.new(fr * 2 - 0.02, fr * 2 - 0.02, 0.03), f * CFrame.new(0, 0, 0.01), dark, "StrikePanel")
 				b:box(Vector3.new(1.02, 1.02, 0.07), f * CFrame.new(0, 0, 0.035), capEdge, "StrikeBossRim")
 				b:box(Vector3.new(0.9, 0.9, 0.1), f * CFrame.new(0, 0, 0.05), P.BrightSteel, "StrikeBoss")
@@ -113,48 +122,50 @@ return {
 			b:cylY(0.1, 0.7, CFrame.new(0, headY - CH / 2 - 0.02, 0), gun, "EyePlate")
 		end)
 
+		local shaftBottom = A.ShaftBottom + 0.27
 		b:group("Shaft", function()
-			local bottom, top = A.ShaftBottom, headY - CH / 2
-			b:cylY(top - bottom, A.ShaftDia, CFrame.new(0, (top + bottom) / 2, 0), dark, "Shaft")
+			local bottom, top = shaftBottom, headY - CH / 2
+			b:cylY(top - bottom, 0.46, CFrame.new(0, (top + bottom) / 2, 0), dark, "Shaft")
 
 			-- casquillo remachado (socket) bajo la cabeza
-			oct(0.5, 0.7, CFrame.new(0, top - 0.3, 0), gun, "Socket")
-			b:disc(CFrame.new(0, top - 0.04, 0), 0.76, 0.06, capEdge, "SocketLip")
+			oct(0.5, 0.78, CFrame.new(0, top - 0.3, 0), gun, "Socket")
+			b:disc(CFrame.new(0, top - 0.04, 0), 0.84, 0.06, capEdge, "SocketLip")
 			for _, a in { 0, math.pi } do
-				b:rivet(Vector3.new(math.sin(a) * 0.35, top - 0.3, math.cos(a) * 0.35), 0.15, rivetSt)
+				b:rivet(Vector3.new(math.sin(a) * 0.39, top - 0.3, math.cos(a) * 0.39), 0.15, rivetSt)
 			end
 			-- anillo de acero biselado
 			local ry = top - 0.68
-			b:disc(CFrame.new(0, ry, 0), 0.68, 0.16, P.BrightSteel, "SteelRing")
-			b:disc(CFrame.new(0, ry + 0.1, 0), 0.6, 0.05, chrome, "SteelRingLip")
-			b:disc(CFrame.new(0, ry - 0.1, 0), 0.6, 0.05, chrome, "SteelRingLip")
-			b:rivet(Vector3.new(0, ry, 0.34), 0.12, chrome)
-			b:rivet(Vector3.new(0, ry, -0.34), 0.12, chrome)
+			b:disc(CFrame.new(0, ry, 0), 0.76, 0.16, P.BrightSteel, "SteelRing")
+			b:disc(CFrame.new(0, ry + 0.1, 0), 0.68, 0.05, chrome, "SteelRingLip")
+			b:disc(CFrame.new(0, ry - 0.1, 0), 0.68, 0.05, chrome, "SteelRingLip")
+			b:rivet(Vector3.new(0, ry, 0.38), 0.12, chrome)
+			b:rivet(Vector3.new(0, ry, -0.38), 0.12, chrome)
 
-			-- agarre negro acanalado
-			local g0, g1 = -1.05, ry - 0.18
-			b:cylY(g1 - g0, 0.5, CFrame.new(0, (g0 + g1) / 2, 0), rubber, "Grip")
-			local n = 9
+			-- agarre corto y grueso: núcleo hundido + costillas gruesas (ranuras hondas)
+			local g0, g1 = shaftBottom + 0.12, ry - 0.16
+			b:cylY(g1 - g0, 0.5, CFrame.new(0, (g0 + g1) / 2, 0), dark, "GripCore")
+			local n = 7
 			for i = 0, n - 1 do
 				local y = g0 + 0.1 + (g1 - g0 - 0.2) * i / (n - 1)
-				b:disc(CFrame.new(0, y, 0), 0.6, 0.13, rubberRib, "GripRib")
+				b:disc(CFrame.new(0, y, 0), 0.68, 0.17, rubber, "GripRib")
+				b:disc(CFrame.new(0, y + 0.07, 0), 0.62, 0.04, rubberRib, "GripRibTop")
 			end
 		end)
 
 		b:group("Pommel", function()
-			local py = A.PommelY - 0.02
-			b:disc(CFrame.new(0, A.ShaftBottom + 0.12, 0), 0.56, 0.08, chrome, "PommelLip")
-			oct(0.42, 0.74, CFrame.new(0, py, 0), capSt, "Pommel")
-			b:disc(CFrame.new(0, py + 0.24, 0), 0.66, 0.07, capEdge, "PommelBevel")
-			b:disc(CFrame.new(0, py - 0.24, 0), 0.66, 0.07, capEdge, "PommelBevel")
-			b:cylY(0.08, 0.52, CFrame.new(0, py - 0.3, 0), dark, "PommelCap")
-			b:cylY(0.04, 0.24, CFrame.new(0, py - 0.35, 0), chrome, "PommelBoss")
+			local py = shaftBottom - 0.3
+			b:disc(CFrame.new(0, shaftBottom + 0.06, 0), 0.66, 0.08, chrome, "PommelLip")
+			oct(0.5, 0.96, CFrame.new(0, py, 0), capSt, "Pommel")
+			b:disc(CFrame.new(0, py + 0.28, 0), 0.86, 0.08, capEdge, "PommelBevel")
+			b:disc(CFrame.new(0, py - 0.28, 0), 0.86, 0.08, capEdge, "PommelBevel")
+			b:cylY(0.08, 0.66, CFrame.new(0, py - 0.34, 0), dark, "PommelCap")
+			b:cylY(0.04, 0.3, CFrame.new(0, py - 0.39, 0), chrome, "PommelBoss")
 		end)
 
 		-- destello sutil sobre el acero
 		local vol = b:fxVolume(Vector3.new(outerX * 2, capH, capD), CFrame.new(0, headY, 0), "GlintVolume")
-		local glint = B.Particles.sparkle(P.rgb(225, 236, 255), 2)
-		glint.Size = B.seq(0, 0, 0.25, 0.22, 1, 0)
+		local glint = B.Particles.sparkle(P.rgb(200, 228, 255), 3)
+		glint.Size = B.seq(0, 0, 0.25, 0.42, 1, 0)
 		glint.Speed = NumberRange.new(0, 0.1)
 		b:emitter(vol, glint, "SteelGlint")
 
