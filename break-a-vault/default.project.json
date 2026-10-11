@@ -1,0 +1,14 @@
+{
+  "name": "BreakAVault_Hammers",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "HammerForge": { "$path": "src/ReplicatedStorage/HammerForge" }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "$path": "src/StarterPlayer/StarterPlayerScripts"
+      }
+    }
+  }
+}

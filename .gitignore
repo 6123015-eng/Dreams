@@ -2,3 +2,4 @@ node_modules/
 *.log
 .DS_Store
 break-a-vault/tools/render/out/
+break-a-vault/dist/check_*.json

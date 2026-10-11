@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>HammerForge render</title>
+<style>html,body{margin:0;background:#0b1018}canvas{display:block}</style>
+<script type="importmap">
+{ "imports": { "three": "./node_modules/three/build/three.module.js", "three/addons/": "./node_modules/three/examples/jsm/" } }
+</script>
+</head>
+<body>
+<canvas id="c" width="640" height="640"></canvas>
+<script type="module">
+import { buildHammer, createStage, frame } from './viewer.js';
+
+const canvas = document.getElementById('c');
+const stage = createStage(canvas, { preserve: true, pixelRatio: 1 });
+let DATA = null;
+
+async function load(path) {
+  if (!DATA) DATA = await (await fetch(path + '?v=' + Date.now())).json();
+  return DATA;
+}
+
+function renderView(hammer, view, w, h) {
+  stage.resize(w, h);
+  frame(stage.camera, hammer.data.stats, view);
+  stage.render();
+  return canvas;
+}
+
+const LABEL_COLORS = { Starter: '#9fb6cc', Uncommon: '#4fd06b', Rare: '#3aa6ff', Epic: '#b472ff', Legendary: '#ffc23b', Mythic: '#ff4d5e', Special: '#c98bff' };
+
+// Composición 2×2 (hero, profile, back, head) de un martillo → dataURL PNG
+window.renderHammer = async (path, id, cell = 512) => {
+  const data = await load(path);
+  const hd = data.hammers.find((x) => x.id === id);
+  if (!hd) throw new Error('no existe ' + id);
+  const hammer = buildHammer(hd, { scaleRef: stage.scaleRef });
+  stage.scene.add(hammer.group);
+  hammer.prewarm(1.6);
+  const out = document.createElement('canvas');
+  const header = 44;
+  out.width = cell * 2; out.height = cell * 2 + header;
+  const g = out.getContext('2d');
+  g.fillStyle = '#0b1018'; g.fillRect(0, 0, out.width, out.height);
+  const views = ['hero', 'profile', 'back', 'head'];
+  views.forEach((v, i) => {
+    hammer.update(1.6 + i * 0.37, 1 / 30);
+    renderView(hammer, v, cell, cell);
+    g.drawImage(canvas, (i % 2) * cell, header + Math.floor(i / 2) * cell, cell, cell);
+    g.fillStyle = 'rgba(255,255,255,0.55)'; g.font = '600 15px sans-serif';
+    g.fillText(v, (i % 2) * cell + 10, header + Math.floor(i / 2) * cell + 22);
+  });
+  g.fillStyle = LABEL_COLORS[hd.rarity] || '#fff'; g.font = '800 24px sans-serif';
+  g.fillText(`${hd.name}  ·  ${hd.rarity}`, 14, 31);
+  g.fillStyle = 'rgba(255,255,255,0.6)'; g.font = '500 15px sans-serif';
+  const s = hd.stats;
+  g.fillText(`piezas ${s.parts} · partículas ${s.emitterRate} · luces ${s.lights} · ${s.size.map((v) => v.toFixed(1)).join('×')} studs`, out.width - 470, 30);
+  stage.scene.remove(hammer.group);
+  return out.toDataURL('image/png');
+};
+
+// Hoja de contacto (vista de perfil de todos) → dataURL
+window.renderSheet = async (path, cols = 8, cw = 220, ch = 300) => {
+  const data = await load(path);
+  const list = data.hammers;
+  const rows = Math.ceil(list.length / cols);
+  const out = document.createElement('canvas');
+  out.width = cols * cw; out.height = rows * ch;
+  const g = out.getContext('2d');
+  g.fillStyle = '#0b1018'; g.fillRect(0, 0, out.width, out.height);
+  list.forEach((hd, i) => {
+    const hammer = buildHammer(hd, { scaleRef: stage.scaleRef });
+    stage.scene.add(hammer.group);
+    hammer.prewarm(1.4);
+    stage.resize(cw * 2, (ch - 46) * 2);
+    frame(stage.camera, hd.stats, 'hero', 1.05);
+    stage.render();
+    const x = (i % cols) * cw, y = Math.floor(i / cols) * ch;
+    g.drawImage(canvas, x, y, cw, ch - 46);
+    g.fillStyle = '#e8f0ff'; g.font = '800 15px sans-serif'; g.textAlign = 'center';
+    g.fillText(hd.name.toUpperCase(), x + cw / 2, y + ch - 26);
+    g.fillStyle = LABEL_COLORS[hd.rarity] || '#fff'; g.font = '700 12px sans-serif';
+    g.fillText(hd.rarity.toUpperCase() + ' · ' + hd.stats.parts + ' piezas', x + cw / 2, y + ch - 9);
+    g.textAlign = 'left';
+    stage.scene.remove(hammer.group);
+  });
+  return out.toDataURL('image/png');
+};
+window.ready = true;
+</script>
+</body>
+</html>

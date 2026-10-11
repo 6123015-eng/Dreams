@@ -1,0 +1,10 @@
+{
+  "name": "hammerforge-render",
+  "private": true,
+  "type": "module",
+  "description": "Render previews of HammerForge hammers (three.js + headless Chromium)",
+  "dependencies": {
+    "three": "0.170.0",
+    "playwright-core": "1.56.1"
+  }
+}
