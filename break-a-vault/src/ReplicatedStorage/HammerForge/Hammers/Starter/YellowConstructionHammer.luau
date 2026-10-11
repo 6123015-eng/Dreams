@@ -79,34 +79,36 @@ return {
 			b:cylY(0.08, 0.56, CFrame.new(0, headY + cH / 2 + 0.03, 0), black, "EyeTop")
 		end)
 
-		-- ── mango ───────────────────────────────────────────────
-		local shaftDia = 0.52
-		local shaftBottom = A.ShaftBottom + 0.28
+		-- ── mango (grueso y corto: K = escala radial de todo el mango) ──
+		local K = 1.2
+		local shaftDia = 0.52 * K
+		local shaftBottom = -0.9
 		b:group("Shaft", function()
 			local bottom, top = shaftBottom, headY - cH / 2
 			b:cylY(top - bottom, shaftDia, CFrame.new(0, (top + bottom) / 2, 0), rubber, "Shaft")
 			-- cuello negro + collar amarillo grande
-			b:cylY(0.42, 0.66, CFrame.new(0, top - 0.22, 0), black, "Neck")
-			b:bevelBox(Vector3.new(0.84, 0.32, 0.84), CFrame.new(0, top - 0.62, 0), yellow, 0.16, { edges = "Y", edgeStyle = yellowEdge, name = "Collar" })
-			b:cylY(0.06, 0.72, CFrame.new(0, top - 0.8, 0), black, "CollarLip")
+			b:cylY(0.42, 0.66 * K, CFrame.new(0, top - 0.22, 0), black, "Neck")
+			b:bevelBox(Vector3.new(0.84 * K, 0.32, 0.84 * K), CFrame.new(0, top - 0.62, 0), yellow, 0.16 * K, { edges = "Y", edgeStyle = yellowEdge, name = "Collar" })
+			b:cylY(0.06, 0.72 * K, CFrame.new(0, top - 0.8, 0), black, "CollarLip")
 			-- agarre corto y grueso: 7 costillas hondas de hule
 			local y0, y1 = -0.84, 1.2
 			local nRibs = 7
 			for i = 0, nRibs - 1 do
 				local y = y0 + (y1 - y0) * (i + 0.5) / nRibs
-				b:cylY(0.18, 0.7, CFrame.new(0, y, 0), if i % 2 == 0 then rubber else P.with(rubber, { Color = P.rgb(38, 39, 46) }), "GripRib")
-				b:cylY(0.04, 0.72, CFrame.new(0, y + 0.07, 0), rubberHi, "GripRibHi")
+				b:cylY(0.19, 0.7 * K, CFrame.new(0, y, 0), if i % 2 == 0 then rubber else P.with(rubber, { Color = P.rgb(38, 39, 46) }), "GripRib")
+				b:cylY(0.04, 0.72 * K, CFrame.new(0, y + 0.075, 0), rubberHi, "GripRibHi")
 			end
 		end)
 
-		-- ── pomo grande ─────────────────────────────────────────
+		-- ── pomo grande (1.2-1.3x, más arriba) ──────────────────
 		b:group("Pommel", function()
-			local y = shaftBottom - 0.3
-			b:disc(CFrame.new(0, y + 0.3, 0), 0.78, 0.09, black, "PommelRing")
-			b:bevelBox(Vector3.new(0.96, 0.44, 0.96), CFrame.new(0, y, 0), yellow, 0.2, { edges = "Y", edgeStyle = yellowEdge, name = "PommelCap" })
-			b:cylY(0.13, 0.8, CFrame.new(0, y - 0.28, 0), black, "PommelBase")
-			b:cylZ(0.05, 0.14, CFrame.new(0, y, 0.48), bolt, "PommelBolt")
-			b:cylZ(0.05, 0.14, CFrame.new(0, y, -0.48), bolt, "PommelBolt")
+			local y = -1.08
+			local w = 0.96 * 1.22
+			b:disc(CFrame.new(0, y + 0.25, 0), 0.78 * 1.22, 0.09, black, "PommelRing")
+			b:bevelBox(Vector3.new(w, 0.4, w), CFrame.new(0, y, 0), yellow, 0.24, { edges = "Y", edgeStyle = yellowEdge, name = "PommelCap" })
+			b:cylY(0.13, 0.8 * 1.22, CFrame.new(0, y - 0.26, 0), black, "PommelBase")
+			b:cylZ(0.05, 0.17, CFrame.new(0, y, w / 2), bolt, "PommelBolt")
+			b:cylZ(0.05, 0.17, CFrame.new(0, y, -w / 2), bolt, "PommelBolt")
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
