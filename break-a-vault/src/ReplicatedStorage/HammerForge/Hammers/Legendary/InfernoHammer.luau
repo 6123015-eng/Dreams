@@ -237,30 +237,34 @@ return {
 		end
 
 		-- ── mango grueso de roca de lava ────────────────────────
+		local K = 1.25 -- escala radial del mango (bloques de roca chunky como el concepto)
 		local shaftTop = headY - H / 2
-		local shaftBottom = A.ShaftBottom + 0.22
+		local shaftBottom = -0.92 -- mango más corto: el pomo sube pegado a la mano
 		b:group("Shaft", function()
-			table.insert(glowParts, b:cylY(shaftTop - shaftBottom, 0.48, CFrame.new(0, (shaftTop + shaftBottom) / 2, 0), lava, "ShaftCore"))
+			table.insert(glowParts, b:cylY(shaftTop - shaftBottom, 0.48 * K, CFrame.new(0, (shaftTop + shaftBottom) / 2, 0), lava, "ShaftCore"))
 			-- collar de hierro
-			local cy = shaftTop - 0.2
-			b:bevelBox(Vector3.new(0.84, 0.38, 0.84), CFrame.new(0, cy, 0), iron, 0.16, { edges = "Y", edgeStyle = ironEdge, name = "Collar" })
-			b:cylY(0.1, 0.76, CFrame.new(0, cy - 0.25, 0), ironDark, "CollarLip")
+			local cy = shaftTop - 0.22
+			b:bevelBox(Vector3.new(0.84 * K, 0.42, 0.84 * K), CFrame.new(0, cy, 0), iron, 0.16 * K, { edges = "Y", edgeStyle = ironEdge, name = "Collar" })
+			b:cylY(0.12, 0.76 * K, CFrame.new(0, cy - 0.27, 0), ironDark, "CollarLip")
 			-- bloques de roca con magma entre juntas
-			local segs = { { 1.8, 1.08 }, { 0.98, 0.26 }, { 0.16, -0.5 }, { -0.6, shaftBottom } }
-			for i, sg in segs do
-				local h = sg[1] - sg[2]
-				b:bevelBox(Vector3.new(0.64, h, 0.64), CFrame.new(0, (sg[1] + sg[2]) / 2, 0) * CFrame.Angles(0, i * 0.5, (if i % 2 == 0 then 1 else -1) * 0.035), if i % 2 == 0 then rockAlt else rock, 0.14, { edges = "Y", edgeStyle = rockEdge, name = "GripRock" })
+			local g1 = cy - 0.36
+			local gap = 0.1
+			local segH = (g1 - shaftBottom - 3 * gap) / 4
+			for i = 1, 4 do
+				local s1 = g1 - (i - 1) * (segH + gap)
+				b:bevelBox(Vector3.new(0.64 * K, segH, 0.64 * K), CFrame.new(0, s1 - segH / 2, 0) * CFrame.Angles(0, i * 0.5, (if i % 2 == 0 then 1 else -1) * 0.035), if i % 2 == 0 then rockAlt else rock, 0.14 * K, { edges = "Y", edgeStyle = rockEdge, name = "GripRock" })
 			end
 		end)
 
-		-- ── pomo: roca enorme y rajada ──────────────────────────
-		local py = shaftBottom - 0.36
+		-- ── pomo: roca enorme y rajada (1.3x de ancho) ──────────
+		local PK, PH = 1.3, 1.1
+		local py = shaftBottom - 0.3
 		b:group("Pommel", function()
-			b:bevelBox(Vector3.new(0.98, 0.74, 0.98), CFrame.new(0, py, 0) * CFrame.Angles(0.06, 0.4, -0.05), rock, 0.26, { edgeStyle = rockEdge, name = "PommelRock" })
-			b:box(Vector3.new(0.8, 0.6, 0.8), CFrame.new(0, py - 0.04, 0) * CFrame.Angles(0.5, 1.2, 0.45), rockAlt, "PommelFacet")
-			table.insert(glowParts, b:box(Vector3.new(0.9, 0.07, 0.9), CFrame.new(0, py + 0.04, 0) * CFrame.Angles(0.06, 0.4, -0.02), lava, "PommelSeam"))
-			table.insert(glowParts, b:box(Vector3.new(0.07, 0.62, 0.9), CFrame.new(0, py - 0.02, 0) * CFrame.Angles(0.06, 1.1, 0.06), lava, "PommelSeam"))
-			table.insert(glowParts, b:cylY(0.05, 0.42, CFrame.new(0, py - 0.38, 0), lavaHot, "PommelCore"))
+			b:bevelBox(Vector3.new(0.98 * PK, 0.74 * PH, 0.98 * PK), CFrame.new(0, py, 0) * CFrame.Angles(0.06, 0.4, -0.05), rock, 0.26 * PK, { edgeStyle = rockEdge, name = "PommelRock" })
+			b:box(Vector3.new(0.8 * PK, 0.6 * PH, 0.8 * PK), CFrame.new(0, py - 0.04, 0) * CFrame.Angles(0.5, 1.2, 0.45), rockAlt, "PommelFacet")
+			table.insert(glowParts, b:box(Vector3.new(0.9 * PK, 0.08, 0.9 * PK), CFrame.new(0, py + 0.04, 0) * CFrame.Angles(0.06, 0.4, -0.02), lava, "PommelSeam"))
+			table.insert(glowParts, b:box(Vector3.new(0.08, 0.62 * PH, 0.9 * PK), CFrame.new(0, py - 0.02, 0) * CFrame.Angles(0.06, 1.1, 0.06), lava, "PommelSeam"))
+			table.insert(glowParts, b:cylY(0.05, 0.42 * PK, CFrame.new(0, py - 0.38 * PH, 0), lavaHot, "PommelCore"))
 		end)
 
 		b:pulse(glowParts, 0, 0.3, 1.1)
