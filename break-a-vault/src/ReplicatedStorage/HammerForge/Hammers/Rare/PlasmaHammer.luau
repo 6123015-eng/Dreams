@@ -164,40 +164,43 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
+		-- K = factor radial del mango (agarre grueso como el concepto); PK = pomo
+		local K, PK = 1.18, 1.3
 		b:group("Shaft", function()
-			local bottom, top = A.ShaftBottom, headY - TUBE_R - 0.22
-			b:cylY(top - bottom, 0.46, CFrame.new(0, (top + bottom) / 2, 0), black, "Shaft")
+			local bottom, top = -1.0, headY - TUBE_R - 0.22
+			b:cylY(top - bottom, 0.46 * K, CFrame.new(0, (top + bottom) / 2, 0), black, "Shaft")
 			-- collar dorado octagonal
-			oct(0.34, 0.72, CFrame.new(0, top - 0.17, 0), gold, "Collar")
-			b:disc(CFrame.new(0, top - 0.36, 0), 0.56, 0.06, goldEdge, "CollarLip")
+			oct(0.34, 0.72 * K, CFrame.new(0, top - 0.17, 0), gold, "Collar")
+			b:disc(CFrame.new(0, top - 0.36, 0), 0.56 * K, 0.06, goldEdge, "CollarLip")
 			-- segmentos oscuros con arista clara
-			local segs = { 0.95, 0.55, 0.15, -0.25, -0.65 }
+			local segs = { 1.68, 1.3, 0.92, 0.54, 0.16, -0.22, -0.6 }
 			for _, y in segs do
-				b:disc(CFrame.new(0, y, 0), 0.58, 0.3, dark, "GripSeg")
+				b:disc(CFrame.new(0, y, 0), 0.58 * K, 0.3, dark, "GripSeg")
 			end
 			-- anillos de plasma entre segmentos
-			for _, y in { 0.35, -0.45 } do
-				b:disc(CFrame.new(0, y, 0), 0.56, 0.1, black, "GlowRingBase")
-				table.insert(glowParts, b:disc(CFrame.new(0, y, 0), 0.6, 0.06, plasma, "GlowRing"))
+			for _, y in { 0.35, -0.41 } do
+				b:disc(CFrame.new(0, y, 0), 0.56 * K, 0.1, black, "GlowRingBase")
+				table.insert(glowParts, b:disc(CFrame.new(0, y, 0), 0.6 * K, 0.06, plasma, "GlowRing"))
 			end
 			-- bandas doradas abajo
-			for _, y in { -0.95, -1.15 } do
-				b:disc(CFrame.new(0, y, 0), 0.6, 0.12, gold, "GoldBand")
-				b:disc(CFrame.new(0, y, 0), 0.64, 0.04, goldEdge, "GoldBandRidge")
+			for _, y in { -0.83, -0.97 } do
+				b:disc(CFrame.new(0, y, 0), 0.6 * K, 0.1, gold, "GoldBand")
+				b:disc(CFrame.new(0, y, 0), 0.64 * K, 0.04, goldEdge, "GoldBandRidge")
 			end
 		end)
 
 		-- ── pomo ────────────────────────────────────────────────
 		b:group("Pommel", function()
-			local py = A.PommelY - 0.06
-			oct(0.44, 0.8, CFrame.new(0, py, 0), dark, "Pommel")
-			b:disc(CFrame.new(0, py + 0.23, 0), 0.66, 0.06, ringEdge, "PommelBevel")
-			b:disc(CFrame.new(0, py - 0.23, 0), 0.66, 0.06, ringEdge, "PommelBevel")
+			local ph = 0.44
+			local py = -1.02 - ph / 2
+			oct(ph, 0.8 * PK, CFrame.new(0, py, 0), dark, "Pommel")
+			b:disc(CFrame.new(0, py + ph / 2 + 0.01, 0), 0.66 * PK, 0.06, ringEdge, "PommelBevel")
+			b:disc(CFrame.new(0, py - ph / 2 - 0.01, 0), 0.66 * PK, 0.06, ringEdge, "PommelBevel")
 			for _, a in { 0, math.pi / 2, math.pi, 3 * math.pi / 2 } do
-				b:rivet(Vector3.new(math.cos(a) * 0.37, py, math.sin(a) * 0.37), 0.12, chrome)
+				b:rivet(Vector3.new(math.cos(a) * 0.37 * PK, py, math.sin(a) * 0.37 * PK), 0.12 * PK, chrome)
 			end
-			b:cylY(0.05, 0.4, CFrame.new(0, py - 0.27, 0), black, "PommelCap")
-			table.insert(glowParts, b:cylY(0.06, 0.2, CFrame.new(0, py - 0.28, 0), plasmaHot, "PommelGlow"))
+			b:cylY(0.05, 0.4 * PK, CFrame.new(0, py - ph / 2 - 0.05, 0), black, "PommelCap")
+			table.insert(glowParts, b:cylY(0.06, 0.2 * PK, CFrame.new(0, py - ph / 2 - 0.06, 0), plasmaHot, "PommelGlow"))
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
