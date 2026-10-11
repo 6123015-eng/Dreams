@@ -1,8 +1,10 @@
--- Rusty Hammer (Starter) — el primer martillo: un ladrillo de hierro viejo, gris acero comido por el óxido.
--- La cabeza está hecha de dos bloques (el remate izquierdo rajado y medio chueco por tanto golpe),
--- con esquinas despostilladas que rompen la silueta, aristas gastadas más claras, manchas y escurrimientos
--- de óxido, remaches viejos y caras de golpe pulidas por el uso (con su "punto de impacto" brillante).
--- Mango octagonal de madera con vetas, venda de tela cruzada en el agarre y pomo de madera astillado.
+-- Rusty Hammer (Starter) — el primer martillo: un ladrillo de hierro viejo COMIDO POR EL ÓXIDO.
+-- La cabeza son dos bloques de óxido naranja-café (el remate izquierdo rajado, chueco y con la esquina
+-- de arriba despostillada a lo bruto) donde asoman parches de acero gris desnudo, biselados y un pelo
+-- salidos, como si el óxido se hubiera descarapelado. Aristas gastadas más claras, escurrimientos de óxido
+-- oscuro desde el lomo, remaches viejos. Caras de golpe: un anillo de óxido oscuro con un parche pulido
+-- irregular encima, con dos abolladuras del uso. Mango de madera grueso y un poco cónico, venda de tela
+-- en capas cruzadas con la punta suelta, y pomo de madera grande y astillado.
 return {
 	Id = "RustyHammer",
 	DisplayName = "Rusty Hammer",
@@ -15,12 +17,14 @@ return {
 		local H, D = 1.95, 1.85
 
 		-- ── estilos ─────────────────────────────────────────────
-		local core = P.style(P.rgb(124, 112, 104), Enum.Material.CorrodedMetal, 0.05) -- acero viejo
+		local core = P.style(P.rgb(158, 80, 40), Enum.Material.CorrodedMetal, 0.02) -- óxido (base)
+		local steel = P.style(P.rgb(132, 132, 134), Enum.Material.CorrodedMetal, 0.08) -- acero desnudo
+		local steelEdge = P.style(P.rgb(176, 172, 166), Enum.Material.CorrodedMetal, 0.04)
 		local rust = P.with(P.Rust, { Color = P.rgb(168, 82, 36) })
 		local rustHot = P.with(P.RustOrange, { Color = P.rgb(206, 112, 50) })
 		local rustDark = P.with(P.RustDark, { Color = P.rgb(78, 40, 24) })
 		local worn = P.metal(P.rgb(196, 186, 172), 0.14) -- metal desnudo (raspones)
-		local edgeRust = P.style(P.rgb(214, 128, 66), Enum.Material.CorrodedMetal, 0.02) -- arista gastada clara
+		local edgeRust = P.style(P.rgb(160, 138, 120), Enum.Material.CorrodedMetal, 0.04) -- arista gastada (acero asomando)
 		local polish = P.metal(P.rgb(206, 208, 210), 0.3) -- cara de golpe pulida
 		local shine = P.foil(P.rgb(236, 236, 232), 0.36)
 		local wood = P.wood(P.rgb(168, 96, 46))
@@ -85,120 +89,142 @@ return {
 
 		-- ── cabeza ──────────────────────────────────────────────
 		local bodyX0, bodyX1 = -0.86, 1.66 -- cuerpo principal
-		local capX0, capX1 = -1.78, -0.9 -- remate izquierdo (rajado)
+		local capX0, capX1 = -1.92, -0.92 -- remate izquierdo (rajado)
+		local capCF = CFrame.new((capX0 + capX1) / 2, headY + 0.02, 0) * CFrame.Angles(0.025, 0, math.rad(2.2))
+		local capH, capD = H + 0.08, D + 0.06
 		b:group("Head", function()
-			chunk(Vector3.new(bodyX1 - bodyX0, H, D), CFrame.new((bodyX0 + bodyX1) / 2, headY, 0), core, edgeRust, 0.16, {
+			chunk(Vector3.new(bodyX1 - bodyX0, H, D), CFrame.new((bodyX0 + bodyX1) / 2, headY, 0), core, edgeRust, 0.17, {
 				{ "X", 1, 1, -0.55, -0.2 },
 				{ "X", -1, -1, 0.35, 0.75 },
 				{ "Y", 1, -1, -0.9, -0.35 },
 				{ "Z", 1, 1, 0.1, 0.6 },
 				{ "X", 1, -1, 0.5, 0.82 },
 			}, rustDark, "HeadCore")
-			-- remate izquierdo: un poco más grande y torcido (golpeado)
-			local capCF = CFrame.new((capX0 + capX1) / 2, headY + 0.02, 0) * CFrame.Angles(0.025, 0, math.rad(2.2))
-			chunk(Vector3.new(capX1 - capX0, H + 0.08, D + 0.06), capCF, core, edgeRust, 0.2, {
-				{ "Y", -1, 1, 0.2, 0.75 },
-				{ "X", 1, -1, -0.8, -0.1 },
-				{ "Z", -1, -1, -0.7, -0.15 },
+			-- remate izquierdo: torcido, biseles grandes y la esquina de arriba-izquierda rota (despostilladuras hondas)
+			chunk(Vector3.new(capX1 - capX0, capH, capD), capCF, core, edgeRust, 0.26, {
+				{ "X", 1, 1, -1, 0.15 },
+				{ "X", 1, -1, -1, -0.2 },
+				{ "Z", -1, 1, -0.9, 0.9 },
+				{ "Y", -1, 1, 0.25, 1 },
+				{ "Y", -1, -1, 0.45, 1 },
+				{ "Y", 1, -1, -0.8, -0.2 },
 			}, rustDark, "HeadCap")
+			-- lajas rotas en la esquina: cuñas de metal desnudo dentro del despostillado
+			B.both(function(s)
+				local c0 = capCF * CFrame.new(-(capX1 - capX0) / 2 + 0.2, capH / 2 - 0.2, s * (capD / 2 - 0.2))
+				b:box(Vector3.new(0.18, 0.14, 0.14), c0 * CFrame.new(-0.04, 0.02, s * 0.02) * CFrame.Angles(0.5 * s, 0.4, 0.7), steel, "ChipFlake")
+			end)
+			b:box(Vector3.new(0.4, 0.2, 0.5), capCF * CFrame.new(0.05, capH / 2 - 0.12, 0.25) * CFrame.Angles(0.2, 0.5, 0.25), rustDark, "ChipPit")
 			-- raja entre bloques (oscura, hundida)
-			b:box(Vector3.new(0.12, H - 0.06, D - 0.06), CFrame.new(-0.88, headY, 0), rustDark, "Crack")
+			b:box(Vector3.new(0.12, H - 0.06, D - 0.06), CFrame.new(-0.89, headY, 0), rustDark, "Crack")
 
-			-- caras de golpe pulidas con "punto de impacto"
-			local function strikeFace(s, x, base)
-				local pcf = base * CFrame.new(s * 0.07, 0, 0)
-				b:box(Vector3.new(0.1, H * 0.9, D * 0.88), base * CFrame.new(-s * 0.01, 0, 0), rust, "StrikeLip")
-				b:bevelBox(Vector3.new(0.14, H * 0.78, D * 0.76), pcf, polish, 0.07, { edges = "X", edgeStyle = worn, name = "StrikeFace" })
-				-- zona brillante del uso: cuadro pulido un poco chueco
-				b:box(Vector3.new(0.05, H * 0.5, D * 0.46), pcf * CFrame.new(s * 0.07, 0.05, -0.04) * CFrame.Angles(math.rad(9), 0, 0), shine, "StrikeShine")
+			-- caras de golpe: anillo de óxido oscuro + parche pulido irregular + 2 abolladuras
+			local V = Vector2.new
+			local function strikeFace(s, base, h, d, seed)
+				local r = B.rng(seed)
+				b:bevelBox(Vector3.new(0.12, h * 0.9, d * 0.88), base * CFrame.new(s * 0.04, 0, 0), rustDark, 0.12, { edges = "X", edgeStyle = rust, name = "StrikeRing" })
+				local face = base * CFrame.new(s * 0.1, 0, 0) * CFrame.Angles(0, s * math.pi / 2, 0)
+				local pts = {}
+				for i = 0, 5 do
+					local a = math.pi * 2 * i / 6 + 0.3
+					local rr = r(0.56, 0.74)
+					table.insert(pts, V(math.cos(a) * rr * d * 0.5, math.sin(a) * rr * h * 0.5))
+				end
+				b:shape(face, pts, 0.06, polish, "StrikePolish")
+				b:box(Vector3.new(0.4, 0.3, 0.04), face * CFrame.new(0.06, 0.08, 0.03) * CFrame.Angles(0, 0, 0.35), shine, "StrikeShine")
+				for _, dent in { { -0.3, 0.32, 0.26 }, { 0.36, -0.3, 0.2 } } do
+					local dc = face * CFrame.new(dent[1], dent[2], 0.03)
+					b:cylZ(0.03, dent[3] + 0.06, dc, worn, "DentRim")
+					b:cylZ(0.04, dent[3], dc * CFrame.new(0, 0, 0.01), rustDark, "Dent")
+				end
 			end
-			strikeFace(1, bodyX1, CFrame.new(bodyX1, headY, 0))
-			strikeFace(-1, capX0, capCF * CFrame.new(-(capX1 - capX0) / 2, 0, 0))
+			strikeFace(1, CFrame.new(bodyX1, headY, 0), H, D, 11)
+			strikeFace(-1, capCF * CFrame.new(-(capX1 - capX0) / 2, 0, 0), capH, capD, 23)
 
 			-- ojo arriba: anillo de hierro, punta del mango y cuña metálica
-			b:bevelBox(Vector3.new(0.62, 0.14, 0.62), CFrame.new(0.15, headY + H / 2 + 0.06, 0), rust, 0.05, { edges = "Y", edgeStyle = rustHot, name = "EyeRing" })
-			b:cylY(0.14, 0.42, CFrame.new(0.15, headY + H / 2 + 0.1, 0), woodDark, "ShaftTop")
-			b:box(Vector3.new(0.48, 0.07, 0.1), CFrame.new(0.15, headY + H / 2 + 0.17, 0) * CFrame.Angles(0, math.rad(32), 0), worn, "IronWedge")
-			-- abajo: salida del ojo
-			b:box(Vector3.new(0.6, 0.1, 0.6), CFrame.new(0.15, headY - H / 2 - 0.04, 0) * CFrame.Angles(0, q, 0), rust, "EyeRingLow")
+			b:bevelBox(Vector3.new(0.72, 0.14, 0.72), CFrame.new(0.15, headY + H / 2 + 0.06, 0), rustDark, 0.06, { edges = "Y", edgeStyle = rustHot, name = "EyeRing" })
+			b:cylY(0.14, 0.5, CFrame.new(0.15, headY + H / 2 + 0.1, 0), woodDark, "ShaftTop")
+			b:box(Vector3.new(0.56, 0.07, 0.1), CFrame.new(0.15, headY + H / 2 + 0.17, 0) * CFrame.Angles(0, math.rad(32), 0), worn, "IronWedge")
+			-- parches de acero en el lomo
+			b:box(Vector3.new(0.7, 0.06, 0.5), CFrame.new(1.05, headY + H / 2, -0.3) * CFrame.Angles(0, 0.2, 0), steel, "SteelPatch")
+			b:box(Vector3.new(0.5, 0.06, 0.4), CFrame.new(-0.45, headY + H / 2, 0.35) * CFrame.Angles(0, -0.3, 0), steel, "SteelPatch")
 
-			-- caras de emblema (±Z): manchas de óxido en capas, escurrimientos, raspones, remaches
+			-- caras de emblema (±Z): parches de acero desnudo, escurrimientos de óxido oscuro, raspones, remaches
 			B.both(function(s)
 				local zs = D / 2
-				local face = B.faceZ(s, headY, zs + 0.015)
+				local face = B.faceZ(s, headY, zs)
 				local n = face.LookVector
-				local function spot(x, y, w, h, rot, st, z)
-					b:box(Vector3.new(w, h, 0.04), face * CFrame.new(x, y, z or 0) * CFrame.Angles(0, 0, rot), st, "RustSpot")
+				local k = s -- espeja X para que cada cara sea distinta
+				-- {x, y, w, h, rot, biselado?}
+				local patches = if s > 0
+					then { { 0.1, 0.2, 0.9, 0.62, 0.05, true }, { 1.05, -0.42, 0.6, 0.44, -0.08, true }, { -0.42, -0.5, 0.5, 0.36, 0.12, true }, { 1.15, 0.5, 0.34, 0.28, 0.2, false }, { 0.55, -0.62, 0.3, 0.2, -0.15, false } }
+					else { { 0.75, 0.12, 0.8, 0.7, -0.06, true }, { -0.25, -0.4, 0.66, 0.4, 0.1, true }, { 0.05, 0.55, 0.42, 0.26, -0.14, true }, { 1.3, -0.5, 0.3, 0.3, 0.25, false }, { -0.55, 0.3, 0.26, 0.22, -0.2, false } }
+				for _, p in patches do
+					local cf = face * CFrame.new(p[1] * k + 0.4 * (1 - k), p[2], 0.02) * CFrame.Angles(0, 0, p[5])
+					if p[6] then
+						-- arista clara (como bisel) + parche
+						b:box(Vector3.new(p[3] + 0.06, p[4] + 0.06, 0.04), cf * CFrame.new(0, 0, -0.01), steelEdge, "SteelPatchEdge")
+						b:box(Vector3.new(p[3], p[4], 0.06), cf, steel, "SteelPatch")
+					else
+						b:box(Vector3.new(p[3], p[4], 0.06), cf, steel, "SteelPatch")
+					end
 				end
-				-- óxido que "trepa" desde las aristas (franjas irregulares pegadas al borde)
-				spot(0.35, H / 2 - 0.26, 1.1, 0.18, 0.04, rust)
-				spot(1.0, H / 2 - 0.3, 0.5, 0.26, -0.12, rustHot, 0.012)
-				spot(-0.2, -H / 2 + 0.27, 0.9, 0.2, -0.05, rust)
-				spot(1.25, -H / 2 + 0.32, 0.42, 0.3, 0.1, rustDark, 0.006)
-				-- mancha central en capas (oscura → óxido → óxido vivo), girada distinto cada capa
-				spot(0.45, 0.12, 0.7, 0.4, 0.16, rustDark)
-				spot(0.52, 0.16, 0.56, 0.28, -0.12, rust, 0.012)
-				spot(0.4, 0.12, 0.26, 0.14, 0.22, rustHot, 0.024)
-				-- salpicado
-				spot(-0.35, -0.3, 0.34, 0.16, 0.14, rust)
-				spot(-0.6, 0.42, 0.26, 0.15, -0.2, rustHot)
-				spot(1.12, -0.12, 0.22, 0.12, -0.15, rust)
-				spot(-1.36, -0.25, 0.28, 0.44, 0.2, rust) -- en el remate
-				-- escurrimientos de óxido desde la arista superior
-				for i, x in { -0.12, 0.72, 1.3 } do
-					local len = 0.3 + 0.13 * i
-					b:box(Vector3.new(0.06, len, 0.04), face * CFrame.new(x, H / 2 - 0.3 - len / 2, 0.018), rustHot, "RustDrip")
+				-- escurrimientos de óxido oscuro desde la arista de arriba
+				for i, x in { -0.35, 0.62, 1.32 } do
+					local len = 0.5 + 0.2 * ((i + (if s > 0 then 0 else 1)) % 3)
+					b:box(Vector3.new(0.06, len, 0.05), face * CFrame.new(x * k + 0.4 * (1 - k), H / 2 - 0.17 - len / 2, 0.025), rustDark, "RustStreak")
 				end
-				-- raspones de metal desnudo (brillan)
-				b:line(face:PointToWorldSpace(Vector3.new(-0.1, 0.66, 0.02)), face:PointToWorldSpace(Vector3.new(0.65, 0.5, 0.02)), 0.05, 0.04, worn, n, "Scratch")
-				b:line(face:PointToWorldSpace(Vector3.new(0.15, -0.25, 0.02)), face:PointToWorldSpace(Vector3.new(0.9, -0.68, 0.02)), 0.045, 0.04, worn, n, "Scratch")
+				-- raspón brillante sobre el parche grande
+				b:line(face:PointToWorldSpace(Vector3.new(-0.2 * k + 0.4 * (1 - k), 0.36, 0.06)), face:PointToWorldSpace(Vector3.new(0.4 * k + 0.4 * (1 - k), 0.16, 0.06)), 0.04, 0.03, worn, n, "Scratch")
 				-- remaches viejos: dos en el remate rajado, dos en el cuerpo
-				local capFace = capCF * CFrame.new(0, 0, s * ((D + 0.06) / 2 + 0.02))
-				for _, y in { -0.62, 0.62 } do
-					b:rivet(capFace:PointToWorldSpace(Vector3.new(0, y, 0)), 0.18, rustHot)
+				local capFace = capCF * CFrame.new(0.06, 0, s * (capD / 2 + 0.01))
+				for _, y in { -0.6, 0.45 } do
+					b:rivet(capFace:PointToWorldSpace(Vector3.new(0, y, 0)), 0.2, rustHot)
 				end
-				b:rivet(Vector3.new(bodyX1 - 0.3, headY + 0.64, s * (zs + 0.02)), 0.16, rustDark)
-				b:rivet(Vector3.new(bodyX1 - 0.3, headY - 0.64, s * (zs + 0.02)), 0.16, rustHot)
+				b:rivet(Vector3.new(bodyX1 - 0.28, headY + 0.66, s * (zs + 0.02)), 0.17, rustDark)
+				b:rivet(Vector3.new(bodyX1 - 0.28, headY - 0.66, s * (zs + 0.02)), 0.17, rustHot)
 			end)
 		end)
 
-		-- ── mango ───────────────────────────────────────────────
-		local shaftW = 0.48
+		-- ── mango: madera gruesa y un poco cónica ───────────────
+		local shaftBottom = A.ShaftBottom + 0.3
 		b:group("Shaft", function()
-			local bottom, top = A.ShaftBottom + 0.05, headY - H / 2 - 0.05
-			local mid = (top + bottom) / 2
-			-- octágono de madera (bisel en Y) con vetas
-			b:bevelBox(Vector3.new(shaftW, top - bottom, shaftW), CFrame.new(0, mid, 0), wood, 0.1, { edges = "Y", edgeStyle = woodLight, name = "Shaft" })
-			b:box(Vector3.new(0.04, 1.2, 0.03), CFrame.new(0.07, 1.75, shaftW / 2 + 0.008), woodDark, "Grain")
-			b:box(Vector3.new(0.04, 0.9, 0.03), CFrame.new(-0.06, 1.55, -shaftW / 2 - 0.008), woodDark, "Grain")
-			b:box(Vector3.new(0.03, 1.0, 0.04), CFrame.new(shaftW / 2 + 0.008, 1.65, -0.05), woodDark, "Grain")
-			-- collar de madera bajo la cabeza (bloque como en el concepto)
-			b:bevelBox(Vector3.new(0.6, 0.36, 0.6), CFrame.new(0, top - 0.2, 0), woodDark, 0.09, { edges = "Y", edgeStyle = wood, name = "Collar" })
+			local top = headY - H / 2 - 0.05
+			-- tramo de arriba (más grueso) y tramo de abajo (más delgado); el escalón queda bajo la venda
+			local split = 0.2
+			b:bevelBox(Vector3.new(0.64, top - split, 0.64), CFrame.new(0, (top + split) / 2, 0), wood, 0.13, { edges = "Y", edgeStyle = woodLight, name = "Shaft" })
+			b:bevelBox(Vector3.new(0.57, split - shaftBottom, 0.57), CFrame.new(0, (split + shaftBottom) / 2, 0), wood, 0.12, { edges = "Y", edgeStyle = woodLight, name = "Shaft" })
+			b:box(Vector3.new(0.05, 1.1, 0.03), CFrame.new(0.08, 1.55, 0.33), woodDark, "Grain")
+			b:box(Vector3.new(0.05, 0.85, 0.03), CFrame.new(-0.07, 1.4, -0.33), woodDark, "Grain")
+			b:box(Vector3.new(0.03, 0.95, 0.05), CFrame.new(0.33, 1.5, -0.06), woodDark, "Grain")
+			-- collar de madera bajo la cabeza
+			b:bevelBox(Vector3.new(0.76, 0.38, 0.76), CFrame.new(0, top - 0.2, 0), woodDark, 0.11, { edges = "Y", edgeStyle = wood, name = "Collar" })
 
-			-- venda cruzada: discos de tela inclinados en direcciones alternas (barato y lee como vendaje en X)
-			local bandDia = 0.64
+			-- venda: 7 vueltas de tela inclinadas y encimadas (alternando dirección) + punta suelta
+			local bandDia = 0.74
 			local turns = {
-				{ -0.58, 0.36, 0.2 }, { -0.3, -0.36, 0.2 }, { -0.02, 0.36, 1.3 },
-				{ 0.26, -0.36, 1.3 }, { 0.54, 0.34, 0.5 },
+				{ -0.62, 0.24, 0.2 }, { -0.42, -0.26, 0.2 }, { -0.2, 0.26, 0.2 }, { 0.02, -0.26, 0.2 },
+				{ 0.24, 0.26, 0.2 }, { 0.46, -0.26, 0.2 }, { 0.64, 0.2, 0.2 },
 			}
 			for i, t in turns do
-				b:cylY(0.26, bandDia - (i % 2) * 0.03, CFrame.new(0, t[1], 0) * CFrame.Angles(0, t[3], 0) * CFrame.Angles(t[2], 0, 0), if i % 2 == 0 then clothDirty else cloth, "Bandage")
+				b:cylY(0.24, bandDia - (i % 2) * 0.03, CFrame.new(0, t[1], 0) * CFrame.Angles(0, t[3], 0) * CFrame.Angles(t[2], 0, 0), if i % 2 == 0 then clothDirty else cloth, "Bandage")
 			end
-			b:disc(CFrame.new(0, 0.8, 0), bandDia - 0.04, 0.2, cloth, "BandageEnd")
-			b:disc(CFrame.new(0, -0.8, 0), bandDia - 0.04, 0.16, clothDirty, "BandageEnd")
-			-- cola de la venda
-			b:box(Vector3.new(0.05, 0.42, 0.18), CFrame.new(bandDia / 2 + 0.01, 0.58, 0.1) * CFrame.Angles(0, 0, math.rad(-10)), clothDirty, "BandageTail")
+			b:disc(CFrame.new(0, -0.78, 0), bandDia - 0.06, 0.12, clothDirty, "BandageEnd")
+			-- punta suelta de la venda
+			b:box(Vector3.new(0.05, 0.5, 0.2), CFrame.new(bandDia / 2 - 0.02, 0.52, 0.14) * CFrame.Angles(0.15, 0, math.rad(-14)), clothDirty, "BandageTail")
+			b:box(Vector3.new(0.05, 0.22, 0.17), CFrame.new(bandDia / 2 + 0.04, 0.2, 0.18) * CFrame.Angles(0.2, 0, math.rad(-30)), cloth, "BandageTail")
 		end)
 
-		-- ── pomo ────────────────────────────────────────────────
+		-- ── pomo grande y astillado ─────────────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY + 0.05
-			b:bevelBox(Vector3.new(0.6, 0.36, 0.6), CFrame.new(0, y, 0), woodDark, 0.11, { edges = "Y", edgeStyle = wood, name = "Pommel" })
-			b:cylY(0.06, 0.46, CFrame.new(0, y - 0.19, 0), woodLight, "EndGrain")
+			local y = shaftBottom - 0.24
+			b:bevelBox(Vector3.new(0.8, 0.46, 0.8), CFrame.new(0, y, 0), woodDark, 0.14, { edges = "Y", edgeStyle = wood, name = "Pommel" })
+			b:cylY(0.06, 0.6, CFrame.new(0, y - 0.24, 0), woodLight, "EndGrain")
+			b:cylY(0.065, 0.3, CFrame.new(0, y - 0.25, 0), woodDark, "EndRing")
 			-- astillas
-			b:wedge(Vector3.new(0.1, 0.16, 0.08), CFrame.new(0.18, y - 0.22, 0.12) * CFrame.Angles(math.pi, 0.4, 0), wood, "Splinter")
-			b:wedge(Vector3.new(0.08, 0.13, 0.07), CFrame.new(-0.15, y - 0.21, -0.14) * CFrame.Angles(math.pi, 2.2, 0), woodLight, "Splinter")
-			b:box(Vector3.new(0.62, 0.07, 0.62), CFrame.new(0, y + 0.2, 0), rustDark, "PommelBand")
+			b:wedge(Vector3.new(0.12, 0.2, 0.1), CFrame.new(0.24, y - 0.28, 0.16) * CFrame.Angles(math.pi, 0.4, 0), wood, "Splinter")
+			b:wedge(Vector3.new(0.1, 0.16, 0.09), CFrame.new(-0.2, y - 0.27, -0.18) * CFrame.Angles(math.pi, 2.2, 0), woodLight, "Splinter")
+			b:box(Vector3.new(0.82, 0.08, 0.82), CFrame.new(0, y + 0.25, 0), rustDark, "PommelBand")
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
