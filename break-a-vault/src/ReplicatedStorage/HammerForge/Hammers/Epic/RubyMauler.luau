@@ -1,9 +1,10 @@
--- Ruby Mauler (Epic) — un rubí gigante encadenado en hierro negro: la cabeza es un bloque de rubí
--- facetado (punta de diamante en cada cara) con un NÚCLEO de neón rojo que late adentro, sujeto por
--- dos marcos de hierro negro erizados de picos de acero. A los lados, dos rubíes más chicos con
--- caras de golpe facetadas, cada uno enmarcado en hierro con picos en las esquinas apuntando afuera.
--- Mango forrado de cuero rojo en espiral con amarres oscuros, collar de hierro remachado y pomo de
--- hierro con tachones. FX: destellos rojos, motas de luz carmesí, luz del núcleo pulsante,
+-- Ruby Mauler (Epic) — un rubí gigante encadenado en acero: la cabeza es un bloque de rubí rojo profundo
+-- (vidrio carmesí con un NÚCLEO de neón rojo que late adentro) con una pirámide baja facetada en cada cara,
+-- sujeto por dos BANDAS GRUESAS de acero biselado con tachones piramidales y picos arriba y abajo.
+-- A los lados, dos rubíes más chicos, también facetados en pirámide, con caras de golpe en punta y
+-- marcos de hierro con picos en las esquinas apuntando afuera.
+-- Mango grueso forrado de cuero rojo en espiral con cordón oscuro, collar de acero con tachones y pomo
+-- grande de acero con tachones y rubí. FX: destellos rojos, motas carmesí, luz roja pulsante,
 -- impacto con esquirlas de rubí.
 return {
 	Id = "RubyMauler",
@@ -17,17 +18,24 @@ return {
 
 		-- ── estilos ─────────────────────────────────────────────
 		local red = P.rgb(230, 24, 52)
-		local ruby = P.crystal(P.rgb(150, 4, 26), 0.06)
-		local rubyFacet = P.crystal(P.rgb(214, 20, 48), 0.06)
-		local rubyEdge = P.crystal(P.rgb(255, 80, 104), 0.04) -- arista brillante
-		local rubyDeep = P.crystal(P.rgb(120, 6, 24), 0.08)
-		local core = P.neon(P.rgb(255, 30, 60))
-		local coreHot = P.neon(P.rgb(255, 64, 84))
+		local function glassSt(c: Color3, t: number)
+			local st = P.style(c, Enum.Material.Glass, 0.12, t)
+			st.CastShadow = false
+			return st
+		end
+		local ruby = glassSt(P.rgb(178, 12, 32), 0.08)
+		local rubyLight = glassSt(P.rgb(232, 30, 54), 0.06) -- faceta iluminada
+		local rubyDark = P.foil(P.rgb(120, 4, 20), 0.3) -- faceta en sombra (opaca, rojo profundo)
+		local rubyEdge = glassSt(P.rgb(255, 84, 104), 0.04) -- arista brillante
+		local rubyDeep = P.foil(P.rgb(104, 2, 18), 0.25)
+		local core = P.neon(P.rgb(255, 24, 52), 0.3)
+		local coreHot = P.neon(P.rgb(255, 80, 96))
 		local iron = P.metal(P.rgb(72, 74, 82), 0.1)
 		local ironEdge = P.metal(P.rgb(150, 154, 166), 0.16)
+		local steel = P.metal(P.rgb(120, 124, 136), 0.16) -- bandas
+		local steelEdge = P.metal(P.rgb(186, 192, 204), 0.22)
 		local ironDark = P.Blackened
-		local spikeSt = P.metal(P.rgb(160, 166, 178), 0.08) -- acero pulido
-		local chrome = P.Chrome
+		local spikeSt = P.metal(P.rgb(176, 182, 194), 0.12) -- acero pulido
 		local leather = P.leather(P.rgb(150, 30, 30))
 		local leatherDark = P.leather(P.rgb(70, 16, 18))
 
@@ -44,12 +52,34 @@ return {
 			-- base metida un poco en la superficie para que no se vea el hueco
 			b:pyramid(along(pos - dir.Unit * 0.04, dir), len + 0.04, w, sides or 4, spikeSt, "Spike")
 		end
+		-- tachón piramidal de UNA pieza: cubo con un vértice hacia afuera, medio enterrado (asoma una pirámide)
+		local diag = Vector3.new(1, 1, 1).Unit
+		local function stud(pos: Vector3, n: Vector3, size: number, h: number, roll: number?)
+			local axis = diag:Cross(n)
+			local rot = if axis.Magnitude < 1e-4 then CFrame.new() else CFrame.fromAxisAngle(axis.Unit, math.acos(math.clamp(diag:Dot(n), -1, 1)))
+			local ctr = pos - n * (size * math.sqrt(3) / 2 - h)
+			return b:box(Vector3.new(size, size, size), CFrame.new(ctr) * CFrame.fromAxisAngle(n, roll or 0) * rot, spikeSt, "Stud")
+		end
+		-- pirámide baja facetada (4 facetas clara/oscura) sobre un rectángulo w×h del plano XY de `face`
+		local function facetTop(face: CFrame, w: number, h: number, height: number)
+			local c = {
+				face:PointToWorldSpace(Vector3.new(-w / 2, -h / 2, 0)),
+				face:PointToWorldSpace(Vector3.new(w / 2, -h / 2, 0)),
+				face:PointToWorldSpace(Vector3.new(w / 2, h / 2, 0)),
+				face:PointToWorldSpace(Vector3.new(-w / 2, h / 2, 0)),
+			}
+			local apex = face:PointToWorldSpace(Vector3.new(0, 0, height))
+			local sts = { rubyDark, ruby, rubyLight, ruby }
+			for i = 1, 4 do
+				b:triangle(c[i], c[i % 4 + 1], apex, 0.05, sts[i], "Facet")
+			end
+		end
 
 		-- ── medidas ────────────────────────────────────────────
 		local CW, CH, CD = 1.5, 1.95, 1.95 -- rubí central
-		local bandW, BH, BD = 0.34, 2.22, 2.22 -- marcos de hierro
-		local bx = CW / 2 + bandW / 2 - 0.02
-		local EX0, EX1 = bx + bandW / 2 - 0.02, 1.76
+		local bandW, BH, BD = 0.48, 2.3, 2.3 -- bandas gruesas de acero (sobresalen ~0.18)
+		local bx = CW / 2 + bandW / 2 - 0.04
+		local EX0, EX1 = bx + bandW / 2 - 0.04, 1.86
 		local EW, EH, ED = EX1 - EX0, 1.8, 1.8 -- rubíes de los extremos
 		local ex = (EX0 + EX1) / 2
 		local frameX = EX1 + 0.06
@@ -58,43 +88,43 @@ return {
 
 		b:group("Head", function()
 			-- ── rubí central con núcleo ────────────────────────
-			table.insert(coreParts, b:box(Vector3.new(CW - 0.5, CH - 0.6, CD - 0.6), CFrame.new(0, headY, 0), core, "Core"))
-			b:box(Vector3.new(CW - 0.3, CH - 0.3, CD - 0.3), CFrame.new(0, headY, 0) * CFrame.Angles(0, math.pi / 4, 0), rubyDeep, "InnerFacets")
+			table.insert(coreParts, b:box(Vector3.new(CW - 0.4, CH - 0.4, CD - 0.4), CFrame.new(0, headY, 0), core, "Core"))
+			b:box(Vector3.new(CW - 0.2, CH - 0.2, CD - 0.2), CFrame.new(0, headY, 0) * CFrame.Angles(0, math.pi / 4, 0), rubyDeep, "InnerFacets")
 			b:bevelBox(Vector3.new(CW, CH, CD), CFrame.new(0, headY, 0), ruby, 0.26, { edgeStyle = rubyEdge, name = "Ruby" })
-			-- punta de diamante en ambas caras de emblema (facetas como en el concepto)
+			-- pirámide baja facetada en ambas caras de emblema
 			B.both(function(s)
-				local base = CFrame.new(0, headY, s * (CD / 2 - 0.02)) * CFrame.Angles(s * math.pi / 2, 0, 0)
-				b:pyramid(base, 0.34, CW - 0.18, 4, rubyFacet, "Facet", 0.06)
-				-- chispa de luz dentro de la punta
-				table.insert(coreParts, b:box(Vector3.new(0.22, 0.22, 0.06), CFrame.new(0, headY, s * (CD / 2 + 0.06)) * CFrame.Angles(0, 0, math.pi / 4), coreHot, "FacetSpark"))
+				facetTop(B.faceZ(s, headY, CD / 2 - 0.02), CW - 0.2, CH - 0.24, 0.4)
+				table.insert(coreParts, b:box(Vector3.new(0.2, 0.2, 0.06), CFrame.new(0, headY, s * (CD / 2 + 0.12)) * CFrame.Angles(0, 0, math.pi / 4), coreHot, "FacetSpark"))
 			end)
 			-- arriba y abajo: facetas planas giradas
 			for _, sy in { 1, -1 } do
-				b:box(Vector3.new(0.9, 0.06, 0.9), CFrame.new(0, headY + sy * (CH / 2 + 0.01), 0) * CFrame.Angles(0, math.pi / 4, 0), rubyFacet, "TopFacet")
+				b:box(Vector3.new(0.9, 0.06, 0.9), CFrame.new(0, headY + sy * (CH / 2 + 0.01), 0) * CFrame.Angles(0, math.pi / 4, 0), rubyLight, "TopFacet")
 			end
 
-			-- ── marcos de hierro con picos ─────────────────────
+			-- ── bandas gruesas de acero con tachones ───────────
 			B.both(function(sx)
 				local x = sx * bx
-				b:bevelBox(Vector3.new(bandW, BH, BD), CFrame.new(x, headY, 0), iron, 0.1, { edges = "X", edgeStyle = ironEdge, name = "Band" })
-				-- reborde interior más oscuro (lee como marco con profundidad)
-				b:box(Vector3.new(bandW + 0.04, BH - 0.5, BD - 0.5), CFrame.new(x, headY, 0), ironDark, "BandInner")
-				-- picos: arriba, abajo, y uno por cara de emblema
-				spike(Vector3.new(x, headY + BH / 2, 0), Vector3.yAxis, 0.6, 0.3)
-				spike(Vector3.new(x, headY - BH / 2, 0), -Vector3.yAxis, 0.42, 0.26)
+				b:bevelBox(Vector3.new(bandW, BH, BD), CFrame.new(x, headY, 0), steel, 0.13, { edges = "X", edgeStyle = steelEdge, name = "Band" })
+				-- filos oscuros a los lados (separan la banda del rubí)
+				for _, ox in { -1, 1 } do
+					b:box(Vector3.new(0.04, BH - 0.2, BD - 0.2), CFrame.new(x + ox * (bandW / 2 + 0.01), headY, 0), ironDark, "BandLip")
+				end
+				-- picos: arriba y abajo
+				spike(Vector3.new(x, headY + BH / 2, 0), Vector3.yAxis, 0.62, 0.34)
+				spike(Vector3.new(x, headY - BH / 2, 0), -Vector3.yAxis, 0.44, 0.28)
+				-- 3 tachones piramidales por cara
 				for _, sz in { 1, -1 } do
-					spike(Vector3.new(x, headY + 0.34, sz * BD / 2), Vector3.new(0, 0.25, sz), 0.48, 0.28)
-					b:rivet(Vector3.new(x, headY - 0.62, sz * (BD / 2 + 0.01)), 0.15, chrome)
-					b:rivet(Vector3.new(x, headY + 0.86, sz * (BD / 2 + 0.01)), 0.12, chrome)
+					for _, y in { -0.66, 0, 0.66 } do
+						stud(Vector3.new(x, headY + y, sz * BD / 2), Vector3.new(0, 0, sz), 0.4, 0.21, math.rad(15))
+					end
 				end
 
 				-- ── rubí del extremo ───────────────────────────
 				local ecf = CFrame.new(sx * ex, headY, 0)
-				table.insert(coreParts, b:box(Vector3.new(EW - 0.1, EH - 0.6, ED - 0.6), ecf, core, "EndCore"))
-				b:bevelBox(Vector3.new(EW, EH, ED), ecf, ruby, 0.3, { edges = "X", edgeStyle = rubyEdge, name = "EndRuby" })
-				-- grieta/faceta diagonal en las caras ±Z
+				table.insert(coreParts, b:box(Vector3.new(EW - 0.14, EH - 0.4, ED - 0.4), ecf, core, "EndCore"))
+				b:bevelBox(Vector3.new(EW, EH, ED), ecf, ruby, 0.26, { edges = "X", edgeStyle = rubyEdge, name = "EndRuby" })
 				for _, sz in { 1, -1 } do
-					b:box(Vector3.new(0.05, EH - 0.5, 0.04), ecf * CFrame.new(0, 0, sz * (ED / 2 + 0.005)) * CFrame.Angles(0, 0, sx * 0.5), rubyEdge, "FacetLine")
+					facetTop(B.faceZ(sz, headY, ED / 2 - 0.02, sx * ex), EW - 0.12, EH - 0.5, 0.26)
 				end
 
 				-- marco de hierro de la cara de golpe
@@ -109,61 +139,62 @@ return {
 				end
 				-- cara de golpe: punta de rubí facetada con chispa
 				local fbase = CFrame.new(sx * (EX1 - 0.02), headY, 0) * CFrame.Angles(0, 0, -sx * math.pi / 2)
-				b:pyramid(fbase, 0.36, 1.36, 4, rubyFacet, "StrikeFacet", 0.06)
+				b:pyramid(fbase, 0.38, 1.36, 4, rubyLight, "StrikeFacet", 0.06)
 				table.insert(coreParts, b:box(Vector3.new(0.06, 0.24, 0.24), CFrame.new(sx * (EX1 + 0.08), headY, 0) * CFrame.Angles(math.pi / 4, 0, 0), coreHot, "StrikeSpark"))
 				-- picos en las 4 esquinas, apuntando hacia afuera
 				for _, cy in { 1, -1 } do
 					for _, cz in { 1, -1 } do
-						spike(Vector3.new(sx * (frameX + 0.06), headY + cy * (fh / 2 - 0.12), cz * (fh / 2 - 0.12)), Vector3.new(sx, cy * 0.55, cz * 0.55), 0.5, 0.24, 3)
+						spike(Vector3.new(sx * (frameX + 0.06), headY + cy * (fh / 2 - 0.12), cz * (fh / 2 - 0.12)), Vector3.new(sx, cy * 0.55, cz * 0.55), 0.52, 0.26, 3)
 					end
 				end
 			end)
 		end)
 
-		-- ── mango ───────────────────────────────────────────────
+		-- ── mango (grueso y corto) ──────────────────────────────
 		b:group("Shaft", function()
 			local top = headY - CH / 2
-			local bottom = A.ShaftBottom
-			b:cylY(top - bottom, 0.4, CFrame.new(0, (top + bottom) / 2, 0), iron, "ShaftCore")
-			-- collar de hierro octagonal con tachones
-			local cy = top - 0.22
-			b:bevelBox(Vector3.new(0.7, 0.34, 0.7), CFrame.new(0, cy, 0), iron, 0.15, { edges = "Y", edgeStyle = ironEdge, name = "Collar" })
-			b:cylY(0.08, 0.6, CFrame.new(0, cy - 0.21, 0), ironDark, "CollarLip")
-			for i = 0, 3 do
-				local a = math.pi / 2 * i + math.pi / 4
-				b:rivet(Vector3.new(math.cos(a) * 0.29, cy, math.sin(a) * 0.29), 0.14, chrome)
+			local bottom = A.ShaftBottom + 0.15
+			b:cylY(top - bottom, 0.46, CFrame.new(0, (top + bottom) / 2, 0), iron, "ShaftCore")
+			-- collar de acero octagonal con tachones
+			local cy = top - 0.24
+			b:bevelBox(Vector3.new(0.86, 0.4, 0.86), CFrame.new(0, cy, 0), steel, 0.18, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
+			b:cylY(0.08, 0.76, CFrame.new(0, cy - 0.24, 0), ironDark, "CollarLip")
+			for i = 0, 5 do
+				local a = math.pi / 3 * i
+				local n = Vector3.new(math.cos(a), 0, math.sin(a))
+				stud(Vector3.new(0, cy, 0) + n * 0.4, n, 0.2, 0.1)
 			end
-			-- agarre de cuero rojo en espiral con amarres oscuros
-			local g0, g1 = -1.1, 1.75
-			b:cylY(g1 - g0, 0.48, CFrame.new(0, (g0 + g1) / 2, 0), leatherDark, "GripBase")
-			-- vueltas de cuero: discos inclinados alternados (lee como cuero cruzado) + cordón oscuro entre vueltas
-			local n = 9
+			-- agarre de cuero rojo en espiral con cordón oscuro
+			local g0, g1 = -0.98, 1.5
+			b:cylY(g1 - g0, 0.6, CFrame.new(0, (g0 + g1) / 2, 0), leatherDark, "GripBase")
+			local n = 8
 			local step = (g1 - g0) / n
 			for i = 0, n - 1 do
 				local y = g0 + step * (i + 0.5)
 				local tilt = if i % 2 == 0 then 0.18 else -0.18
-				b:cylY(step * 1.08, 0.56 - (i % 2) * 0.02, CFrame.new(0, y, 0) * CFrame.Angles(0, i * 0.7, 0) * CFrame.Angles(tilt, 0, 0), leather, "LeatherWrap")
+				b:cylY(step * 1.08, 0.7 - (i % 2) * 0.02, CFrame.new(0, y, 0) * CFrame.Angles(0, i * 0.7, 0) * CFrame.Angles(tilt, 0, 0), leather, "LeatherWrap")
 			end
-			-- cordón oscuro cruzado entre vueltas
 			for i = 1, n - 1, 2 do
-				b:cylY(0.05, 0.59, CFrame.new(0, g0 + step * i, 0) * CFrame.Angles(0, i * 0.9, 0) * CFrame.Angles(-0.3, 0, 0), leatherDark, "Cord")
+				b:cylY(0.05, 0.73, CFrame.new(0, g0 + step * i, 0) * CFrame.Angles(0, i * 0.9, 0) * CFrame.Angles(-0.3, 0, 0), leatherDark, "Cord")
 			end
 			for _, y in { g0, g1 } do
-				b:cylY(0.14, 0.6, CFrame.new(0, y, 0), leatherDark, "Binding")
+				b:cylY(0.14, 0.74, CFrame.new(0, y, 0), leatherDark, "Binding")
 			end
 		end)
 
-		-- ── pomo ────────────────────────────────────────────────
+		-- ── pomo (1.3x) ─────────────────────────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY - 0.05
-			b:bevelBox(Vector3.new(0.82, 0.5, 0.82), CFrame.new(0, y, 0), iron, 0.22, { edges = "Y", edgeStyle = ironEdge, name = "Pommel" })
-			b:bevelBox(Vector3.new(0.66, 0.12, 0.66), CFrame.new(0, y - 0.3, 0), ironDark, 0.18, { edges = "Y", edgeStyle = iron, name = "PommelCap" })
-			for i = 0, 3 do
-				local a = math.pi / 2 * i
-				b:rivet(Vector3.new(math.cos(a) * 0.42, y, math.sin(a) * 0.42), 0.2, spikeSt)
+			local y = A.PommelY + 0.04
+			b:bevelBox(Vector3.new(1.04, 0.6, 1.04), CFrame.new(0, y, 0), steel, 0.27, { edges = "Y", edgeStyle = steelEdge, name = "Pommel" })
+			b:bevelBox(Vector3.new(0.84, 0.14, 0.84), CFrame.new(0, y - 0.37, 0), ironDark, 0.22, { edges = "Y", edgeStyle = iron, name = "PommelCap" })
+			for i = 0, 7 do
+				local a = math.pi / 4 * i
+				local n = Vector3.new(math.cos(a), 0, math.sin(a))
+				local r = if i % 2 == 0 then 0.52 else 0.47
+				stud(Vector3.new(0, y, 0) + n * r, n, 0.26, 0.13)
 			end
 			-- rubí en la base del pomo
-			b:gem(CFrame.new(0, y - 0.4, 0), 0.2, rubyFacet, core)
+			b:gem(CFrame.new(0, y - 0.5, 0), 0.26, rubyLight, core)
 		end)
 
 		b:pulse(coreParts, 0, 0.45, 1.1)
@@ -180,7 +211,7 @@ return {
 				b:emitter(e, B.Particles.sparkle(P.rgb(255, 120, 140), 3), "EndSparkle")
 			end)
 		end)
-		b:light(Vector3.new(0, headY, 0), red, 2.2, 10, { pulse = { 1.2, 3 }, pulseSpeed = 1.1, name = "CoreGlow" })
+		b:light(Vector3.new(0, headY, 0), red, 2.6, 11, { pulse = { 1.4, 3.4 }, pulseSpeed = 1.1, name = "CoreGlow" })
 		b:light(Vector3.new(-EX1 - 0.3, headY, 0), P.rgb(255, 60, 80), 1, 6, { pulse = { 0.6, 1.6 }, pulseSpeed = 1.1, name = "StrikeGlow" })
 
 		local shards = B.Particles.sparkle(P.rgb(255, 50, 80), 0)
