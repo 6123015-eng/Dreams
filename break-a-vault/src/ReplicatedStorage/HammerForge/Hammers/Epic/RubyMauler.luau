@@ -151,50 +151,53 @@ return {
 		end)
 
 		-- ── mango (grueso y corto) ──────────────────────────────
+		-- K = factor radial del mango; PK = pomo (más ancho que alto para acortar el mango)
+		local K, PK = 1.2, 1.15
 		b:group("Shaft", function()
 			local top = headY - CH / 2
-			local bottom = A.ShaftBottom + 0.15
-			b:cylY(top - bottom, 0.46, CFrame.new(0, (top + bottom) / 2, 0), iron, "ShaftCore")
+			local bottom = -0.98
+			b:cylY(top - bottom, 0.46 * K, CFrame.new(0, (top + bottom) / 2, 0), iron, "ShaftCore")
 			-- collar de acero octagonal con tachones
 			local cy = top - 0.24
-			b:bevelBox(Vector3.new(0.86, 0.4, 0.86), CFrame.new(0, cy, 0), steel, 0.18, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
-			b:cylY(0.08, 0.76, CFrame.new(0, cy - 0.24, 0), ironDark, "CollarLip")
+			b:bevelBox(Vector3.new(0.86 * K, 0.4, 0.86 * K), CFrame.new(0, cy, 0), steel, 0.18 * K, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
+			b:cylY(0.08, 0.76 * K, CFrame.new(0, cy - 0.24, 0), ironDark, "CollarLip")
 			for i = 0, 5 do
 				local a = math.pi / 3 * i
 				local n = Vector3.new(math.cos(a), 0, math.sin(a))
-				stud(Vector3.new(0, cy, 0) + n * 0.4, n, 0.2, 0.1)
+				stud(Vector3.new(0, cy, 0) + n * 0.4 * K, n, 0.2 * K, 0.1 * K)
 			end
-			-- agarre de cuero rojo en espiral con cordón oscuro
-			local g0, g1 = -0.98, 1.5
-			b:cylY(g1 - g0, 0.6, CFrame.new(0, (g0 + g1) / 2, 0), leatherDark, "GripBase")
+			-- agarre de cuero rojo en espiral con cordón oscuro (sube hasta el collar)
+			local g0, g1 = -0.92, cy - 0.3
+			b:cylY(g1 - g0, 0.6 * K, CFrame.new(0, (g0 + g1) / 2, 0), leatherDark, "GripBase")
 			local n = 8
 			local step = (g1 - g0) / n
 			for i = 0, n - 1 do
 				local y = g0 + step * (i + 0.5)
 				local tilt = if i % 2 == 0 then 0.18 else -0.18
-				b:cylY(step * 1.08, 0.7 - (i % 2) * 0.02, CFrame.new(0, y, 0) * CFrame.Angles(0, i * 0.7, 0) * CFrame.Angles(tilt, 0, 0), leather, "LeatherWrap")
+				b:cylY(step * 1.08, (0.7 - (i % 2) * 0.02) * K, CFrame.new(0, y, 0) * CFrame.Angles(0, i * 0.7, 0) * CFrame.Angles(tilt, 0, 0), leather, "LeatherWrap")
 			end
 			for i = 1, n - 1, 2 do
-				b:cylY(0.05, 0.73, CFrame.new(0, g0 + step * i, 0) * CFrame.Angles(0, i * 0.9, 0) * CFrame.Angles(-0.3, 0, 0), leatherDark, "Cord")
+				b:cylY(0.05, 0.73 * K, CFrame.new(0, g0 + step * i, 0) * CFrame.Angles(0, i * 0.9, 0) * CFrame.Angles(-0.3, 0, 0), leatherDark, "Cord")
 			end
 			for _, y in { g0, g1 } do
-				b:cylY(0.14, 0.74, CFrame.new(0, y, 0), leatherDark, "Binding")
+				b:cylY(0.14, 0.74 * K, CFrame.new(0, y, 0), leatherDark, "Binding")
 			end
 		end)
 
-		-- ── pomo (1.3x) ─────────────────────────────────────────
+		-- ── pomo ────────────────────────────────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY + 0.04
-			b:bevelBox(Vector3.new(1.04, 0.6, 1.04), CFrame.new(0, y, 0), steel, 0.27, { edges = "Y", edgeStyle = steelEdge, name = "Pommel" })
-			b:bevelBox(Vector3.new(0.84, 0.14, 0.84), CFrame.new(0, y - 0.37, 0), ironDark, 0.22, { edges = "Y", edgeStyle = iron, name = "PommelCap" })
+			local ph = 0.56
+			local y = -0.97 - ph / 2
+			b:bevelBox(Vector3.new(1.04 * PK, ph, 1.04 * PK), CFrame.new(0, y, 0), steel, 0.27 * PK, { edges = "Y", edgeStyle = steelEdge, name = "Pommel" })
+			b:bevelBox(Vector3.new(0.84 * PK, 0.14, 0.84 * PK), CFrame.new(0, y - ph / 2 - 0.07, 0), ironDark, 0.22 * PK, { edges = "Y", edgeStyle = iron, name = "PommelCap" })
 			for i = 0, 7 do
 				local a = math.pi / 4 * i
 				local n = Vector3.new(math.cos(a), 0, math.sin(a))
-				local r = if i % 2 == 0 then 0.52 else 0.47
-				stud(Vector3.new(0, y, 0) + n * r, n, 0.26, 0.13)
+				local r = (if i % 2 == 0 then 0.52 else 0.47) * PK
+				stud(Vector3.new(0, y, 0) + n * r, n, 0.26 * PK, 0.13 * PK)
 			end
 			-- rubí en la base del pomo
-			b:gem(CFrame.new(0, y - 0.5, 0), 0.26, rubyLight, core)
+			b:gem(CFrame.new(0, y - ph / 2 - 0.16, 0), 0.26, rubyLight, core)
 		end)
 
 		b:pulse(coreParts, 0, 0.45, 1.1)
