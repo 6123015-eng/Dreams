@@ -195,43 +195,47 @@ return {
 		end
 
 		-- ── mango ───────────────────────────────────────────────
+		local K = 1.4 -- escala radial del mango (bloques cuadrados ~0.67 chunky como el concepto)
+		local gBottom = -0.92 -- fondo del agarre (mango más corto)
 		b:group("Shaft", function()
 			local top = headY - CH / 2
-			local bottom = A.ShaftBottom
 			-- collar: bloque de acero + bloque de piedra
-			b:bevelBox(Vector3.new(0.84, 0.2, 0.84), CFrame.new(0, top - 0.1, 0), steel, 0.16, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
-			b:bevelBox(Vector3.new(0.7, 0.3, 0.7), CFrame.new(0, top - 0.35, 0), stone, 0.12, { edges = "Y", edgeStyle = stoneEdge, name = "CollarStone" })
+			b:bevelBox(Vector3.new(0.84 * K, 0.22, 0.84 * K), CFrame.new(0, top - 0.11, 0), steel, 0.16 * K, { edges = "Y", edgeStyle = steelEdge, name = "Collar" })
+			b:bevelBox(Vector3.new(0.7 * K, 0.32, 0.7 * K), CFrame.new(0, top - 0.37, 0), stone, 0.12 * K, { edges = "Y", edgeStyle = stoneEdge, name = "CollarStone" })
 			-- eje de vacío (se ve en las costuras)
-			b:box(Vector3.new(0.34, top - bottom - 0.4, 0.34), CFrame.new(0, (top + bottom) / 2 - 0.2, 0), voidBlack, "ShaftCore")
+			b:box(Vector3.new(0.34 * K, top - gBottom, 0.34 * K), CFrame.new(0, (top + gBottom) / 2, 0), voidBlack, "ShaftCore")
 			-- bloques de piedra con costuras de neón
-			local g0, g1 = bottom + 0.05, top - 0.52
+			local g0, g1 = gBottom, top - 0.53
 			local n = 4
 			local step = (g1 - g0) / n
 			for i = 0, n - 1 do
 				local y = g0 + step * (i + 0.5)
-				local w = if i % 2 == 0 then 0.5 else 0.46
-				b:bevelBox(Vector3.new(w, step - 0.1, w), CFrame.new(0, y, 0) * CFrame.Angles(0, (i % 2) * 0.12, 0), obsidian, 0.08, { edges = "Y", edgeStyle = stoneEdge, name = "GripBlock" })
+				local w = (if i % 2 == 0 then 0.5 else 0.46) * K
+				b:bevelBox(Vector3.new(w, step - 0.1, w), CFrame.new(0, y, 0) * CFrame.Angles(0, (i % 2) * 0.12, 0), obsidian, 0.08 * K, { edges = "Y", edgeStyle = stoneEdge, name = "GripBlock" })
 				if i > 0 then
-					local seam = b:box(Vector3.new(0.4, 0.07, 0.4), CFrame.new(0, g0 + step * i, 0), neon, "Seam")
+					local seam = b:box(Vector3.new(0.4 * K, 0.08, 0.4 * K), CFrame.new(0, g0 + step * i, 0), neon, "Seam")
 					b:pulse({ seam }, 0, 0.5, 1.2, i * 0.25)
 				end
 			end
-			addCracks(crack(CFrame.new(0, 0.4, 0.251), Vector2.new(0.05, 0.5), Vector2.new(-0.08, -0.3), 3, 0.06, 91, 0.035))
+			-- grieta de vacío sobre el tercer bloque (cara +Z)
+			local cy = g0 + step * 2.5
+			addCracks(crack(CFrame.new(0, cy, 0.25 * K + 0.001), Vector2.new(0.05, step * 0.4), Vector2.new(-0.08, -step * 0.4), 3, 0.07, 91, 0.04))
 		end)
 
-		-- ── pomo ────────────────────────────────────────────────
+		-- ── pomo (1.3x, pegado al agarre) ───────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY - 0.05
-			b:bevelBox(Vector3.new(0.7, 0.12, 0.7), CFrame.new(0, y + 0.3, 0), steel, 0.12, { edges = "Y", edgeStyle = steelEdge, name = "PommelBand" })
-			b:bevelBox(Vector3.new(0.86, 0.46, 0.86), CFrame.new(0, y, 0), stone, 0.14, { edgeStyle = stoneEdge, name = "Pommel" })
+			local PK = 1.3
+			local y = gBottom - 0.42
+			b:bevelBox(Vector3.new(0.7 * PK, 0.14, 0.7 * PK), CFrame.new(0, gBottom - 0.1, 0), steel, 0.12 * PK, { edges = "Y", edgeStyle = steelEdge, name = "PommelBand" })
+			b:bevelBox(Vector3.new(0.86 * PK, 0.5, 0.86 * PK), CFrame.new(0, y, 0), stone, 0.14 * PK, { edgeStyle = stoneEdge, name = "Pommel" })
 			-- gema de vacío en cada cara del pomo
 			for i = 0, 3 do
 				local a = i * math.pi / 2
-				local f = CFrame.new(math.cos(a) * 0.43, y, math.sin(a) * 0.43) * CFrame.Angles(0, -a + math.pi / 2, 0)
-				b:box(Vector3.new(0.22, 0.22, 0.04), f * CFrame.Angles(0, 0, math.pi / 4), neon, "PommelRune")
+				local f = CFrame.new(math.cos(a) * 0.43 * PK, y, math.sin(a) * 0.43 * PK) * CFrame.Angles(0, -a + math.pi / 2, 0)
+				b:box(Vector3.new(0.28, 0.28, 0.04), f * CFrame.Angles(0, 0, math.pi / 4), neon, "PommelRune")
 			end
-			b:pyramid(CFrame.new(0, y - 0.22, 0) * CFrame.Angles(math.pi, math.pi / 4, 0), 0.42, 0.5, 4, P.crystal(purple, 0.25), "PommelGem")
-			local gc = b:ball(0.22, CFrame.new(0, y - 0.32, 0), neonHot, "PommelCore")
+			b:pyramid(CFrame.new(0, y - 0.24, 0) * CFrame.Angles(math.pi, math.pi / 4, 0), 0.4, 0.5 * PK, 4, P.crystal(purple, 0.25), "PommelGem")
+			local gc = b:ball(0.26, CFrame.new(0, y - 0.34, 0), neonHot, "PommelCore")
 			b:pulse({ gc }, 0, 0.5, 1.2)
 		end)
 
