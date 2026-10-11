@@ -1,0 +1,293 @@
+<title>Break a Vault Armory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;700;800&family=Rajdhani:wght@500;600;700&display=swap">
+<style>
+/* Layout: an armory bay — the live 3D stage is the hero, the hammer rack sits below it like slots on a wall. Committed dark sci-fi look that matches the game HUD. */
+:root{
+  color-scheme: dark;
+  --bg:#050e1a; --bay:#0a1a2c; --panel:#0e2238; --line:#24507c; --line-soft:#173a5c;
+  --glow:#37b8ff; --glow-soft:#8fdcff; --gold:#ffc64b; --text:#eaf4ff; --muted:#8fb0d0;
+  --r-starter:#9fb6cc; --r-uncommon:#4fd06b; --r-rare:#3aa6ff; --r-epic:#b472ff; --r-legendary:#ffc23b; --r-mythic:#ff4d5e; --r-special:#c98bff;
+  --display:"Oxanium", "Rajdhani", ui-sans-serif, system-ui, sans-serif;
+  --body:"Rajdhani", ui-sans-serif, system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--text)}
+body{font-family:var(--body);font-size:16px;line-height:1.4;padding-inline:16px;padding-block:14px 32px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;line-height:.86}
+.brand .a{font-family:var(--display);font-weight:800;font-style:italic;font-size:15px;letter-spacing:.18em;color:#cfe4f5}
+.brand .v{font-family:var(--display);font-weight:800;font-style:italic;font-size:34px;letter-spacing:.02em;color:var(--gold);text-shadow:0 2px 0 #4a2a04}
+.brand .v span{color:var(--text);font-size:.62em;letter-spacing:.14em;margin-left:.35em;text-shadow:none}
+.count{font-family:var(--display);font-weight:700;color:var(--muted);font-size:14px;letter-spacing:.12em;text-transform:uppercase}
+.count b{color:var(--text);font-variant-numeric:tabular-nums}
+
+.bay{position:relative;border-radius:14px;overflow:hidden;background:radial-gradient(70% 70% at 50% 40%,#13304d 0%,#0a1a2c 55%,#060f1c 100%);border:1px solid var(--line-soft);aspect-ratio:16/9;max-height:70vh;width:100%;max-width:100%}
+.bay canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.corner{position:absolute;width:22px;height:22px;border-color:var(--glow);border-style:solid;opacity:.55;pointer-events:none}
+.c1{top:10px;left:10px;border-width:2px 0 0 2px}.c2{top:10px;right:10px;border-width:2px 2px 0 0}.c3{bottom:10px;left:10px;border-width:0 0 2px 2px}.c4{bottom:10px;right:10px;border-width:0 2px 2px 0}
+.info{position:absolute;left:18px;bottom:18px;max-width:min(360px,calc(100% - 36px));display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.info .rar{align-self:flex-start;font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.16em;text-transform:uppercase;padding:3px 9px;border-radius:5px;color:#071222;background:var(--rc,#9fb6cc)}
+.info h1{font-family:var(--display);font-weight:800;font-size:clamp(24px,4.2vw,40px);line-height:1;margin:0;text-wrap:balance;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.info .zone{color:var(--muted);font-weight:600;font-size:15px}
+.stats{display:flex;gap:14px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-family:var(--display);font-size:18px;font-weight:700}
+.stats span{font-size:12px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.controls{position:absolute;right:16px;bottom:16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100% - 32px)}
+button{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.06em;color:var(--text);background:rgba(14,34,56,.88);border:1px solid var(--line);border-radius:8px;padding:9px 13px;cursor:pointer;transition:transform .12s,border-color .12s,background .12s}
+button:hover{border-color:var(--glow-soft)}
+button:active{transform:scale(.96)}
+button:focus-visible{outline:2px solid var(--glow-soft);outline-offset:2px}
+button[aria-pressed="false"]{color:var(--muted)}
+button.hit{background:linear-gradient(#ffd75e,#f2a51e);color:#2a1700;border-color:#ffe9a8;font-weight:800;padding-inline:20px}
+.note{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:rgba(143,176,208,.7);white-space:nowrap;pointer-events:none}
+
+.rail{display:flex;gap:6px;flex-wrap:wrap}
+.rail button{font-size:13px;padding:7px 11px;background:var(--bay)}
+.rail button[aria-pressed="true"]{border-color:var(--rc,var(--glow));color:var(--rc,var(--text));box-shadow:inset 0 0 0 1px var(--rc,var(--glow))}
+.rack{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px}
+.slot{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0;border-radius:10px;overflow:hidden;background:var(--panel);border:1px solid var(--line-soft);text-align:left;min-width:0}
+.slot img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;max-width:100%;background:#0b1828}
+.slot .nm{font-family:var(--display);font-weight:700;font-size:13px;line-height:1.15;padding:7px 9px 2px;color:var(--text);text-wrap:balance}
+.slot .rr{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:0 9px 8px;color:var(--rc,#9fb6cc)}
+.slot[aria-current="true"]{border-color:var(--rc,var(--glow));box-shadow:0 0 0 1px var(--rc,var(--glow)),0 0 18px -4px var(--rc,var(--glow))}
+.foot{color:var(--muted);font-size:14px;max-width:70ch}
+@media (max-width:640px){
+  .bay{aspect-ratio:4/5;max-height:none}
+  .info{bottom:auto;top:16px}
+  .note{display:none}
+  .brand .v{font-size:28px}
+}
+@media (prefers-reduced-motion:reduce){button{transition:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brand"><span class="a">BREAK A</span><span class="v">VAULT<span>ARMORY</span></span></div>
+    <div class="count"><b id="count">0</b> martillos · HammerForge</div>
+  </header>
+
+  <section class="bay" id="bay" aria-label="Vista 3D del martillo">
+    <canvas id="stage"></canvas>
+    <span class="corner c1"></span><span class="corner c2"></span><span class="corner c3"></span><span class="corner c4"></span>
+    <div class="note">Arrastra para girar · rueda o pellizco para zoom</div>
+    <div class="info" id="info">
+      <span class="rar" id="i-rar">STARTER</span>
+      <h1 id="i-name">Cargando…</h1>
+      <div class="zone" id="i-zone"></div>
+      <div class="stats">
+        <div><b id="i-parts">0</b><span>piezas</span></div>
+        <div><b id="i-rate">0</b><span>partículas/s</span></div>
+        <div><b id="i-lights">0</b><span>luces</span></div>
+        <div><b id="i-height">0</b><span>studs de alto</span></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="b-spin" aria-pressed="true">Girar</button>
+      <button id="b-fx" aria-pressed="true">Efectos</button>
+      <button id="b-view">Vista concepto</button>
+      <button id="b-hit" class="hit">Golpear</button>
+    </div>
+  </section>
+
+  <nav class="rail" id="rail" aria-label="Filtrar por rareza"></nav>
+  <div class="rack" id="rack"></div>
+  <p class="foot">Vista previa aproximada del render de Roblox: la geometría es exacta (mismas piezas que el .rbxm); los materiales y el brillo se parecen a Roblox con BloomEffect. Para verlo real, abre <b>BreakAVault_Showcase.rbxl</b> en Roblox Studio.</p>
+</div>
+
+<script type="application/json" id="hammer-data">/*__DATA__*/</script>
+<script type="application/json" id="hammer-thumbs">/*__THUMBS__*/</script>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }
+</script>
+<script type="module">
+/*__VIEWER__*/
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const DATA = JSON.parse(document.getElementById('hammer-data').textContent);
+const THUMBS = JSON.parse(document.getElementById('hammer-thumbs').textContent || '{}');
+const HAMMERS = Array.isArray(DATA.hammers) ? DATA.hammers : [];
+const ORDER = ['Starter', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Mythic', 'Special'];
+const RC = { Starter: '--r-starter', Uncommon: '--r-uncommon', Rare: '--r-rare', Epic: '--r-epic', Legendary: '--r-legendary', Mythic: '--r-mythic', Special: '--r-special' };
+const LABEL = { Starter: 'Starter', Uncommon: 'Uncommon', Rare: 'Rare', Epic: 'Epic', Legendary: 'Legendary', Mythic: 'Mythic', Special: 'Special & Event' };
+const rcVar = (r) => `var(${RC[r] || '--r-starter'})`;
+const $ = (id) => document.getElementById(id);
+$('count').textContent = HAMMERS.length;
+
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const canvas = $('stage');
+const stage = createStage(canvas, { pixelRatio: Math.min(2, window.devicePixelRatio || 1), background: 0x0a1a2c });
+
+const controls = new OrbitControls(stage.camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.08; controls.enablePan = false;
+controls.minDistance = 4; controls.maxDistance = 40;
+controls.autoRotate = !reduce; controls.autoRotateSpeed = 1.6;
+
+// pedestal ring
+const ringMat = new THREE.MeshBasicMaterial({ color: 0x37b8ff, toneMapped: false, transparent: true, opacity: 0.9 });
+const ring = new THREE.Mesh(new THREE.TorusGeometry(2.1, 0.035, 8, 96), ringMat);
+ring.rotation.x = Math.PI / 2; stage.scene.add(ring);
+const glowCv = document.createElement('canvas'); glowCv.width = glowCv.height = 128;
+{ const g = glowCv.getContext('2d'); const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, 'rgba(255,255,255,0.55)'); gr.addColorStop(0.55, 'rgba(255,255,255,0.18)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, 128, 128); }
+const discMat = new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(glowCv), color: 0x37b8ff, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, opacity: 0.55 });
+const disc = new THREE.Mesh(new THREE.CircleGeometry(2.6, 64), discMat);
+disc.rotation.x = -Math.PI / 2; stage.scene.add(disc);
+
+const pivot = new THREE.Group(); stage.scene.add(pivot);
+let current = null, currentData = null, fxOn = true;
+
+// swing trail ribbon
+const TRAIL_N = 18;
+const trailGeo = new THREE.BufferGeometry();
+const trailPos = new Float32Array(TRAIL_N * 2 * 3), trailCol = new Float32Array(TRAIL_N * 2 * 4);
+trailGeo.setAttribute('position', new THREE.BufferAttribute(trailPos, 3));
+trailGeo.setAttribute('color', new THREE.BufferAttribute(trailCol, 4));
+const idx = []; for (let i = 0; i < TRAIL_N - 1; i++) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+trailGeo.setIndex(idx);
+const trail = new THREE.Mesh(trailGeo, new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, toneMapped: false }));
+trail.frustumCulled = false; trail.visible = false; stage.scene.add(trail);
+const samples = [];
+let trailColor = new THREE.Color(1, 1, 1);
+
+function resize() {
+  const r = $('bay').getBoundingClientRect();
+  stage.resize(Math.max(1, r.width), Math.max(1, r.height));
+}
+new ResizeObserver(resize).observe($('bay'));
+
+function frameView(view) {
+  if (!currentData) return;
+  const f = frame(stage.camera, currentData.stats, view, view === 'profile' ? 1.15 : 1.25);
+  controls.target.copy(f.target);
+  controls.update();
+}
+
+function select(id) {
+  const hd = HAMMERS.find((h) => h.id === id) || HAMMERS[0];
+  if (!hd) return;
+  if (current) { pivot.remove(current.group); }
+  current = buildHammer(hd, { scaleRef: stage.scaleRef });
+  currentData = hd;
+  pivot.add(current.group);
+  current.prewarm(1.2);
+  const minY = hd.stats.bboxMin[1];
+  ring.position.y = minY - 0.25; disc.position.y = minY - 0.27;
+  const col = getComputedStyle(document.documentElement).getPropertyValue(RC[hd.rarity] || '--r-starter').trim();
+  ringMat.color.set(col || '#37b8ff'); discMat.color.set(col || '#37b8ff');
+  const t = Array.isArray(hd.trails) && hd.trails[0];
+  trailColor = t && Array.isArray(t.col) ? new THREE.Color().setRGB(...t.col[0][1], THREE.SRGBColorSpace) : new THREE.Color(col || '#ffffff');
+  $('info').style.setProperty('--rc', rcVar(hd.rarity));
+  $('i-rar').textContent = LABEL[hd.rarity] || hd.rarity;
+  $('i-name').textContent = hd.name;
+  $('i-zone').textContent = hd.theme ? `Zona sugerida: ${hd.theme}` : '';
+  $('i-parts').textContent = hd.stats.parts;
+  $('i-rate').textContent = Math.round(hd.stats.emitterRate);
+  $('i-lights').textContent = hd.stats.lights;
+  $('i-height').textContent = hd.stats.size[1].toFixed(1);
+  document.querySelectorAll('.slot').forEach((s) => s.setAttribute('aria-current', s.dataset.id === hd.id ? 'true' : 'false'));
+  try { localStorage.setItem('bav-armory-sel', hd.id); } catch (e) {}
+  frameView('hero');
+}
+
+// rack + rarity rail
+let filter = 'All';
+function drawRail() {
+  const rail = $('rail'); rail.innerHTML = '';
+  const present = ORDER.filter((r) => HAMMERS.some((h) => h.rarity === r));
+  ['All', ...present].forEach((r) => {
+    const b = document.createElement('button');
+    b.textContent = r === 'All' ? 'Todos' : LABEL[r];
+    b.setAttribute('aria-pressed', String(filter === r));
+    if (r !== 'All') b.style.setProperty('--rc', rcVar(r));
+    b.addEventListener('click', () => { filter = r; drawRail(); drawRack(); });
+    rail.appendChild(b);
+  });
+}
+function drawRack() {
+  const rack = $('rack'); rack.innerHTML = '';
+  HAMMERS.filter((h) => filter === 'All' || h.rarity === filter).forEach((h) => {
+    const b = document.createElement('button');
+    b.className = 'slot'; b.dataset.id = h.id; b.style.setProperty('--rc', rcVar(h.rarity));
+    b.setAttribute('aria-current', currentData && currentData.id === h.id ? 'true' : 'false');
+    if (THUMBS[h.id]) { const img = document.createElement('img'); img.src = THUMBS[h.id]; img.alt = ''; b.appendChild(img); }
+    const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = h.name; b.appendChild(nm);
+    const rr = document.createElement('span'); rr.className = 'rr'; rr.textContent = LABEL[h.rarity] || h.rarity; b.appendChild(rr);
+    b.addEventListener('click', () => { select(h.id); if (window.innerWidth < 640) $('bay').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); });
+    rack.appendChild(b);
+  });
+}
+
+// controls
+$('b-spin').addEventListener('click', (e) => { controls.autoRotate = !controls.autoRotate; e.currentTarget.setAttribute('aria-pressed', String(controls.autoRotate)); });
+$('b-fx').addEventListener('click', (e) => { fxOn = !fxOn; e.currentTarget.setAttribute('aria-pressed', String(fxOn)); stage.bloom.enabled = fxOn; });
+$('b-view').addEventListener('click', () => { controls.autoRotate = false; $('b-spin').setAttribute('aria-pressed', 'false'); frameView('profile'); });
+
+let swing = null, shake = 0;
+$('b-hit').addEventListener('click', () => { if (!swing) swing = { t: 0, hit: false }; });
+window.addEventListener('keydown', (e) => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); if (!swing) swing = { t: 0, hit: false }; } });
+
+const ease = (x) => x * x * x;
+const tmpA = new THREE.Vector3(), tmpB = new THREE.Vector3();
+function updateSwing(dt) {
+  if (!swing || !currentData) { pivot.rotation.z = 0; return; }
+  swing.t += dt;
+  const DOWN = 0.2, HOLD = 0.12, UP = 0.42;
+  let a;
+  if (swing.t < DOWN) a = ease(swing.t / DOWN) * 1.75;
+  else if (swing.t < DOWN + HOLD) { a = 1.75; if (!swing.hit) { swing.hit = true; current.impact(); shake = 1; } }
+  else if (swing.t < DOWN + HOLD + UP) { const k = (swing.t - DOWN - HOLD) / UP; a = 1.75 * (1 - k * k * (3 - 2 * k)); }
+  else { a = 0; swing = null; }
+  pivot.rotation.z = a;
+  const tr = Array.isArray(currentData.trails) && currentData.trails[0];
+  if (tr && swing && swing.t < DOWN + 0.06) {
+    pivot.updateMatrixWorld();
+    tmpA.set(...tr.a).applyMatrix4(pivot.matrixWorld); tmpB.set(...tr.b).applyMatrix4(pivot.matrixWorld);
+    samples.unshift([tmpA.clone(), tmpB.clone()]);
+  }
+}
+function updateTrail(dt) {
+  if (samples.length && !swing) samples.splice(Math.max(1, samples.length - Math.ceil(dt * 60 * 3)));
+  if (samples.length > TRAIL_N) samples.length = TRAIL_N;
+  trail.visible = fxOn && samples.length > 1;
+  if (!trail.visible) { if (!swing) samples.length = 0; return; }
+  for (let i = 0; i < TRAIL_N; i++) {
+    const s = samples[Math.min(i, samples.length - 1)];
+    trailPos.set([s[0].x, s[0].y, s[0].z, s[1].x, s[1].y, s[1].z], i * 6);
+    const k = 1 - i / (samples.length - 1 || 1); const alpha = Math.max(0, k) * 0.85;
+    trailCol.set([trailColor.r, trailColor.g, trailColor.b, alpha, trailColor.r, trailColor.g, trailColor.b, alpha * 0.4], i * 8);
+  }
+  trailGeo.attributes.position.needsUpdate = true; trailGeo.attributes.color.needsUpdate = true;
+}
+
+let last = performance.now(), t = 0;
+const camBase = new THREE.Vector3();
+function loop(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now; t += dt;
+  updateSwing(dt);
+  if (current) {
+    if (fxOn) current.update(t, dt);
+    current.group.traverse((o) => { if (o.isPoints) o.visible = fxOn; });
+  }
+  updateTrail(dt);
+  controls.update();
+  if (shake > 0 && !reduce) {
+    camBase.copy(stage.camera.position);
+    stage.camera.position.x += (Math.random() - 0.5) * 0.12 * shake; stage.camera.position.y += (Math.random() - 0.5) * 0.12 * shake;
+    stage.render();
+    stage.camera.position.copy(camBase);
+    shake = Math.max(0, shake - dt * 4);
+  } else stage.render();
+  requestAnimationFrame(loop);
+}
+
+drawRail(); drawRack(); resize();
+let initial = HAMMERS[0] && HAMMERS[0].id;
+try { const saved = localStorage.getItem('bav-armory-sel'); if (saved && HAMMERS.some((h) => h.id === saved)) initial = saved; } catch (e) {}
+const hash = location.hash.replace('#', '');
+if (hash && HAMMERS.some((h) => h.id === hash)) initial = hash;
+select(initial);
+requestAnimationFrame(loop);
+</script>

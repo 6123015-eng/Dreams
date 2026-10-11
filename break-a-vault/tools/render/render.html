@@ -88,6 +88,24 @@ window.renderSheet = async (path, cols = 8, cw = 220, ch = 300) => {
   });
   return out.toDataURL('image/png');
 };
+// Miniaturas (vista hero) para la vista previa → { id: dataURL jpeg }
+window.renderThumbs = async (path, w = 240, h = 300) => {
+  const data = await load(path);
+  const out = {};
+  for (const hd of data.hammers) {
+    const hammer = buildHammer(hd, { scaleRef: stage.scaleRef });
+    stage.scene.add(hammer.group);
+    hammer.prewarm(1.4);
+    stage.resize(w * 2, h * 2);
+    frame(stage.camera, hd.stats, 'hero', 1.02);
+    stage.render();
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    c.getContext('2d').drawImage(canvas, 0, 0, w, h);
+    out[hd.id] = c.toDataURL('image/jpeg', 0.84);
+    stage.scene.remove(hammer.group);
+  }
+  return out;
+};
 window.ready = true;
 </script>
 </body>
