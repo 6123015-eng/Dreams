@@ -122,44 +122,47 @@ return {
 			b:cylY(0.1, 0.7, CFrame.new(0, headY - CH / 2 - 0.02, 0), gun, "EyePlate")
 		end)
 
-		local shaftBottom = A.ShaftBottom + 0.27
+		-- mango grueso y corto: K = escala radial de todo el mango; el pomo sube
+		local K = 1.2
+		local shaftBottom = -1.02
 		b:group("Shaft", function()
 			local bottom, top = shaftBottom, headY - CH / 2
-			b:cylY(top - bottom, 0.46, CFrame.new(0, (top + bottom) / 2, 0), dark, "Shaft")
+			b:cylY(top - bottom, 0.46 * K, CFrame.new(0, (top + bottom) / 2, 0), dark, "Shaft")
 
 			-- casquillo remachado (socket) bajo la cabeza
-			oct(0.5, 0.78, CFrame.new(0, top - 0.3, 0), gun, "Socket")
-			b:disc(CFrame.new(0, top - 0.04, 0), 0.84, 0.06, capEdge, "SocketLip")
+			oct(0.5, 0.78 * K, CFrame.new(0, top - 0.3, 0), gun, "Socket")
+			b:disc(CFrame.new(0, top - 0.04, 0), 0.84 * K, 0.06, capEdge, "SocketLip")
 			for _, a in { 0, math.pi } do
-				b:rivet(Vector3.new(math.sin(a) * 0.39, top - 0.3, math.cos(a) * 0.39), 0.15, rivetSt)
+				b:rivet(Vector3.new(math.sin(a) * 0.39 * K, top - 0.3, math.cos(a) * 0.39 * K), 0.17, rivetSt)
 			end
 			-- anillo de acero biselado
 			local ry = top - 0.68
-			b:disc(CFrame.new(0, ry, 0), 0.76, 0.16, P.BrightSteel, "SteelRing")
-			b:disc(CFrame.new(0, ry + 0.1, 0), 0.68, 0.05, chrome, "SteelRingLip")
-			b:disc(CFrame.new(0, ry - 0.1, 0), 0.68, 0.05, chrome, "SteelRingLip")
-			b:rivet(Vector3.new(0, ry, 0.38), 0.12, chrome)
-			b:rivet(Vector3.new(0, ry, -0.38), 0.12, chrome)
+			b:disc(CFrame.new(0, ry, 0), 0.76 * K, 0.17, P.BrightSteel, "SteelRing")
+			b:disc(CFrame.new(0, ry + 0.1, 0), 0.68 * K, 0.05, chrome, "SteelRingLip")
+			b:disc(CFrame.new(0, ry - 0.1, 0), 0.68 * K, 0.05, chrome, "SteelRingLip")
+			b:rivet(Vector3.new(0, ry, 0.38 * K), 0.14, chrome)
+			b:rivet(Vector3.new(0, ry, -0.38 * K), 0.14, chrome)
 
 			-- agarre corto y grueso: núcleo hundido + costillas gruesas (ranuras hondas)
-			local g0, g1 = shaftBottom + 0.12, ry - 0.16
-			b:cylY(g1 - g0, 0.5, CFrame.new(0, (g0 + g1) / 2, 0), dark, "GripCore")
+			local g0, g1 = -0.9, ry - 0.17
+			b:cylY(g1 - g0, 0.5 * K, CFrame.new(0, (g0 + g1) / 2, 0), dark, "GripCore")
 			local n = 7
 			for i = 0, n - 1 do
 				local y = g0 + 0.1 + (g1 - g0 - 0.2) * i / (n - 1)
-				b:disc(CFrame.new(0, y, 0), 0.68, 0.17, rubber, "GripRib")
-				b:disc(CFrame.new(0, y + 0.07, 0), 0.62, 0.04, rubberRib, "GripRibTop")
+				b:disc(CFrame.new(0, y, 0), 0.68 * K, 0.24, rubber, "GripRib")
+				b:disc(CFrame.new(0, y + 0.11, 0), 0.62 * K, 0.04, rubberRib, "GripRibTop")
 			end
 		end)
 
 		b:group("Pommel", function()
-			local py = shaftBottom - 0.3
-			b:disc(CFrame.new(0, shaftBottom + 0.06, 0), 0.66, 0.08, chrome, "PommelLip")
-			oct(0.5, 0.96, CFrame.new(0, py, 0), capSt, "Pommel")
-			b:disc(CFrame.new(0, py + 0.28, 0), 0.86, 0.08, capEdge, "PommelBevel")
-			b:disc(CFrame.new(0, py - 0.28, 0), 0.86, 0.08, capEdge, "PommelBevel")
-			b:cylY(0.08, 0.66, CFrame.new(0, py - 0.34, 0), dark, "PommelCap")
-			b:cylY(0.04, 0.3, CFrame.new(0, py - 0.39, 0), chrome, "PommelBoss")
+			local PK = 1.25 -- pomo ~1.3x
+			local py = -1.12
+			b:disc(CFrame.new(0, -0.9, 0), 0.66 * K, 0.08, chrome, "PommelLip")
+			oct(0.4, 0.96 * PK, CFrame.new(0, py, 0), capSt, "Pommel")
+			b:disc(CFrame.new(0, py + 0.22, 0), 0.86 * PK, 0.08, capEdge, "PommelBevel")
+			b:disc(CFrame.new(0, py - 0.22, 0), 0.86 * PK, 0.08, capEdge, "PommelBevel")
+			b:cylY(0.08, 0.66 * PK, CFrame.new(0, py - 0.28, 0), dark, "PommelCap")
+			b:cylY(0.04, 0.3 * PK, CFrame.new(0, py - 0.33, 0), chrome, "PommelBoss")
 		end)
 
 		-- destello sutil sobre el acero
