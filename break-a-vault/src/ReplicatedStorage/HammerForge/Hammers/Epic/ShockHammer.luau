@@ -155,10 +155,9 @@ return {
 			local folder = b:group(if sx > 0 then "ArcsR" else "ArcsL", function()
 				local cx = sx * (ex + 0.2)
 				local defs = {
-					-- { z, radio, a0, a1, semilla, glow }  (ángulos para el lado +X; se espejan)
+					-- { z, radio, a0, a1, semilla, glow }  (ángulos para el lado +X; se espejan) — solo 2 lazos finos: lo grande es de ThunderCore
 					{ 1.1, 1.32, 1.9, -1.2, 11, true }, -- lazo grande al frente (de arriba-adentro a abajo-afuera)
 					{ -1.1, 1.3, 1.0, -1.9, 23, true }, -- lazo grande atrás
-					{ 0.2, 1.45, 2.4, 0.5, 37, false }, -- chispazo arriba
 				}
 				for _, d in defs do
 					local a0, a1 = d[3], d[4]
@@ -166,11 +165,11 @@ return {
 						a0, a1 = math.pi - d[3], math.pi - d[4]
 					end
 					local pts = arcPoints(cx, headY, d[1], d[2], a0, a1, 6, 0.24, d[5] + (if sx > 0 then 0 else 100))
-					for _, p in b:polyline(pts, 0.05, 0.05, arcCore, Vector3.zAxis, false, "Arc") do
+					for _, p in b:polyline(pts, 0.04, 0.04, arcCore, Vector3.zAxis, false, "Arc") do
 						table.insert(arcParts, p)
 					end
 					if d[6] then
-						for _, p in b:polyline(pts, 0.12, 0.12, arcGlow, Vector3.zAxis, false, "ArcGlow") do
+						for _, p in b:polyline(pts, 0.09, 0.09, arcGlow, Vector3.zAxis, false, "ArcGlow") do
 							table.insert(arcParts, p)
 						end
 					end
@@ -180,54 +179,57 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
+		-- K = factor radial del mango (agarre grueso como el concepto); PK = pomo
+		local K, PK = 1.3, 1.3
 		b:group("Shaft", function()
 			local top = headY - CH / 2
-			local bottom = A.ShaftBottom
+			local bottom = -0.98
 			-- collar de bronce octagonal bajo la cabeza
-			b:bevelBox(Vector3.new(0.7, 0.2, 0.7), CFrame.new(0, top - 0.1, 0), bronze, 0.14, { edges = "Y", edgeStyle = bronzeEdge, name = "Collar" })
-			b:bevelBox(Vector3.new(0.56, 0.14, 0.56), CFrame.new(0, top - 0.27, 0), steelDark, 0.1, { edges = "Y", edgeStyle = steelEdge, name = "CollarLow" })
+			b:bevelBox(Vector3.new(0.7 * K, 0.2, 0.7 * K), CFrame.new(0, top - 0.1, 0), bronze, 0.14 * K, { edges = "Y", edgeStyle = bronzeEdge, name = "Collar" })
+			b:bevelBox(Vector3.new(0.56 * K, 0.14, 0.56 * K), CFrame.new(0, top - 0.27, 0), steelDark, 0.1 * K, { edges = "Y", edgeStyle = steelEdge, name = "CollarLow" })
 			-- eje de acero pavonado
-			b:cylY(top - bottom - 0.2, A.ShaftDia, CFrame.new(0, (top + bottom) / 2 - 0.1, 0), steelDark, "ShaftCore")
+			b:cylY(top - bottom - 0.2, A.ShaftDia * K, CFrame.new(0, (top + bottom) / 2 - 0.1, 0), steelDark, "ShaftCore")
 			-- agarre segmentado: goma + anillos de acero + 3 anillos de neón bajo vidrio
-			local g0, g1 = -1.15, 1.95
-			local segs = 8
+			local g0, g1 = -0.92, 1.95
+			local segs = 6
 			local step = (g1 - g0) / segs
-			local neonAt = { [2] = true, [4] = true, [6] = true }
+			local neonAt = { [1] = true, [3] = true, [5] = true }
 			for i = 0, segs - 1 do
 				local y = g0 + step * (i + 0.5)
-				b:cylY(step - 0.05, 0.54, CFrame.new(0, y, 0), rubber, "Grip")
+				b:cylY(step - 0.05, 0.54 * K, CFrame.new(0, y, 0), rubber, "Grip")
 			end
 			for i = 0, segs do
 				local y = g0 + step * i
 				if neonAt[i] then
-					local ringN = b:cylY(0.1, 0.6, CFrame.new(0, y, 0), neon, "GripNeon")
+					local ringN = b:cylY(0.1, 0.6 * K, CFrame.new(0, y, 0), neon, "GripNeon")
 					-- la energía "sube" por el mango: pulso escalonado de abajo hacia arriba
 					b:pulse(ringN, 0, 0.55, 1.4, 1 - i * 0.12)
-					b:cylY(0.16, 0.64, CFrame.new(0, y, 0), glass, "GripNeonGlass")
+					b:cylY(0.16, 0.64 * K, CFrame.new(0, y, 0), glass, "GripNeonGlass")
 				else
-					b:cylY(0.08, 0.62, CFrame.new(0, y, 0), steel, "GripRing")
+					b:cylY(0.08, 0.62 * K, CFrame.new(0, y, 0), steel, "GripRing")
 				end
 			end
 		end)
 
 		-- ── pomo ────────────────────────────────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY - 0.05
-			b:cylY(0.08, 0.52, CFrame.new(0, y + 0.3, 0), neon, "PommelNeon")
-			b:bevelBox(Vector3.new(0.86, 0.56, 0.86), CFrame.new(0, y, 0), steel, 0.24, { edges = "Y", edgeStyle = steelEdge, name = "Pommel" })
-			b:bevelBox(Vector3.new(0.7, 0.12, 0.7), CFrame.new(0, y - 0.33, 0), black, 0.19, { edges = "Y", edgeStyle = steel, name = "PommelCap" })
+			local ph = 0.5
+			local y = -0.97 - ph / 2
+			b:cylY(0.08, 0.52 * PK, CFrame.new(0, y + ph / 2 + 0.02, 0), neon, "PommelNeon")
+			b:bevelBox(Vector3.new(0.86 * PK, ph, 0.86 * PK), CFrame.new(0, y, 0), steel, 0.24 * PK, { edges = "Y", edgeStyle = steelEdge, name = "Pommel" })
+			b:bevelBox(Vector3.new(0.7 * PK, 0.12, 0.7 * PK), CFrame.new(0, y - ph / 2 - 0.05, 0), black, 0.19 * PK, { edges = "Y", edgeStyle = steel, name = "PommelCap" })
 			for i = 0, 3 do
 				local a = math.pi / 2 * i
-				b:rivet(Vector3.new(math.cos(a) * 0.44, y, math.sin(a) * 0.44), 0.14, chrome)
+				b:rivet(Vector3.new(math.cos(a) * 0.44 * PK, y, math.sin(a) * 0.44 * PK), 0.14 * PK, chrome)
 			end
-			b:cylY(0.04, 0.24, CFrame.new(0, y - 0.4, 0), neonHot, "PommelGem")
+			b:cylY(0.04, 0.24 * PK, CFrame.new(0, y - ph / 2 - 0.12, 0), neonHot, "PommelGem")
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
 		b:group("FX", function()
 			B.both(function(sx)
 				local v = b:fxVolume(Vector3.new(EW + 0.6, EH + 0.5, ED + 0.5), CFrame.new(sx * (ex + 0.15), headY, 0), "SparkVolume")
-				b:emitter(v, B.Particles.electric(blue, 7), "Sparks")
+				b:emitter(v, B.Particles.electric(blue, 5), "Sparks")
 			end)
 			local core = b:fxVolume(Vector3.new(CW, CH, CD + 0.4), CFrame.new(0, headY, 0), "SparkleVolume")
 			b:emitter(core, B.Particles.sparkle(blueHot, 5), "Sparkle")
