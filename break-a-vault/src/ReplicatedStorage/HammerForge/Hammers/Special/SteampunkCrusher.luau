@@ -300,44 +300,48 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
+		-- k = escala radial del mango (agarre robusto como el concepto); gBot = fin inferior del agarre
+		local k = 1.25
+		local gBot = -0.95
 		b:group("Shaft", function()
 			local top = headY - H / 2
 			-- collar de latón con brida y anillo de hierro remachado
-			b:bevelBox(Vector3.new(0.84, 0.16, 0.84), CFrame.new(0, top - 0.1, 0), brass, 0.22, { edges = "Y", edgeStyle = brassBright, name = "CollarFlange" })
-			b:cylY(0.34, 0.6, CFrame.new(0, top - 0.34, 0), brassDeep, "CollarBell")
-			b:cylY(0.06, 0.66, CFrame.new(0, top - 0.2, 0), brassBright, "CollarLip")
-			b:cylY(0.14, 0.58, CFrame.new(0, top - 0.6, 0), iron, "IronRing")
+			b:bevelBox(Vector3.new(0.84 * k, 0.16, 0.84 * k), CFrame.new(0, top - 0.1, 0), brass, 0.22 * k, { edges = "Y", edgeStyle = brassBright, name = "CollarFlange" })
+			b:cylY(0.34, 0.6 * k, CFrame.new(0, top - 0.34, 0), brassDeep, "CollarBell")
+			b:cylY(0.06, 0.66 * k, CFrame.new(0, top - 0.2, 0), brassBright, "CollarLip")
+			b:cylY(0.14, 0.58 * k, CFrame.new(0, top - 0.6, 0), iron, "IronRing")
 			for i = 0, 5 do
 				local a = TAU * i / 6
-				b:rivet(Vector3.new(math.cos(a) * 0.29, top - 0.6, math.sin(a) * 0.29), 0.07, brassBright)
+				b:rivet(Vector3.new(math.cos(a) * 0.29 * k, top - 0.6, math.sin(a) * 0.29 * k), 0.07 * k, brassBright)
 			end
-			local s0, s1 = A.ShaftBottom, top - 0.6
-			b:cylY(s1 - s0, 0.42, CFrame.new(0, (s0 + s1) / 2, 0), iron, "Shaft")
+			local s0, s1 = gBot, top - 0.6
+			b:cylY(s1 - s0, 0.42 * k, CFrame.new(0, (s0 + s1) / 2, 0), iron, "Shaft")
 			-- banda de hierro y latón arriba del agarre
-			b:cylY(0.18, 0.54, CFrame.new(0, 1.1, 0), ironEdge, "UpperBand")
-			b:cylY(0.06, 0.58, CFrame.new(0, 1.22, 0), brass, "UpperBandLip")
+			b:cylY(0.18, 0.54 * k, CFrame.new(0, 1.1, 0), ironEdge, "UpperBand")
+			b:cylY(0.06, 0.58 * k, CFrame.new(0, 1.22, 0), brass, "UpperBandLip")
 			-- agarre: anillos de cobre sobre cuero
-			b:cylY(1.8, 0.46, CFrame.new(0, 0.05, 0), leather, "GripCore")
+			b:cylY(1.76, 0.46 * k, CFrame.new(0, 0.07, 0), leather, "GripCore")
 			local n = 9
 			for i = 0, n - 1 do
-				local y = -0.82 + i * (1.74 / (n - 1))
-				b:cylY(0.13, if i % 2 == 0 then 0.6 else 0.54, CFrame.new(0, y, 0), if i % 2 == 0 then copper else copperDark, "GripRing")
+				local y = -0.78 + i * (1.7 / (n - 1))
+				b:cylY(0.13, (if i % 2 == 0 then 0.6 else 0.54) * k, CFrame.new(0, y, 0), if i % 2 == 0 then copper else copperDark, "GripRing")
 			end
-			b:cylY(0.1, 0.6, CFrame.new(0, -1.0, 0), brass, "LowerBand")
+			b:cylY(0.1, 0.6 * k, CFrame.new(0, gBot + 0.05, 0), brass, "LowerBand")
 		end)
 
-		-- ── pomo ────────────────────────────────────────────────
+		-- ── pomo (1.3x, achatado) ───────────────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY - 0.04
-			b:bevelBox(Vector3.new(0.82, 0.36, 0.82), CFrame.new(0, y, 0), iron, 0.22, { edges = "Y", edgeStyle = ironEdge, name = "Pommel" })
-			b:bevelBox(Vector3.new(0.88, 0.1, 0.88), CFrame.new(0, y + 0.2, 0), brass, 0.24, { edges = "Y", edgeStyle = brassBright, name = "PommelTop" })
-			b:bevelBox(Vector3.new(0.7, 0.1, 0.7), CFrame.new(0, y - 0.22, 0), brassDeep, 0.19, { edges = "Y", edgeStyle = brass, name = "PommelCap" })
+			local pk = 1.3
+			local y = gBot - 0.23
+			b:bevelBox(Vector3.new(0.82 * pk, 0.28, 0.82 * pk), CFrame.new(0, y, 0), iron, 0.22 * pk, { edges = "Y", edgeStyle = ironEdge, name = "Pommel" })
+			b:bevelBox(Vector3.new(0.88 * pk, 0.08, 0.88 * pk), CFrame.new(0, y + 0.18, 0), brass, 0.24 * pk, { edges = "Y", edgeStyle = brassBright, name = "PommelTop" })
+			b:bevelBox(Vector3.new(0.7 * pk, 0.08, 0.7 * pk), CFrame.new(0, y - 0.18, 0), brassDeep, 0.19 * pk, { edges = "Y", edgeStyle = brass, name = "PommelCap" })
 			for i = 0, 3 do
 				local a = TAU * i / 4 + TAU / 8
-				b:rivet(Vector3.new(math.cos(a) * 0.4, y, math.sin(a) * 0.4), 0.1, brassBright)
+				b:rivet(Vector3.new(math.cos(a) * 0.4 * pk, y, math.sin(a) * 0.4 * pk), 0.1 * pk, brassBright)
 			end
-			local pg = CFrame.new(0, y - 0.28, 0) * CFrame.Angles(math.pi / 2, 0, 0)
-			local pgear = gear(pg, 0.2, 6, 0.07, 0.06, brass, { hubSt = copper })
+			local pg = CFrame.new(0, y - 0.23, 0) * CFrame.Angles(math.pi / 2, 0, 0)
+			local pgear = gear(pg, 0.2 * pk, 6, 0.07 * pk, 0.06, brass, { hubSt = copper })
 			b:animate(pgear, pg, { Spin = Vector3.new(0, 0, 0.8) })
 		end)
 
