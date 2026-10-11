@@ -140,37 +140,41 @@ return {
 		b:pulse(halos, 0.15, 0.8, 1.2)
 
 		-- ── mango ───────────────────────────────────────────────
+		-- K = factor radial del mango (agarre grueso como el concepto); PK = pomo
+		local K, PK = 1.35, 1.3
 		b:group("Shaft", function()
 			local top = headY - CH / 2 - 0.07
-			local bottom = A.ShaftBottom
-			b:cylY(top - bottom, 0.4, CFrame.new(0, (top + bottom) / 2, 0), black, "ShaftCore")
+			local bottom = -1.0
+			b:cylY(top - bottom, 0.4 * K, CFrame.new(0, (top + bottom) / 2, 0), black, "ShaftCore")
 			-- collar de oro octagonal en dos pisos
-			b:bevelBox(Vector3.new(0.76, 0.26, 0.76), CFrame.new(0, top - 0.13, 0), gold, 0.16, { edges = "Y", edgeStyle = goldEdge, name = "Collar" })
-			b:cylY(0.08, 0.56, CFrame.new(0, top - 0.3, 0), black, "CollarGap")
-			b:bevelBox(Vector3.new(0.62, 0.16, 0.62), CFrame.new(0, top - 0.42, 0), goldDeep, 0.13, { edges = "Y", edgeStyle = gold, name = "CollarLow" })
+			b:bevelBox(Vector3.new(0.76 * K, 0.26, 0.76 * K), CFrame.new(0, top - 0.13, 0), gold, 0.16 * K, { edges = "Y", edgeStyle = goldEdge, name = "Collar" })
+			b:cylY(0.08, 0.56 * K, CFrame.new(0, top - 0.3, 0), black, "CollarGap")
+			b:bevelBox(Vector3.new(0.62 * K, 0.16, 0.62 * K), CFrame.new(0, top - 0.42, 0), goldDeep, 0.13 * K, { edges = "Y", edgeStyle = gold, name = "CollarLow" })
 			-- agarre negro laqueado con anillos de oro
-			local g0, g1 = -1.12, 1.9
-			local segs = 5
+			local g0, g1 = -0.92, top - 0.5
+			local segs = 4
 			local step = (g1 - g0) / segs
 			for i = 0, segs - 1 do
-				b:cylY(step - 0.1, 0.52, CFrame.new(0, g0 + step * (i + 0.5), 0), black, "Grip")
+				b:cylY(step - 0.1, 0.52 * K, CFrame.new(0, g0 + step * (i + 0.5), 0), black, "Grip")
 			end
 			for i = 0, segs do
 				local y = g0 + step * i
-				b:cylY(0.12, 0.6, CFrame.new(0, y, 0), gold, "GripRing")
+				b:cylY(0.18, 0.62 * K, CFrame.new(0, y, 0), gold, "GripRing")
 			end
 		end)
 
 		-- ── pomo ────────────────────────────────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY - 0.07
-			b:bevelBox(Vector3.new(0.9, 0.56, 0.9), CFrame.new(0, y, 0), gold, 0.24, { edges = "Y", edgeStyle = goldEdge, name = "Pommel" })
-			b:bevelBox(Vector3.new(0.7, 0.12, 0.7), CFrame.new(0, y - 0.33, 0), black, 0.18, { edges = "Y", edgeStyle = blackEdge, name = "PommelCap" })
+			local ph = 0.58
+			local y = -0.98 - ph / 2
+			local pr = 0.45 * PK -- media anchura del pomo
+			b:bevelBox(Vector3.new(0.9 * PK, ph, 0.9 * PK), CFrame.new(0, y, 0), gold, 0.24 * PK, { edges = "Y", edgeStyle = goldEdge, name = "Pommel" })
+			b:bevelBox(Vector3.new(0.7 * PK, 0.12, 0.7 * PK), CFrame.new(0, y - ph / 2 - 0.05, 0), black, 0.18 * PK, { edges = "Y", edgeStyle = blackEdge, name = "PommelCap" })
 			B.both(function(s)
-				b:box(Vector3.new(0.26, 0.2, 0.05), B.faceZ(s, y, 0.45 + 0.01), black, "PommelBadge")
-				b:pyramid(B.faceZ(s, y - 0.06, 0.45 + 0.03), 0.14, 0.14, 3, goldEdge, "PommelCrown")
+				b:box(Vector3.new(0.26, 0.2, 0.05) * PK, B.faceZ(s, y, pr + 0.01), black, "PommelBadge")
+				b:pyramid(B.faceZ(s, y - 0.06 * PK, pr + 0.03), 0.14 * PK, 0.14 * PK, 3, goldEdge, "PommelCrown")
 			end)
-			b:gem(CFrame.new(0, y - 0.42, 0), 0.16, goldEdge, goldNeon)
+			b:gem(CFrame.new(0, y - ph / 2 - 0.14, 0), 0.16 * PK, goldEdge, goldNeon)
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
