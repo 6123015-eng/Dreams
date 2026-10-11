@@ -257,58 +257,61 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
+		-- k = escala radial del mango (agarre robusto como el concepto); gBot = fin inferior del agarre
+		local k = 1.35
+		local gBot = -1.05
 		b:group("Shaft", function()
 			local top = yBot - 0.1
-			local bottom = A.ShaftBottom
-			b:cylY(top - bottom, 0.36, CFrame.new(0, (top + bottom) / 2, 0), steelDark, "ShaftCore")
+			b:cylY(top - gBot, 0.36 * k, CFrame.new(0, (top + gBot) / 2, 0), steelDark, "ShaftCore")
 			-- collar de acero con remaches
 			local cy = top - 0.2
-			b:cylY(0.34, 0.74, CFrame.new(0, cy, 0), steel, "Collar")
-			b:cylY(0.07, 0.82, CFrame.new(0, cy + 0.15, 0), steelEdge, "CollarRim")
-			b:cylY(0.07, 0.82, CFrame.new(0, cy - 0.15, 0), steelEdge, "CollarRim")
+			b:cylY(0.34, 0.74 * k, CFrame.new(0, cy, 0), steel, "Collar")
+			b:cylY(0.07, 0.82 * k, CFrame.new(0, cy + 0.15, 0), steelEdge, "CollarRim")
+			b:cylY(0.07, 0.82 * k, CFrame.new(0, cy - 0.15, 0), steelEdge, "CollarRim")
 			for i = 0, 5 do
 				local a = i * math.pi / 3 + 0.3
-				b:rivet(Vector3.new(math.cos(a) * 0.37, cy, math.sin(a) * 0.37), 0.12, rivetSt)
+				b:rivet(Vector3.new(math.cos(a) * 0.37 * k, cy, math.sin(a) * 0.37 * k), 0.12 * k, rivetSt)
 			end
 			-- slime escurriendo por el collar y el mango
-			G(b:cylY(0.08, 0.6, CFrame.new(0, cy - 0.21, 0), slime, "CollarOoze"))
-			faceRun(0.0, 0.27, cy - 0.2, 0.36, 0.1)
-			G(b:box(Vector3.new(0.06, 0.38, 0.09), CFrame.new(0.22, cy - 0.38, 0.12) * CFrame.Angles(0, -0.5, 0), slime, "ShaftRun"))
-			G(b:ball(0.13, Vector3.new(0.22, cy - 0.58, 0.12), slimeHot, "ShaftRunTip"))
+			G(b:cylY(0.08, 0.6 * k, CFrame.new(0, cy - 0.21, 0), slime, "CollarOoze"))
+			faceRun(0.0, 0.27 * k + 0.02, cy - 0.2, 0.36, 0.1 * k)
+			G(b:box(Vector3.new(0.06 * k, 0.38, 0.09 * k), CFrame.new(0.22 * k, cy - 0.38, 0.12 * k + 0.02) * CFrame.Angles(0, -0.5, 0), slime, "ShaftRun"))
+			G(b:ball(0.13 * k, Vector3.new(0.22 * k, cy - 0.58, 0.12 * k + 0.02), slimeHot, "ShaftRunTip"))
 			-- agarre superior de hule acanalado
 			for i = 0, 5 do
 				local y = 1.92 - i * 0.18
-				b:cylY(0.11, 0.5, CFrame.new(0, y, 0), rubber, "GripRib")
-				b:cylY(0.05, 0.44, CFrame.new(0, y - 0.09, 0), rubberRib, "GripGap")
+				b:cylY(0.11, 0.5 * k, CFrame.new(0, y, 0), rubber, "GripRib")
+				b:cylY(0.05, 0.44 * k, CFrame.new(0, y - 0.09, 0), rubberRib, "GripGap")
 			end
 			-- venda verde cruzada
-			b:cylY(1.5, 0.44, CFrame.new(0, 0.2, 0), P.fabric(P.rgb(40, 70, 24)), "WrapBase")
+			b:cylY(1.5, 0.44 * k, CFrame.new(0, 0.2, 0), P.fabric(P.rgb(40, 70, 24)), "WrapBase")
 			local bands = { { -0.42, 0.34, 0.3 }, { -0.16, -0.34, 1.1 }, { 0.1, 0.34, 2.0 }, { 0.36, -0.34, 0.6 }, { 0.62, 0.34, 1.5 }, { 0.84, -0.3, 2.4 } }
 			for i, t in bands do
-				b:cylY(0.2, 0.54 - (i % 2) * 0.02, CFrame.new(0, t[1], 0) * CFrame.Angles(0, t[3], 0) * CFrame.Angles(t[2], 0, 0), if i % 2 == 0 then wrapB else wrapA, "Wrap")
+				b:cylY(0.2, (0.54 - (i % 2) * 0.02) * k, CFrame.new(0, t[1], 0) * CFrame.Angles(0, t[3], 0) * CFrame.Angles(t[2], 0, 0), if i % 2 == 0 then wrapB else wrapA, "Wrap")
 			end
-			b:cylY(0.1, 0.52, CFrame.new(0, 1.0, 0), steelDark, "WrapStop")
-			b:cylY(0.1, 0.52, CFrame.new(0, -0.6, 0), steelDark, "WrapStop")
+			b:cylY(0.1, 0.52 * k, CFrame.new(0, 1.0, 0), steelDark, "WrapStop")
+			b:cylY(0.1, 0.52 * k, CFrame.new(0, -0.6, 0), steelDark, "WrapStop")
 			-- agarre inferior acanalado
 			for i = 0, 2 do
-				local y = -0.76 - i * 0.17
-				b:cylY(0.11, 0.48, CFrame.new(0, y, 0), rubber, "GripRib")
+				local y = -0.72 - i * 0.14
+				b:cylY(0.11, 0.48 * k, CFrame.new(0, y, 0), rubber, "GripRib")
 			end
 		end)
 
-		-- ── pomo de bronce con cápsula tóxica ───────────────────
+		-- ── pomo de bronce con cápsula tóxica (1.3x, achatado) ──
 		b:group("Pommel", function()
-			local py = A.PommelY - 0.02
-			b:cylY(0.16, 0.76, CFrame.new(0, py + 0.16, 0), bronze, "PommelBand")
+			local pk = 1.3
+			local py = gBot - 0.08 -- centro de la banda
+			b:cylY(0.18, 0.76 * pk, CFrame.new(0, py, 0), bronze, "PommelBand")
 			for i = 0, 3 do
 				local a = i * math.pi / 2 + math.pi / 4
-				b:rivet(Vector3.new(math.cos(a) * 0.38, py + 0.16, math.sin(a) * 0.38), 0.14, rivetSt)
+				b:rivet(Vector3.new(math.cos(a) * 0.38 * pk, py, math.sin(a) * 0.38 * pk), 0.14 * pk, rivetSt)
 			end
-			b:bevelBox(Vector3.new(0.7, 0.32, 0.7), CFrame.new(0, py - 0.08, 0), steel, 0.14, { edges = "Y", edgeStyle = steelEdge, name = "PommelCap" })
-			b:cylY(0.06, 0.56, CFrame.new(0, py - 0.26, 0), steelEdge, "PommelRim")
-			G(b:ball(0.28, Vector3.new(0, py - 0.32, 0), slimeHot, "PommelCore"))
-			b:ball(0.36, Vector3.new(0, py - 0.33, 0), bubbleShell, "PommelGlass")
-			drip(0.2, 0.18, 0.22, 0.05, py - 0.2)
+			b:bevelBox(Vector3.new(0.7 * pk, 0.28, 0.7 * pk), CFrame.new(0, py - 0.23, 0), steel, 0.14, { edges = "Y", edgeStyle = steelEdge, name = "PommelCap" })
+			b:cylY(0.06, 0.56 * pk, CFrame.new(0, py - 0.39, 0), steelEdge, "PommelRim")
+			G(b:ball(0.28 * pk, Vector3.new(0, py - 0.42, 0), slimeHot, "PommelCore"))
+			b:ball(0.36 * pk, Vector3.new(0, py - 0.43, 0), bubbleShell, "PommelGlass")
+			drip(0.3, 0.26, 0.2, 0.05, py - 0.3)
 		end)
 
 		b:pulse(glow, 0, 0.3, 0.8)
