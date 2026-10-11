@@ -1,7 +1,7 @@
 -- Magma Pounder (Special) — dos pedazos de volcán amarrados con un fleje de hierro. Cada extremo de la
--- cabeza es un CÚMULO DE ROCA hecho de bloques de basalto y roca de lava (aparejo cuatrapeado, cada
--- bloque un poco chueco y con aristas despostilladas) sobre un NÚCLEO DE MAGMA de neón que brilla por
--- todas las juntas. En las caras de golpe, el bloque central está hundido y deja ver una bolsa de magma
+-- cabeza es un CÚMULO DE ROCA hecho de trozos biselados de basalto y roca de lava de tamaños distintos
+-- (aparejo irregular, cada trozo chueco y con arista clara) sobre un NÚCLEO DE MAGMA de neón hundido que
+-- brilla por las juntas anchas. En las caras de golpe, el bloque central está hundido y deja ver una bolsa de magma
 -- al rojo vivo. En medio, un fleje ancho de hierro forjado con rebordes, remaches chicos en las orillas
 -- y dos remaches grandes de cobre; costuras de magma donde el hierro toca la roca. Del fondo cuelgan
 -- gotas de roca fundida y alrededor flotan esquirlas de roca con el corazón encendido.
@@ -26,8 +26,9 @@ return {
 		local rockB = P.style(P.rgb(78, 60, 52), Enum.Material.Basalt, 0)
 		local rockC = P.style(P.rgb(36, 30, 30), Enum.Material.Slate, 0)
 		local rockLava = P.style(P.rgb(86, 38, 24), Enum.Material.CrackedLava, 0)
+		local rockEdge = P.style(P.rgb(112, 88, 74), Enum.Material.Basalt, 0) -- arista clara
 		local magma = P.neon(P.rgb(255, 96, 8))
-		local magmaDeep = P.neon(P.rgb(255, 96, 6))
+		local magmaDeep = P.neon(P.rgb(255, 84, 4))
 		local magmaHot = P.neon(P.rgb(255, 176, 40))
 		local magmaWhite = P.neon(P.rgb(255, 230, 150))
 		local iron = P.metal(P.rgb(54, 50, 52), 0.1)
@@ -70,59 +71,53 @@ return {
 		local yTop, yBot = headY + H / 2, headY - H / 2
 
 		b:group("Head", function()
-			-- ── cúmulos de roca ─────────────────────────────
+			-- ── cúmulos de roca: trozos irregulares sobre un núcleo de magma ──
 			B.both(function(s)
 				local xa, xb = bandX + 0.02, X1
 				local L = xb - xa
-				G(b:box(Vector3.new(L - 0.1, H - 0.14, D - 0.14), CFrame.new(s * (xa + xb) / 2, headY, 0), magmaDeep, "MagmaCore"))
-				local yb = { -H / 2, -H / 2 + H * (1 / 3 + 0.03), -H / 2 + H * (2 / 3 - 0.02), H / 2 }
-				local zb = { -D / 2, -D / 2 + D * (1 / 3 - 0.03), -D / 2 + D * (2 / 3 + 0.02), D / 2 }
-				local gap = 0.05
+				-- núcleo de magma en dos capas: naranja (se ve en las juntas) y amarillo caliente al fondo
+				G(b:box(Vector3.new(L - 0.5, H - 0.5, D - 0.5), CFrame.new(s * (xa + xb) / 2, headY, 0), magmaDeep, "MagmaCore"))
+				local gap = 0.095 -- juntas anchas y hundidas
+				-- filas con alturas distintas (aparejo irregular)
+				local yb = { -H / 2, -H / 2 + H * rnd(0.3, 0.38), -H / 2 + H * rnd(0.62, 0.7), H / 2 }
 				for j = 1, 3 do
-					for k = 1, 3 do
-						local t1 = 0.5 + rnd(-0.16, 0.16)
-						local xbnd = { 0, t1, 1 }
-						for i = 1, 2 do
+					local zsplit = rnd(-0.18, 0.18)
+					local zb = { -D / 2, zsplit, D / 2 }
+					for k = 1, 2 do
+						-- 1, 2 o 3 trozos a lo largo de X (tamaños variados)
+						local r = rnd()
+						local xbnd = if r < 0.25 then { 0, 1 } elseif r < 0.8 then { 0, rnd(0.36, 0.64), 1 } else { 0, rnd(0.26, 0.38), rnd(0.6, 0.72), 1 }
+						for i = 1, #xbnd - 1 do
 							local u0, u1 = xa + L * xbnd[i], xa + L * xbnd[i + 1]
 							local y0, y1 = yb[j], yb[j + 1]
 							local z0, z1 = zb[k], zb[k + 1]
-							local size = Vector3.new(u1 - u0 - gap, y1 - y0 - gap, z1 - z0 - gap) + Vector3.new(rnd(0, 0.06), rnd(0, 0.06), rnd(0, 0.06))
-							-- empuje hacia afuera en las caras exteriores (superficie con relieve)
-							local push = Vector3.new(if i == 2 then rnd(0.0, 0.1) else 0, if j == 3 then rnd(0.02, 0.1) elseif j == 1 then -rnd(0.02, 0.09) else 0, if k == 3 then rnd(0.02, 0.1) elseif k == 1 then -rnd(0.02, 0.1) else 0)
+							local outer = i == #xbnd - 1
+							local size = Vector3.new(u1 - u0 - gap, y1 - y0 - gap, z1 - z0 - gap) * Vector3.new(rnd(0.98, 1.1), rnd(0.98, 1.1), rnd(0.98, 1.08))
+							-- empuje hacia afuera (relieve irregular en la silueta)
+							local push = Vector3.new(
+								if outer then rnd(0.0, 0.1) else 0,
+								if j == 3 then rnd(0.0, 0.06) elseif j == 1 then -rnd(0.0, 0.05) else 0,
+								if k == 2 then rnd(0.01, 0.08) else -rnd(0.01, 0.08)
+							)
 							local st = pick()
-							local pocket = (i == 2 and j == 2 and k == 2)
-							if pocket then
-								-- bolsa de magma en la cara de golpe: bloque hundido
-								push = Vector3.new(-0.2, 0, 0)
+							if outer and j == 2 then
+								-- bolsa de magma en la cara de golpe: los trozos del centro se hunden
+								push = Vector3.new(-0.18, 0, push.Z * 0.5)
 								st = rockLava
-								size = size * Vector3.new(0.8, 0.8, 0.8)
 							end
 							local ctr = Vector3.new(s * ((u0 + u1) / 2 + push.X), headY + (y0 + y1) / 2 + push.Y, (z0 + z1) / 2 + push.Z)
-							local cf = CFrame.new(ctr) * CFrame.Angles(rnd(-0.1, 0.1), rnd(-0.1, 0.1), rnd(-0.1, 0.1))
-							rock(cf, size, st)
+							local cf = CFrame.new(ctr) * CFrame.Angles(rnd(-0.1, 0.1), rnd(-0.1, 0.1), rnd(-0.12, 0.12))
+							-- trozo biselado (chaflanes vistos desde las caras ±Z, con arista más clara)
+							b:bevelBox(size, cf, st, math.min(size.X, size.Y) * rnd(0.16, 0.24), { edges = "Z", edgeStyle = if st == rockLava then rockB else rockEdge, name = "Chunk" })
 						end
 					end
 				end
 				-- bolsa de magma: núcleo blanco-amarillo + anillo caliente
-				local px = s * (X1 - 0.14)
-				G(b:cylinder(0.06, 0.62, CFrame.new(px, headY, 0), magmaHot, "PocketGlow"))
-				G(b:cylinder(0.06, 0.32, CFrame.new(px + s * 0.03, headY, 0), magmaWhite, "PocketCore"))
+				local px = s * (X1 - 0.12)
+				G(b:cylinder(0.06, 0.66, CFrame.new(px, headY, 0), magmaHot, "PocketGlow"))
+				G(b:cylinder(0.06, 0.34, CFrame.new(px + s * 0.03, headY, 0), magmaWhite, "PocketCore"))
 				-- costura de magma junto al fleje
-				G(b:box(Vector3.new(0.05, HB + 0.1, DB + 0.1), CFrame.new(s * (bandX + 0.035), headY, 0), magma, "BandSeam"))
-				-- venas de magma que cruzan los bloques en las caras ±Z
-				B.both(function(t)
-					local face = B.faceZ(t, headY, D / 2 + 0.11)
-					local cx = s * t * (xa + xb) / 2
-					for vi, v in { { -0.55, 0.75, 0.5, -0.2, 3 }, { -0.1, -0.15, 0.6, -0.95, 13 } } do
-						local pts = {}
-						for _, q in B.jitterPath(Vector3.new(cx + v[1], v[2], 0), Vector3.new(cx + v[3], v[4], 0), 4, 0.1, v[5] + (if s > 0 then 0 else 50) + (if t > 0 then 0 else 100)) do
-							table.insert(pts, face:PointToWorldSpace(q))
-						end
-						for _, pp in b:polyline(pts, if vi == 1 then 0.05 else 0.04, 0.04, magmaHot, face.LookVector, false, "Vein") do
-							G(pp)
-						end
-					end
-				end)
+				G(b:box(Vector3.new(0.06, HB + 0.1, DB + 0.1), CFrame.new(s * (bandX + 0.035), headY, 0), magma, "BandSeam"))
 			end)
 
 			-- ── fleje de hierro central ─────────────────────
