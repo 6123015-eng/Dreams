@@ -188,41 +188,44 @@ return {
 		b:flicker(glitch, 7, 0.6)
 
 		-- ── mango (grueso y corto) ──────────────────────────────
+		-- K = factor radial del mango; PK = pomo (más ancho que alto para acortar el mango)
+		local K, PK = 1.18, 1.12
 		b:group("Shaft", function()
 			local top = headY - CH / 2 - 0.07
-			local bottom = A.ShaftBottom + 0.15
-			b:cylY(top - bottom, 0.46, CFrame.new(0, (top + bottom) / 2, 0), graphite, "ShaftCore")
+			local bottom = -0.98
+			b:cylY(top - bottom, 0.46 * K, CFrame.new(0, (top + bottom) / 2, 0), graphite, "ShaftCore")
 			-- collar octagonal con anillo de neón
-			b:bevelBox(Vector3.new(0.78, 0.28, 0.78), CFrame.new(0, top - 0.14, 0), armor, 0.16, { edges = "Y", edgeStyle = armorEdge, name = "Collar" })
-			C(b:cylY(0.08, 0.7, CFrame.new(0, top - 0.32, 0), neon, "CollarNeon"))
-			b:bevelBox(Vector3.new(0.68, 0.16, 0.68), CFrame.new(0, top - 0.44, 0), armorDark, 0.14, { edges = "Y", edgeStyle = armor, name = "CollarLow" })
-			-- agarre segmentado
-			local g0, g1 = -0.98, 1.6
+			b:bevelBox(Vector3.new(0.78 * K, 0.28, 0.78 * K), CFrame.new(0, top - 0.14, 0), armor, 0.16 * K, { edges = "Y", edgeStyle = armorEdge, name = "Collar" })
+			C(b:cylY(0.08, 0.7 * K, CFrame.new(0, top - 0.32, 0), neon, "CollarNeon"))
+			b:bevelBox(Vector3.new(0.68 * K, 0.16, 0.68 * K), CFrame.new(0, top - 0.44, 0), armorDark, 0.14 * K, { edges = "Y", edgeStyle = armor, name = "CollarLow" })
+			-- agarre segmentado (sube hasta el collar)
+			local g0, g1 = -0.92, top - 0.58
 			local segs = 5
 			local step = (g1 - g0) / segs
 			for i = 0, segs - 1 do
-				b:cylY(step - 0.08, 0.62, CFrame.new(0, g0 + step * (i + 0.5), 0), rubber, "Grip")
+				b:cylY(step - 0.08, 0.62 * K, CFrame.new(0, g0 + step * (i + 0.5), 0), rubber, "Grip")
 			end
 			for i = 0, segs do
 				local y = g0 + step * i
 				if i == 1 or i == 2 or i == 4 then
-					local r = b:cylY(0.12, 0.68, CFrame.new(0, y, 0), neon, "GripNeon")
-					b:cylY(0.18, 0.72, CFrame.new(0, y, 0), glass, "GripGlass")
+					local r = b:cylY(0.12, 0.68 * K, CFrame.new(0, y, 0), neon, "GripNeon")
+					b:cylY(0.18, 0.72 * K, CFrame.new(0, y, 0), glass, "GripGlass")
 					b:pulse(r, 0, 0.45, 1.2, 1 - i * 0.1)
 				else
-					b:cylY(0.12, 0.7, CFrame.new(0, y, 0), armor, "GripRing")
+					b:cylY(0.12, 0.7 * K, CFrame.new(0, y, 0), armor, "GripRing")
 				end
 			end
 		end)
 
-		-- ── pomo (1.3x) ─────────────────────────────────────────
+		-- ── pomo ────────────────────────────────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY + 0.06
-			b:bevelBox(Vector3.new(1.0, 0.6, 1.0), CFrame.new(0, y, 0), armor, 0.27, { edges = "Y", edgeStyle = armorEdge, name = "Pommel" })
-			b:cylY(0.14, 1.1, CFrame.new(0, y, 0), black, "PommelSlot")
-			C(b:cylY(0.06, 1.13, CFrame.new(0, y, 0), neon, "PommelNeon"))
-			b:bevelBox(Vector3.new(0.78, 0.14, 0.78), CFrame.new(0, y - 0.37, 0), graphite, 0.2, { edges = "Y", edgeStyle = graphiteEdge, name = "PommelCap" })
-			b:cylY(0.05, 0.28, CFrame.new(0, y - 0.45, 0), neonHot, "PommelNode")
+			local ph = 0.62
+			local y = -0.97 - ph / 2
+			b:bevelBox(Vector3.new(1.0 * PK, ph, 1.0 * PK), CFrame.new(0, y, 0), armor, 0.27 * PK, { edges = "Y", edgeStyle = armorEdge, name = "Pommel" })
+			b:cylY(0.14, 1.1 * PK, CFrame.new(0, y, 0), black, "PommelSlot")
+			C(b:cylY(0.06, 1.13 * PK, CFrame.new(0, y, 0), neon, "PommelNeon"))
+			b:bevelBox(Vector3.new(0.78 * PK, 0.14, 0.78 * PK), CFrame.new(0, y - ph / 2 - 0.07, 0), graphite, 0.2 * PK, { edges = "Y", edgeStyle = graphiteEdge, name = "PommelCap" })
+			b:cylY(0.05, 0.28 * PK, CFrame.new(0, y - ph / 2 - 0.15, 0), neonHot, "PommelNode")
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
