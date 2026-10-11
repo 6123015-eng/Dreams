@@ -223,42 +223,45 @@ return {
 		b:animate(turbine, CFrame.new(coreMid, headY, 0), { Spin = Vector3.new(1.1, 0, 0) })
 
 		-- ── mango ───────────────────────────────────────────────
+		-- k = escala radial del mango (agarre robusto como el concepto); gBot = fin inferior del agarre
+		local k = 1.2
+		local gBot = -0.95
 		b:group("Shaft", function()
 			local top = headY - 2.28 / 2 + 0.05
-			local bottom = A.ShaftBottom
-			b:cylY(top - bottom, 0.34, CFrame.new(0, (top + bottom) / 2, 0), hullDark, "ShaftCore")
+			b:cylY(top - gBot, 0.34 * k, CFrame.new(0, (top + gBot) / 2, 0), hullDark, "ShaftCore")
 			-- collar con remaches
 			local cy = top - 0.22
-			b:bevelBox(Vector3.new(0.74, 0.34, 0.74), CFrame.new(0, cy, 0), hullAlt, 0.2, { edges = "Y", edgeStyle = hullEdge, name = "Collar" })
+			b:bevelBox(Vector3.new(0.74 * k, 0.34, 0.74 * k), CFrame.new(0, cy, 0), hullAlt, 0.2 * k, { edges = "Y", edgeStyle = hullEdge, name = "Collar" })
 			for i = 0, 3 do
 				local a = i * math.pi / 2
-				b:rivet(Vector3.new(math.cos(a) * 0.37, cy, math.sin(a) * 0.37), 0.12, rivetSt)
+				b:rivet(Vector3.new(math.cos(a) * 0.37 * k, cy, math.sin(a) * 0.37 * k), 0.12 * k, rivetSt)
 			end
 			-- anillo morado
 			local function neonRing(y: number, st)
-				b:cylY(0.06, 0.6, CFrame.new(0, y + 0.09, 0), hullEdge, "RingLip")
-				G(b:cylY(0.1, 0.56, CFrame.new(0, y, 0), st, "NeonRing"))
-				b:cylY(0.06, 0.6, CFrame.new(0, y - 0.09, 0), hullEdge, "RingLip")
+				b:cylY(0.06, 0.6 * k, CFrame.new(0, y + 0.09, 0), hullEdge, "RingLip")
+				G(b:cylY(0.1, 0.56 * k, CFrame.new(0, y, 0), st, "NeonRing"))
+				b:cylY(0.06, 0.6 * k, CFrame.new(0, y - 0.09, 0), hullEdge, "RingLip")
 			end
 			neonRing(cy - 0.36, purple)
 			-- agarre segmentado
 			for i = 0, 8 do
 				local y = 1.5 - i * 0.24
-				b:cylY(0.17, 0.58, CFrame.new(0, y, 0), grip, "GripSeg")
-				b:cylY(0.04, 0.6, CFrame.new(0, y + 0.07, 0), hull, "GripEdge")
+				b:cylY(0.17, 0.58 * k, CFrame.new(0, y, 0), grip, "GripSeg")
+				b:cylY(0.04, 0.6 * k, CFrame.new(0, y + 0.07, 0), hull, "GripEdge")
 			end
-			neonRing(-0.86, cyan)
-			b:cylY(0.18, 0.5, CFrame.new(0, -1.1, 0), grip, "GripSeg")
+			neonRing(-0.68, cyan)
+			b:cylY(0.16, 0.56 * k, CFrame.new(0, gBot + 0.1, 0), grip, "GripSeg")
 		end)
 
-		-- ── pomo octagonal ──────────────────────────────────────
+		-- ── pomo octagonal (1.3x, achatado) ─────────────────────
 		b:group("Pommel", function()
-			local py = A.PommelY - 0.04
-			b:bevelBox(Vector3.new(0.84, 0.4, 0.84), CFrame.new(0, py, 0), hullAlt, 0.24, { edges = "Y", edgeStyle = P.metal(P.rgb(90, 66, 130), 0.18), name = "Pommel" })
-			b:cylY(0.06, 0.66, CFrame.new(0, py + 0.23, 0), hullEdge, "PommelLip")
-			G(b:cylY(0.06, 0.6, CFrame.new(0, py - 0.22, 0), purple, "PommelRing"))
-			b:cylY(0.08, 0.4, CFrame.new(0, py - 0.26, 0), chrome, "PommelCap")
-			G(b:cylY(0.04, 0.16, CFrame.new(0, py - 0.31, 0), cyanHot, "PommelEye"))
+			local pk = 1.3
+			local py = gBot - 0.18
+			b:bevelBox(Vector3.new(0.84 * pk, 0.32, 0.84 * pk), CFrame.new(0, py, 0), hullAlt, 0.24 * pk, { edges = "Y", edgeStyle = P.metal(P.rgb(90, 66, 130), 0.18), name = "Pommel" })
+			b:cylY(0.06, 0.66 * pk, CFrame.new(0, py + 0.19, 0), hullEdge, "PommelLip")
+			G(b:cylY(0.06, 0.6 * pk, CFrame.new(0, py - 0.18, 0), purple, "PommelRing"))
+			b:cylY(0.08, 0.4 * pk, CFrame.new(0, py - 0.22, 0), chrome, "PommelCap")
+			G(b:cylY(0.04, 0.16 * pk, CFrame.new(0, py - 0.27, 0), cyanHot, "PommelEye"))
 		end)
 
 		b:pulse(glow, 0, 0.3, 1.2)
