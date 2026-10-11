@@ -225,42 +225,45 @@ return {
 		b:animate(orbit, ocf, { Spin = Vector3.new(0, 0.8, 0) })
 
 		-- ── mango ───────────────────────────────────────────────
+		local K = 1.38 -- escala radial del mango (eje de mármol ~0.66 chunky como el concepto)
+		local g0, g1 = -0.92, 1.66 -- agarre (mango más corto)
 		b:group("Shaft", function()
 			local top = headY - CH / 2
-			local bottom = A.ShaftBottom
 			-- collar dorado con picos de rayo + anillo celeste
-			b:bevelBox(Vector3.new(0.9, 0.22, 0.9), CFrame.new(0, top - 0.11, 0), gold, 0.22, { edges = "Y", edgeStyle = goldPale, name = "Collar" })
+			b:bevelBox(Vector3.new(0.9 * K, 0.24, 0.9 * K), CFrame.new(0, top - 0.12, 0), gold, 0.22 * K, { edges = "Y", edgeStyle = goldPale, name = "Collar" })
 			for i = 0, 3 do
 				local a = TAU * i / 4 + math.pi / 4
-				b:wedge(Vector3.new(0.14, 0.3, 0.22), CFrame.new(math.cos(a) * 0.42, top - 0.3, math.sin(a) * 0.42) * CFrame.Angles(0, -a - math.pi / 2, 0) * CFrame.Angles(math.pi, 0, 0), goldDeep, "CollarSpike")
+				b:wedge(Vector3.new(0.16, 0.32, 0.26), CFrame.new(math.cos(a) * 0.42 * K, top - 0.32, math.sin(a) * 0.42 * K) * CFrame.Angles(0, -a - math.pi / 2, 0) * CFrame.Angles(math.pi, 0, 0), goldDeep, "CollarSpike")
 			end
-			b:cylY(0.18, 0.56, CFrame.new(0, top - 0.33, 0), sky, "SkyCollar")
-			b:cylY(0.22, 0.6, CFrame.new(0, top - 0.33, 0), skyGlass, "SkyCollarGlass")
-			b:cylY(0.1, 0.66, CFrame.new(0, top - 0.49, 0), gold, "CollarLow")
+			b:cylY(0.2, 0.56 * K, CFrame.new(0, top - 0.35, 0), sky, "SkyCollar")
+			b:cylY(0.24, 0.6 * K, CFrame.new(0, top - 0.35, 0), skyGlass, "SkyCollarGlass")
+			b:cylY(0.12, 0.66 * K, CFrame.new(0, top - 0.52, 0), gold, "CollarLow")
 			-- eje de mármol
-			local s0, s1 = bottom + 0.05, top - 0.5
-			b:cylY(s1 - s0, 0.48, CFrame.new(0, (s0 + s1) / 2, 0), marble, "Shaft")
+			local s0, s1 = g0 - 0.08, top - 0.5
+			b:cylY(s1 - s0, 0.48 * K, CFrame.new(0, (s0 + s1) / 2, 0), marble, "Shaft")
 			-- cinta dorada en espiral
-			b:wrap(-0.85, 1.6, 0.24, 2, goldPale, { width = 0.1, thickness = 0.04, segmentsPerTurn = 7, name = "GoldRibbon" })
+			b:wrap(g0 + 0.1, g1 - 0.1, 0.24 * K, 2, goldPale, { width = 0.13, thickness = 0.05, segmentsPerTurn = 7, name = "GoldRibbon" })
 			-- anillos de oro
-			for _, y in { -0.95, 0.35, 1.7 } do
-				b:cylY(0.14, 0.58, CFrame.new(0, y, 0), gold, "GoldRing")
+			for _, y in { g0, 0.32, g1 } do
+				b:cylY(0.22, 0.6 * K, CFrame.new(0, y, 0), gold, "GoldRing")
 			end
 			-- venas doradas en el mármol
-			b:polyline({ Vector3.new(0.1, 1.2, 0.24), Vector3.new(0.02, 0.95, 0.245), Vector3.new(0.12, 0.65, 0.24) }, 0.035, 0.03, neonVein, Vector3.zAxis, false, "GoldVein")
+			local vz = 0.24 * K
+			b:polyline({ Vector3.new(0.1, 1.2, vz), Vector3.new(0.02, 0.95, vz + 0.005), Vector3.new(0.12, 0.65, vz) }, 0.04, 0.03, neonVein, Vector3.zAxis, false, "GoldVein")
 		end)
 
-		-- ── pomo ────────────────────────────────────────────────
+		-- ── pomo (1.3x, pegado al agarre) ───────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY - 0.05
-			b:bevelBox(Vector3.new(0.8, 0.14, 0.8), CFrame.new(0, y + 0.26, 0), gold, 0.2, { edges = "Y", edgeStyle = goldPale, name = "PommelTop" })
-			b:bevelBox(Vector3.new(0.88, 0.38, 0.88), CFrame.new(0, y, 0), marble, 0.24, { edges = "Y", edgeStyle = gold, name = "Pommel" })
-			b:bevelBox(Vector3.new(0.82, 0.12, 0.82), CFrame.new(0, y - 0.24, 0), goldDeep, 0.22, { edges = "Y", edgeStyle = gold, name = "PommelCap" })
+			local PK = 1.3
+			local y = g0 - 0.42
+			b:bevelBox(Vector3.new(0.8 * PK, 0.16, 0.8 * PK), CFrame.new(0, g0 - 0.12, 0), gold, 0.2 * PK, { edges = "Y", edgeStyle = goldPale, name = "PommelTop" })
+			b:bevelBox(Vector3.new(0.88 * PK, 0.46, 0.88 * PK), CFrame.new(0, y, 0), marble, 0.24 * PK, { edges = "Y", edgeStyle = gold, name = "Pommel" })
+			b:bevelBox(Vector3.new(0.82 * PK, 0.14, 0.82 * PK), CFrame.new(0, y - 0.29, 0), goldDeep, 0.22 * PK, { edges = "Y", edgeStyle = gold, name = "PommelCap" })
 			for i = 0, 3 do
 				local a = TAU * i / 4
-				b:ball(0.13, Vector3.new(math.cos(a) * 0.45, y, math.sin(a) * 0.45), neonSun, "PommelGem")
+				b:ball(0.17, Vector3.new(math.cos(a) * 0.45 * PK, y, math.sin(a) * 0.45 * PK), neonSun, "PommelGem")
 			end
-			b:cylY(0.06, 0.32, CFrame.new(0, y - 0.32, 0), neonSun, "PommelSun")
+			b:cylY(0.06, 0.4, CFrame.new(0, y - 0.38, 0), neonSun, "PommelSun")
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
