@@ -1,7 +1,8 @@
--- Iron Breaker (Starter) — maza de hierro forjado, pesada y honesta. Cabeza en tres bloques: el central
--- biselado y dos remates más gordos de perfil octagonal (facetas de acero frío con un toque azul), separados
--- por bandas negras hundidas. Grietas y abolladuras de forja en las caras, tapas de golpe escalonadas,
--- cuello hexagonal de acero, agarre de cuero café enrollado y pomo de acero facetado.
+-- Iron Breaker (Starter) — maza de hierro forjado, pesada y honesta. Cabeza en tres bloques de casi la misma
+-- altura: el central, alto y muy biselado con aristas de acero brillante, y dos remates más gordos de perfil
+-- octagonal (facetas de acero frío con un toque azul), separados por juntas negras delgadas. Grietas y mellas
+-- de forja en las caras, tapas de golpe escalonadas, cuello de acero, agarre grueso de cuero en dos tonos con
+-- correa en espiral, y pomo octagonal grande y achaflanado con aro oscuro.
 return {
 	Id = "IronBreaker",
 	DisplayName = "Iron Breaker",
@@ -17,6 +18,7 @@ return {
 		local ironMid = P.metal(P.rgb(66, 70, 82), 0.08)
 		local facet = P.metal(P.rgb(162, 176, 198), 0.2) -- faceta clara, acero frío
 		local edgeHi = P.metal(P.rgb(206, 220, 240), 0.28) -- arista más brillante (azulada)
+		local edgeMatte = P.metal(P.rgb(196, 204, 216), 0.03) -- arista clara pero mate (bloque central)
 		local dark = P.metal(P.rgb(34, 36, 44), 0.05)
 		local crack = P.metal(P.rgb(40, 42, 50), 0)
 		local polish = P.metal(P.rgb(188, 196, 208), 0.3)
@@ -24,20 +26,22 @@ return {
 		local leatherDark = P.leather(P.rgb(104, 56, 26))
 
 		-- ── cabeza ──────────────────────────────────────────────
-		local cW, cH, cD = 1.2, 1.86, 1.72 -- bloque central
+		local cW, cH, cD = 1.24, 2.02, 1.9 -- bloque central (alto, casi como los remates)
 		local eL, eH, eD = 1.04, 2.12, 2.0 -- remates (más gordos)
-		local gap = 0.14 -- banda negra entre bloques
+		local gap = 0.08 -- junta negra entre bloques
 		local eX = cW / 2 + gap + eL / 2 -- centro de cada remate
 		local tipX = eX + eL / 2
 		b:group("Head", function()
-			-- bloque central biselado
-			b:bevelBox(Vector3.new(cW, cH, cD), CFrame.new(0, headY, 0), iron, 0.2, { edgeStyle = facet, name = "CenterBlock" })
-			-- banda forjada oscura que lo abraza por el medio (aristas claras)
-			b:bevelBox(Vector3.new(0.24, cH + 0.07, cD + 0.07), CFrame.new(0, headY, 0), dark, 0.22, { edges = "X", edgeStyle = facet, name = "CenterBand" })
+			-- bloque central: alto, bisel marcado y aristas brillantes propias
+			b:bevelBox(Vector3.new(cW, cH, cD), CFrame.new(0, headY, 0), iron, 0.15, { edges = "X", edgeStyle = edgeMatte, name = "CenterBlock" })
+			-- panel forjado un pelo salido en ambas caras (da la lectura de "bloque" grueso)
+			B.both(function(s)
+				b:bevelBox(Vector3.new(cW - 0.36, cH - 0.4, 0.06), CFrame.new(0, headY, s * (cD / 2 + 0.01)), ironMid, 0.04, { edges = "Z", edgeStyle = facet, name = "CenterPanel" })
+			end)
 
 			B.both(function(s)
 				-- banda negra hundida entre bloques
-				b:bevelBox(Vector3.new(gap + 0.04, cH - 0.12, cD - 0.12), CFrame.new(s * (cW / 2 + gap / 2), headY, 0), dark, 0.22, { edges = "X", name = "Gap" })
+				b:bevelBox(Vector3.new(gap + 0.04, cH - 0.1, cD - 0.1), CFrame.new(s * (cW / 2 + gap / 2), headY, 0), dark, 0.2, { edges = "X", name = "Gap" })
 				-- remate octagonal (facetas grandes) + aro claro en la cara interior
 				b:bevelBox(Vector3.new(eL, eH, eD), CFrame.new(s * eX, headY, 0), iron, 0.44, { edges = "X", edgeStyle = facet, name = "EndBlock" })
 				b:bevelBox(Vector3.new(0.06, eH - 0.06, eD - 0.06), CFrame.new(s * (tipX - 0.02), headY, 0), edgeHi, 0.42, { edges = "X", name = "EndRim" })
@@ -48,7 +52,7 @@ return {
 
 			-- caras de emblema (±Z): grietas de forja y abolladuras
 			B.both(function(s)
-				local cface = B.faceZ(s, headY, cD / 2 + 0.006)
+				local cface = B.faceZ(s, headY, cD / 2 + 0.046)
 				local n = cface.LookVector
 				local function crackAt(planeCF, pts, w)
 					local world = {}
@@ -77,33 +81,36 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
-		local shaftDia = 0.44
+		local shaftDia = 0.5
+		local shaftBottom = A.ShaftBottom + 0.27
 		b:group("Shaft", function()
-			local bottom, top = A.ShaftBottom, headY - cH / 2
+			local bottom, top = shaftBottom, headY - cH / 2
 			b:cylY(top - bottom, shaftDia, CFrame.new(0, (top + bottom) / 2, 0), leatherDark, "Shaft")
-			-- cuello hexagonal de acero bajo la cabeza
-			local neckY = top - 0.32
-			b:bevelBox(Vector3.new(0.66, 0.56, 0.66), CFrame.new(0, neckY, 0), iron, 0.16, { edges = "Y", edgeStyle = facet, name = "Neck" })
-			b:disc(CFrame.new(0, neckY - 0.3, 0), 0.76, 0.1, dark, "NeckRing")
-			b:cylY(0.18, shaftDia + 0.06, CFrame.new(0, neckY - 0.42, 0), ironMid, "NeckTaper")
+			-- cuello de acero bajo la cabeza
+			local neckY = top - 0.3
+			b:bevelBox(Vector3.new(0.74, 0.54, 0.74), CFrame.new(0, neckY, 0), iron, 0.18, { edges = "Y", edgeStyle = facet, name = "Neck" })
+			b:disc(CFrame.new(0, neckY - 0.3, 0), 0.82, 0.1, dark, "NeckRing")
+			b:cylY(0.16, shaftDia + 0.08, CFrame.new(0, neckY - 0.42, 0), ironMid, "NeckTaper")
 
-			-- agarre: cuero enrollado (discos inclinados en el mismo sentido = espiral) + costura clara
-			local y0, y1 = -1.05, 1.0
-			local nWraps = 8
+			-- agarre grueso: cuero en dos tonos (discos inclinados = vueltas) + correa oscura en espiral
+			local y0, y1 = -0.86, 0.96
+			local nWraps = 7
+			local leatherLight = P.with(leather, { Color = P.rgb(176, 104, 50) })
 			for i = 0, nWraps - 1 do
 				local y = y0 + (y1 - y0) * (i + 0.5) / nWraps
-				b:cylY(0.24, shaftDia + 0.1, CFrame.new(0, y, 0) * CFrame.Angles(0, 0.35, 0) * CFrame.Angles(0.3, 0, 0), if i % 2 == 0 then leather else P.with(leather, { Color = P.rgb(164, 96, 46) }), "LeatherWrap")
+				b:cylY(0.27, 0.6 - (i % 2) * 0.02, CFrame.new(0, y, 0) * CFrame.Angles(0, 0.35, 0) * CFrame.Angles(0.3, 0, 0), if i % 2 == 0 then leather else leatherLight, "LeatherWrap")
 			end
-			b:disc(CFrame.new(0, y1 + 0.04, 0), shaftDia + 0.12, 0.08, leatherDark, "WrapEnd")
-			b:disc(CFrame.new(0, y0 - 0.04, 0), shaftDia + 0.12, 0.08, leatherDark, "WrapEnd")
+			b:wrap(y0 + 0.04, y1 - 0.04, 0.3, 3.5, leatherDark, { width = 0.06, thickness = 0.04, segmentsPerTurn = 6, name = "WrapLine" })
+			b:disc(CFrame.new(0, y1 + 0.05, 0), 0.66, 0.1, leatherDark, "WrapEnd")
+			b:disc(CFrame.new(0, y0 - 0.05, 0), 0.66, 0.1, leatherDark, "WrapEnd")
 		end)
 
-		-- ── pomo de acero facetado ─────────────────────────────
+		-- ── pomo octagonal grande y achaflanado ────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY - 0.02
-			b:bevelBox(Vector3.new(0.86, 0.44, 0.86), CFrame.new(0, y - 0.04, 0), iron, 0.24, { edges = "Y", edgeStyle = facet, name = "Pommel" })
-			b:bevelBox(Vector3.new(0.66, 0.1, 0.66), CFrame.new(0, y - 0.3, 0), ironMid, 0.18, { edges = "Y", edgeStyle = edgeHi, name = "PommelCap" })
-			b:bevelBox(Vector3.new(0.62, 0.08, 0.62), CFrame.new(0, y + 0.21, 0), dark, 0.16, { edges = "Y", name = "PommelRing" })
+			local y = shaftBottom - 0.3
+			b:bevelBox(Vector3.new(1.08, 0.5, 1.08), CFrame.new(0, y, 0), iron, 0.2, { edgeStyle = facet, name = "Pommel" })
+			b:bevelBox(Vector3.new(0.7, 0.08, 0.7), CFrame.new(0, y - 0.28, 0), ironMid, 0.18, { edges = "Y", edgeStyle = facet, name = "PommelCap" })
+			b:bevelBox(Vector3.new(0.8, 0.1, 0.8), CFrame.new(0, y + 0.29, 0), dark, 0.2, { edges = "Y", name = "PommelRing" })
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
