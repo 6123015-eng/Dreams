@@ -212,48 +212,52 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
+		-- k = escala radial del mango (agarre robusto como el concepto); gBot = fin inferior del agarre
+		local k = 1.32
+		local gBot = -1.0
 		b:group("Shaft", function()
 			local top = headY - CH / 2
 			-- collar escalonado de oro
-			b:bevelBox(Vector3.new(0.98, 0.14, 0.98), CFrame.new(0, top - 0.07, 0), gold, 0.28, { edges = "Y", edgeStyle = goldPale, name = "CollarFlange" })
-			b:cylY(0.3, 0.76, CFrame.new(0, top - 0.29, 0), goldDeep, "Collar")
-			b:cylY(0.06, 0.82, CFrame.new(0, top - 0.17, 0), goldPale, "CollarLip")
-			b:cylY(0.1, 0.66, CFrame.new(0, top - 0.48, 0), gold, "CollarLow")
+			b:bevelBox(Vector3.new(0.98 * k, 0.14, 0.98 * k), CFrame.new(0, top - 0.07, 0), gold, 0.28 * k, { edges = "Y", edgeStyle = goldPale, name = "CollarFlange" })
+			b:cylY(0.3, 0.76 * k, CFrame.new(0, top - 0.29, 0), goldDeep, "Collar")
+			b:cylY(0.06, 0.82 * k, CFrame.new(0, top - 0.17, 0), goldPale, "CollarLip")
+			b:cylY(0.1, 0.66 * k, CFrame.new(0, top - 0.48, 0), gold, "CollarLow")
 			for i = 0, 3 do
 				local a = TAU * i / 4 + TAU / 8
-				b:ball(0.12, Vector3.new(math.cos(a) * 0.38, top - 0.29, math.sin(a) * 0.38), P.neon(purpleC), "CollarGem")
+				b:ball(0.12 * k, Vector3.new(math.cos(a) * 0.38 * k, top - 0.29, math.sin(a) * 0.38 * k), P.neon(purpleC), "CollarGem")
 			end
 			-- eje de cristal cósmico: núcleo de nebulosa + cáscara + estrellas
-			local s0, s1 = A.ShaftBottom, top - 0.5
+			local s0, s1 = gBot, top - 0.5
 			local mid, len = (s0 + s1) / 2, s1 - s0
-			local core = b:cylY(len, 0.34, CFrame.new(0, mid, 0), P.neon(P.darken(purpleC, 0.45)), "ShaftNebula")
-			b:cylY(len, 0.5, CFrame.new(0, mid, 0), P.glass(P.rgb(60, 30, 130), 0.3, 0.3), "ShaftGlass")
+			local core = b:cylY(len, 0.34 * k, CFrame.new(0, mid, 0), P.neon(P.darken(purpleC, 0.45)), "ShaftNebula")
+			b:cylY(len, 0.5 * k, CFrame.new(0, mid, 0), P.glass(P.rgb(60, 30, 130), 0.3, 0.3), "ShaftGlass")
 			b:pulse({ core }, 0, 0.25, 0.8)
 			for i = 0, 11 do
 				local a = i * 2.4
 				local y = s0 + 0.15 + (len - 0.3) * (i / 11)
-				b:box(Vector3.new(0.04, 0.04, 0.04), CFrame.new(math.cos(a) * 0.255, y, math.sin(a) * 0.255) * CFrame.Angles(0.6, a, 0.6), star, "ShaftStar")
+				b:box(Vector3.new(0.05, 0.05, 0.05), CFrame.new(math.cos(a) * 0.255 * k, y, math.sin(a) * 0.255 * k) * CFrame.Angles(0.6, a, 0.6), star, "ShaftStar")
 			end
 			-- banda de oro media y aro bajo con gemas azules
-			b:cylY(0.18, 0.62, CFrame.new(0, 0.55, 0), gold, "MidBand")
-			b:cylY(0.05, 0.66, CFrame.new(0, 0.66, 0), goldPale, "MidBandLip")
-			b:cylY(0.05, 0.66, CFrame.new(0, 0.44, 0), goldPale, "MidBandLip")
-			b:cylY(0.2, 0.66, CFrame.new(0, -1.02, 0), gold, "LowBand")
+			b:cylY(0.18, 0.62 * k, CFrame.new(0, 0.55, 0), gold, "MidBand")
+			b:cylY(0.05, 0.66 * k, CFrame.new(0, 0.66, 0), goldPale, "MidBandLip")
+			b:cylY(0.05, 0.66 * k, CFrame.new(0, 0.44, 0), goldPale, "MidBandLip")
+			b:cylY(0.18, 0.66 * k, CFrame.new(0, gBot + 0.09, 0), gold, "LowBand")
 			for _, sz in { -1, 1 } do
-				b:ball(0.14, Vector3.new(0, -1.02, sz * 0.33), P.neon(P.rgb(90, 200, 255)), "LowGem")
-				b:ball(0.12, Vector3.new(0, 0.55, sz * 0.31), P.neon(purpleC), "MidGem")
+				b:ball(0.14 * k, Vector3.new(0, gBot + 0.09, sz * 0.33 * k), P.neon(P.rgb(90, 200, 255)), "LowGem")
+				b:ball(0.12 * k, Vector3.new(0, 0.55, sz * 0.31 * k), P.neon(purpleC), "MidGem")
 			end
 		end)
 
-		-- ── pomo ────────────────────────────────────────────────
+		-- ── pomo (1.3x, achatado) ───────────────────────────────
 		b:group("Pommel", function()
-			local y = A.PommelY - 0.06
-			b:bevelBox(Vector3.new(0.86, 0.34, 0.86), CFrame.new(0, y, 0), gold, 0.24, { edges = "Y", edgeStyle = goldPale, name = "Pommel" })
-			b:bevelBox(Vector3.new(0.72, 0.14, 0.72), CFrame.new(0, y - 0.23, 0), cosmos, 0.2, { edges = "Y", edgeStyle = goldDeep, name = "PommelCap" })
-			b:cylY(0.06, 0.4, CFrame.new(0, y - 0.31, 0), P.neon(purpleC), "PommelNebula")
+			local pk = 1.3
+			local y = gBot - 0.15
+			b:bevelBox(Vector3.new(0.86 * pk, 0.28, 0.86 * pk), CFrame.new(0, y, 0), gold, 0.24 * pk, { edges = "Y", edgeStyle = goldPale, name = "Pommel" })
+			b:bevelBox(Vector3.new(0.72 * pk, 0.1, 0.72 * pk), CFrame.new(0, y - 0.19, 0), cosmos, 0.2 * pk, { edges = "Y", edgeStyle = goldDeep, name = "PommelCap" })
+			b:cylY(0.06, 0.4 * pk, CFrame.new(0, y - 0.24, 0), P.neon(purpleC), "PommelNebula")
 			for i = 0, 3 do
 				local a = TAU * i / 4 + TAU / 8
-				b:ball(0.13, Vector3.new(math.cos(a) * 0.43, y, math.sin(a) * 0.43), P.neon(P.rgb(90, 200, 255)), "PommelGem")
+				b:ball(0.13 * pk, Vector3.new(math.cos(a) * 0.43 * pk, y, math.sin(a) * 0.43 * pk), P.neon(P.rgb(90, 200, 255)), "PommelGem")
 			end
 		end)
 
