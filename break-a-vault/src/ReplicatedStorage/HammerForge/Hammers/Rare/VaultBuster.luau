@@ -160,33 +160,36 @@ return {
 		end)
 
 		-- ── mango ───────────────────────────────────────────────
+		-- K = factor radial del mango (agarre grueso como el concepto); PK = pomo
+		local K, PK = 1.15, 1.15
 		b:group("Shaft", function()
-			local bottom, top = A.ShaftBottom + 0.27, headY - CH / 2
-			b:cylY(top - bottom, 0.52, CFrame.new(0, (top + bottom) / 2, 0), black, "Shaft")
+			local bottom, top = -0.96, headY - CH / 2
+			b:cylY(top - bottom, 0.52 * K, CFrame.new(0, (top + bottom) / 2, 0), black, "Shaft")
 			-- collar octagonal de oro
-			oct(0.42, 0.86, CFrame.new(0, top - 0.21, 0), gold, "Collar")
-			b:disc(CFrame.new(0, top - 0.44, 0), 0.76, 0.06, goldEdge, "CollarLip")
-			b:disc(CFrame.new(0, top - 0.02, 0), 0.94, 0.05, goldDeep, "CollarTop")
+			oct(0.42, 0.86 * K, CFrame.new(0, top - 0.21, 0), gold, "Collar")
+			b:disc(CFrame.new(0, top - 0.44, 0), 0.76 * K, 0.06, goldEdge, "CollarLip")
+			b:disc(CFrame.new(0, top - 0.02, 0), 0.94 * K, 0.05, goldDeep, "CollarTop")
 			-- segmentos de hierro con arista
-			for _, y in { 1.02, 0.5, -0.02, -0.54 } do
-				b:disc(CFrame.new(0, y, 0), 0.62, 0.36, iron, "GripSeg")
+			for _, y in { 1.54, 1.02, 0.5, -0.02, -0.54 } do
+				b:disc(CFrame.new(0, y, 0), 0.62 * K, 0.36, iron, "GripSeg")
 			end
 			-- bandas de oro
-			for _, y in { 0.76, 0.24, -0.28 } do
-				b:disc(CFrame.new(0, y, 0), 0.68, 0.15, gold, "GoldBand")
-				b:disc(CFrame.new(0, y, 0), 0.72, 0.05, goldEdge, "GoldBandRidge")
+			for _, y in { 1.28, 0.76, 0.24, -0.28 } do
+				b:disc(CFrame.new(0, y, 0), 0.68 * K, 0.18, gold, "GoldBand")
+				b:disc(CFrame.new(0, y, 0), 0.72 * K, 0.05, goldEdge, "GoldBandRidge")
 			end
 		end)
 
 		-- ── pomo ────────────────────────────────────────────────
 		b:group("Pommel", function()
-			local py = A.PommelY + 0.2
-			oct(0.5, 1.02, CFrame.new(0, py, 0), gold, "Pommel")
-			b:disc(CFrame.new(0, py + 0.28, 0), 0.9, 0.07, goldEdge, "PommelBevel")
-			b:disc(CFrame.new(0, py - 0.28, 0), 0.9, 0.07, goldDeep, "PommelBevel")
-			b:cylY(0.07, 0.62, CFrame.new(0, py - 0.34, 0), black, "PommelCap")
+			local ph = 0.48
+			local py = -0.95 - ph / 2
+			oct(ph, 1.02 * PK, CFrame.new(0, py, 0), gold, "Pommel")
+			b:disc(CFrame.new(0, py + ph / 2 + 0.03, 0), 0.9 * PK, 0.07, goldEdge, "PommelBevel")
+			b:disc(CFrame.new(0, py - ph / 2 - 0.03, 0), 0.9 * PK, 0.07, goldDeep, "PommelBevel")
+			b:cylY(0.07, 0.62 * PK, CFrame.new(0, py - ph / 2 - 0.09, 0), black, "PommelCap")
 			for _, a in { 0, math.pi / 2, math.pi, 3 * math.pi / 2 } do
-				b:rivet(Vector3.new(math.cos(a) * 0.51, py, math.sin(a) * 0.51), 0.15, chrome)
+				b:rivet(Vector3.new(math.cos(a) * 0.51 * PK, py, math.sin(a) * 0.51 * PK), 0.15 * PK, chrome)
 			end
 		end)
 
