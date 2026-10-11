@@ -80,37 +80,39 @@ return {
 			b:box(Vector3.new(0.4, 0.06, 0.08), CFrame.new(0, headY + cH / 2 + 0.08, 0) * CFrame.Angles(0, math.rad(90), 0), edgeHi, "Wedge")
 		end)
 
-		-- ── mango ───────────────────────────────────────────────
-		local shaftDia = 0.5
-		local shaftBottom = A.ShaftBottom + 0.27
+		-- ── mango (grueso y corto: K = escala radial de todo el mango) ──
+		local K = 1.2
+		local shaftDia = 0.5 * K
+		local shaftBottom = -0.9
 		b:group("Shaft", function()
 			local bottom, top = shaftBottom, headY - cH / 2
 			b:cylY(top - bottom, shaftDia, CFrame.new(0, (top + bottom) / 2, 0), leatherDark, "Shaft")
 			-- cuello de acero bajo la cabeza
 			local neckY = top - 0.3
-			b:bevelBox(Vector3.new(0.74, 0.54, 0.74), CFrame.new(0, neckY, 0), iron, 0.18, { edges = "Y", edgeStyle = facet, name = "Neck" })
-			b:disc(CFrame.new(0, neckY - 0.3, 0), 0.82, 0.1, dark, "NeckRing")
-			b:cylY(0.16, shaftDia + 0.08, CFrame.new(0, neckY - 0.42, 0), ironMid, "NeckTaper")
+			b:bevelBox(Vector3.new(0.74 * K, 0.54, 0.74 * K), CFrame.new(0, neckY, 0), iron, 0.18 * K, { edges = "Y", edgeStyle = facet, name = "Neck" })
+			b:disc(CFrame.new(0, neckY - 0.3, 0), 0.82 * K, 0.1, dark, "NeckRing")
+			b:cylY(0.16, shaftDia + 0.08 * K, CFrame.new(0, neckY - 0.42, 0), ironMid, "NeckTaper")
 
 			-- agarre grueso: cuero en dos tonos (discos inclinados = vueltas) + correa oscura en espiral
-			local y0, y1 = -0.86, 0.96
+			local y0, y1 = -0.86, 1.56
 			local nWraps = 7
 			local leatherLight = P.with(leather, { Color = P.rgb(176, 104, 50) })
 			for i = 0, nWraps - 1 do
 				local y = y0 + (y1 - y0) * (i + 0.5) / nWraps
-				b:cylY(0.27, 0.6 - (i % 2) * 0.02, CFrame.new(0, y, 0) * CFrame.Angles(0, 0.35, 0) * CFrame.Angles(0.3, 0, 0), if i % 2 == 0 then leather else leatherLight, "LeatherWrap")
+				b:cylY(0.36, (0.6 - (i % 2) * 0.02) * K, CFrame.new(0, y, 0) * CFrame.Angles(0, 0.35, 0) * CFrame.Angles(0.3, 0, 0), if i % 2 == 0 then leather else leatherLight, "LeatherWrap")
 			end
-			b:wrap(y0 + 0.04, y1 - 0.04, 0.3, 3.5, leatherDark, { width = 0.06, thickness = 0.04, segmentsPerTurn = 6, name = "WrapLine" })
-			b:disc(CFrame.new(0, y1 + 0.05, 0), 0.66, 0.1, leatherDark, "WrapEnd")
-			b:disc(CFrame.new(0, y0 - 0.05, 0), 0.66, 0.1, leatherDark, "WrapEnd")
+			b:wrap(y0 + 0.04, y1 - 0.04, 0.3 * K, 4.5, leatherDark, { width = 0.07, thickness = 0.045, segmentsPerTurn = 6, name = "WrapLine" })
+			b:disc(CFrame.new(0, y1 + 0.05, 0), 0.66 * K, 0.1, leatherDark, "WrapEnd")
+			b:disc(CFrame.new(0, y0 - 0.05, 0), 0.66 * K, 0.1, leatherDark, "WrapEnd")
 		end)
 
-		-- ── pomo octagonal grande y achaflanado ────────────────
+		-- ── pomo octagonal grande y achaflanado (más grande y más arriba) ──
 		b:group("Pommel", function()
-			local y = shaftBottom - 0.3
-			b:bevelBox(Vector3.new(1.08, 0.5, 1.08), CFrame.new(0, y, 0), iron, 0.2, { edgeStyle = facet, name = "Pommel" })
-			b:bevelBox(Vector3.new(0.7, 0.08, 0.7), CFrame.new(0, y - 0.28, 0), ironMid, 0.18, { edges = "Y", edgeStyle = facet, name = "PommelCap" })
-			b:bevelBox(Vector3.new(0.8, 0.1, 0.8), CFrame.new(0, y + 0.29, 0), dark, 0.2, { edges = "Y", name = "PommelRing" })
+			local y = -1.1
+			local w = 1.08 * 1.22
+			b:bevelBox(Vector3.new(w, 0.44, w), CFrame.new(0, y, 0), iron, 0.24, { edgeStyle = facet, name = "Pommel" })
+			b:bevelBox(Vector3.new(0.7 * 1.22, 0.08, 0.7 * 1.22), CFrame.new(0, y - 0.25, 0), ironMid, 0.2, { edges = "Y", edgeStyle = facet, name = "PommelCap" })
+			b:bevelBox(Vector3.new(0.8 * 1.22, 0.1, 0.8 * 1.22), CFrame.new(0, y + 0.25, 0), dark, 0.22, { edges = "Y", name = "PommelRing" })
 		end)
 
 		-- ── efectos ─────────────────────────────────────────────
