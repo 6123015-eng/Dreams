@@ -198,47 +198,50 @@ return {
 		b:pulse(mouthParts, 0, 0.3, 2.2)
 
 		-- ── mango ───────────────────────────────────────────────
+		local K = 1.3 -- escala radial del mango (agarre chunky ~0.62-0.73 como el concepto)
+		local g0, g1 = -0.92, 1.5 -- agarre (mango ~12% más corto)
 		b:group("Shaft", function()
 			local top = headY - RH / 2
-			local bottom = A.ShaftBottom
-			b:cylY(top - bottom, 0.4, CFrame.new(0, (top + bottom) / 2, 0), goldDeep, "ShaftCore")
-			local cy = top - 0.22
-			b:bevelBox(Vector3.new(0.74, 0.38, 0.74), CFrame.new(0, cy, 0), gold, 0.16, { edges = "Y", edgeStyle = goldPale, name = "Collar" })
-			b:cylY(0.1, 0.64, CFrame.new(0, cy - 0.25, 0), goldDark, "CollarLip")
+			local bottom = g0 - 0.1
+			b:cylY(top - bottom, 0.42 * K, CFrame.new(0, (top + bottom) / 2, 0), goldDeep, "ShaftCore")
+			local cy = top - 0.24
+			b:bevelBox(Vector3.new(0.74 * K, 0.42, 0.74 * K), CFrame.new(0, cy, 0), gold, 0.16 * K, { edges = "Y", edgeStyle = goldPale, name = "Collar" })
+			b:cylY(0.12, 0.64 * K, CFrame.new(0, cy - 0.27, 0), goldDark, "CollarLip")
 			for i = 0, 3 do
 				local a = math.pi / 2 * i + math.pi / 4
-				b:rivet(Vector3.new(math.cos(a) * 0.3, cy, math.sin(a) * 0.3), 0.13, goldPale)
+				b:rivet(Vector3.new(math.cos(a) * 0.3 * K, cy, math.sin(a) * 0.3 * K), 0.15, goldPale)
 			end
 			-- cuero rojo cruzado
-			local g0, g1 = -1.12, 1.66
-			b:cylY(g1 - g0, 0.48, CFrame.new(0, (g0 + g1) / 2, 0), leatherDark, "GripBase")
-			local n = 7
+			b:cylY(g1 - g0, 0.48 * K, CFrame.new(0, (g0 + g1) / 2, 0), leatherDark, "GripBase")
+			local n = 6
 			local step = (g1 - g0) / n
 			for i = 0, n - 1 do
 				local tilt = if i % 2 == 0 then 0.2 else -0.2
-				b:cylY(step * 1.05, 0.56 - (i % 2) * 0.02, CFrame.new(0, g0 + step * (i + 0.5), 0) * CFrame.Angles(0, i * 0.7, 0) * CFrame.Angles(tilt, 0, 0), leather, "LeatherWrap")
+				b:cylY(step * 1.05, (0.56 - (i % 2) * 0.02) * K, CFrame.new(0, g0 + step * (i + 0.5), 0) * CFrame.Angles(0, i * 0.7, 0) * CFrame.Angles(tilt, 0, 0), leather, "LeatherWrap")
 			end
 			for _, y in { g0, g1 } do
-				b:cylY(0.14, 0.62, CFrame.new(0, y, 0), gold, "GripRing")
-				b:cylY(0.05, 0.66, CFrame.new(0, y, 0), goldPale, "GripRingLip")
+				b:cylY(0.16, 0.62 * K, CFrame.new(0, y, 0), gold, "GripRing")
+				b:cylY(0.06, 0.66 * K, CFrame.new(0, y, 0), goldPale, "GripRingLip")
 			end
 		end)
 
-		-- ── pomo: garra de dragón ───────────────────────────────
-		local py = A.PommelY - 0.04
+		-- ── pomo: garra de dragón (1.3x) ────────────────────────
+		local PK = 1.3
+		local cuffH = 0.36 * PK
+		local py = g0 - 0.06 - cuffH / 2
 		b:group("Pommel", function()
-			b:bevelBox(Vector3.new(0.74, 0.36, 0.74), CFrame.new(0, py, 0), gold, 0.18, { edges = "Y", edgeStyle = goldPale, name = "ClawCuff" })
-			b:cylY(0.08, 0.8, CFrame.new(0, py + 0.14, 0), goldDeep, "CuffRim")
+			b:bevelBox(Vector3.new(0.74 * PK, cuffH, 0.74 * PK), CFrame.new(0, py, 0), gold, 0.18 * PK, { edges = "Y", edgeStyle = goldPale, name = "ClawCuff" })
+			b:cylY(0.1, 0.8 * PK, CFrame.new(0, py + cuffH / 2 - 0.06, 0), goldDeep, "CuffRim")
 			-- orbe de fuego apretado por la garra
-			local oy = py - 0.46
-			table.insert(eyeParts, b:ball(0.16, Vector3.new(0, oy, 0), lava, "OrbCore"))
-			b:ball(0.34, Vector3.new(0, oy, 0), P.glass(P.rgb(170, 20, 10), 0.3), "Orb")
+			local oy = py - 0.4 * PK
+			table.insert(eyeParts, b:ball(0.2, Vector3.new(0, oy, 0), lava, "OrbCore"))
+			b:ball(0.42, Vector3.new(0, oy, 0), P.glass(P.rgb(170, 20, 10), 0.3), "Orb")
 			-- dedos (nudillos de oro) + uñas de cristal rojo curvadas hacia el orbe
 			for i = 0, 3 do
 				local a = math.pi / 2 * i + math.pi / 4
 				local d = Vector3.new(math.cos(a), 0, math.sin(a))
-				b:ball(0.22, Vector3.new(0, py - 0.18, 0) + d * 0.32, goldPale, "Knuckle")
-				spike(Vector3.new(0, py - 0.24, 0) + d * 0.32, Vector3.new(0, -1, 0) - d * 0.4, 0.62, 0.2, 3, talon)
+				b:ball(0.26 * PK, Vector3.new(0, py - cuffH / 2, 0) + d * 0.32 * PK, goldPale, "Knuckle")
+				spike(Vector3.new(0, py - cuffH / 2 - 0.06, 0) + d * 0.32 * PK, Vector3.new(0, -1, 0) - d * 0.5, 0.68, 0.26 * PK, 3, talon)
 			end
 		end)
 
