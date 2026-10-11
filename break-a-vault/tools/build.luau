@@ -227,13 +227,24 @@ end
 -- ── chequeo de sintaxis de TODOS los scripts (incluye FX y el LocalScript) ──
 do
 	local bad = 0
+	local function relevant(path: string): boolean
+		if not only or not string.find(path, "/Hammers/", 1, true) then
+			return true -- archivos núcleo, o build completo
+		end
+		local file = string.match(path, "([^/]+)%.luau$")
+		return file ~= nil and (only :: any)[file] == true
+	end
 	local function check(node)
 		local path = rawget(node, "Path")
 		if path then
 			local ok, err = pcall(luau.compile, fs.readFile(path))
 			if not ok then
-				bad += 1
-				print("  ✗ sintaxis: " .. path .. "\n      " .. tostring(err))
+				if relevant(path) then
+					bad += 1
+					print("  ✗ sintaxis: " .. path .. "\n      " .. tostring(err))
+				else
+					print("  (aviso: otro martillo tiene error de sintaxis, se ignora en --only: " .. path .. ")")
+				end
 			end
 		end
 		for _, c in rawget(node, "_children") do

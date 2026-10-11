@@ -1,5 +1,8 @@
 # Break a Vault — Traspaso de martillos (nube → Claude local)
 
+> **Estado real = los archivos que existan en `break-a-vault/src/ReplicatedStorage/HammerForge/Hammers/`
+> y el `git log` de la rama.** Cada martillo terminado tiene su propio commit "Martillo <Id>".
+>
 > **Para el usuario:** si la sesión en la nube se cortó (créditos, error, lo que sea), copia
 > TODO el bloque "PROMPT PARA CLAUDE LOCAL" de abajo y pégaselo a tu Claude local
 > (el que está conectado a Roblox Studio por MCP). Este archivo se actualiza cada vez
@@ -8,8 +11,10 @@
 ## Estado actual
 
 - [x] Plan y estructura del proyecto subidos (`break-a-vault/`)
-- [x] Imágenes de concepto guardadas en `break-a-vault/concepts/`
-- [ ] Fábrica de martillos (`HammerForge`: Builder, Palette, FX)
+- [x] Imágenes de concepto guardadas en `break-a-vault/concepts/` (y recortes por martillo en `concepts/hammers/`)
+- [x] Fábrica de martillos (`HammerForge`: Builder, Palette, FX, init) + build con Lune + visor 3D
+- [x] Guía de modelado: `break-a-vault/docs/MODELING_GUIDE.md`
+- [x] Rusty Hammer (primera versión de referencia)
 - [ ] Martillos Starter (4) · Uncommon (4)
 - [ ] Martillos Rare (4) · Epic (4)
 - [ ] Martillos Legendary (4) · Mythic (4)
@@ -73,7 +78,16 @@ toca meterlos al juego.
    claude/dreamy-wright-vjz0hp y lee HANDOFF_CLAUDE_LOCAL.md (sección "Estado actual")
    para ver qué martillos ya están terminados.
 
-2. Mete los martillos a Studio. Opción A (rápida): inserta
+   La lista definitiva de terminados = archivos en
+   break-a-vault/src/ReplicatedStorage/HammerForge/Hammers/ (cada uno con commit "Martillo <Id>").
+   Lee también break-a-vault/docs/MODELING_GUIDE.md (convenciones y reglas de calidad).
+
+2. Si dist/BreakAVault_Hammers.rbxm está desactualizado (más viejo que el último martillo),
+   regenéralo: instala Lune (cargo install lune --locked, o rokit/aftman) y corre
+   `cd break-a-vault && lune run tools/build.luau`. También genera
+   dist/BreakAVault_Showcase.rbxl: un lugar de prueba con todos los martillos en vitrina.
+
+3. Mete los martillos a Studio. Opción A (rápida): inserta
    break-a-vault/dist/BreakAVault_Hammers.rbxm en el lugar (contiene la carpeta
    HammerForge con los ModuleScripts, la carpeta Hammers con los Tools ya construidos
    y el LocalScript HammerFXClient). Opción B: crea por MCP los ModuleScripts con el
@@ -83,21 +97,39 @@ toca meterlos al juego.
    - Hammers (Tools) → ReplicatedStorage (o ServerStorage si Codex lo prefiere)
    - HammerFXClient → StarterPlayer.StarterPlayerScripts
 
-3. Revisa cada martillo en Studio (Play) y ajusta lo visual que se vea mal en el motor
-   real (escala en la mano, Grip, brillo del neón, cantidad de partículas).
+4. Revisa cada martillo en Studio (Play) y ajusta lo visual que se vea mal en el motor
+   real (escala en la mano, Grip, brillo del neón, cantidad de partículas). Notas:
+   - Builder.GRIP controla cómo se sostiene (una sola línea en Builder.luau).
+   - Las formas con WedgeParts (picos, símbolos, cristales) asumen que la rampa de una
+     WedgePart sube de (abajo, -Z) a (arriba, +Z). Si en Studio salen invertidas, el
+     arreglo es solo en Builder:triangle().
+   - Para que el neón brille como en la vista previa, Lighting necesita BloomEffect
+     (ver la vitrina .rbxl: Intensity 0.9, Size 30, Threshold 0.9) y EnvironmentSpecularScale = 1.
 
-4. Los martillos que la sesión en la nube NO alcanzó a terminar (ver "Estado actual"),
-   hazlos tú siguiendo el mismo estilo: usa Builder.luau y copia la estructura de los
-   que ya existen en Hammers/. Referencia visual en break-a-vault/concepts/.
+5. Los martillos que la sesión en la nube NO alcanzó a terminar,
+   hazlos tú siguiendo docs/MODELING_GUIDE.md: usa Builder.luau y copia la estructura de los
+   que ya existen en Hammers/. Referencia visual en break-a-vault/concepts/hammers/<Id>.png.
 
-5. Asigna cada martillo a su zona (Starter Yard, Bank Alley, Steel Factory, Gold Vault,
+6. Asigna cada martillo a su zona (Starter Yard, Bank Alley, Steel Factory, Gold Vault,
    Frozen Vault, Cyber Lab, Volcano Vault) para que el tema visual concuerde.
 
-6. Al terminar, dame un prompt para Codex con el contrato de la API de efectos
+7. Al terminar, dame un prompt para Codex con el contrato de la API de efectos
    (está en la sección "Contrato para Codex" de HANDOFF_CLAUDE_LOCAL.md) para que él
    conecte el daño/golpes con HammerFX.
 ```
 
 ## Contrato para Codex (funcional)
 
-_(Se completa cuando quede lista la API de FX.)_
+Los martillos son `Tool` con tag `BAV_Hammer` y atributos: `HammerId`, `DisplayName`, `Rarity`,
+`Order`, `RarityColor`, `PartCount`, `Theme`. Se construyen con
+`require(ReplicatedStorage.HammerForge).Build(id)` o se clonan de la carpeta `Hammers`.
+Los stats (daño, velocidad, precio) NO están en los modelos: son de Codex.
+
+Efectos (módulo `ReplicatedStorage.HammerForge.FX`, ya iniciado por `HammerFXClient`):
+- Cliente que golpea (feedback instantáneo): `FX.Swing(tool)` al empezar el swing y
+  `FX.Impact(tool)` cuando conecta con la bóveda.
+- Para que lo vean TODOS los jugadores, desde el servidor:
+  `tool:SetAttribute("FX_SwingSeq", (tool:GetAttribute("FX_SwingSeq") or 0) + 1)` y
+  `tool:SetAttribute("FX_ImpactSeq", (tool:GetAttribute("FX_ImpactSeq") or 0) + 1)`.
+- `FX.OnImpact` (evento) para sacudir cámara o poner sonido.
+- `FX.AutoSwing = true` muestra el trail al hacer clic aunque no se llame Swing (se puede apagar).
